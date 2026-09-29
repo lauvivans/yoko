@@ -5,7 +5,9 @@ const Footer = () => {
         <div>
           <img src="/mascot.svg" />
         </div>
-        <span>&copy; Yoko! 2024. All rights reserved.</span>
+        <span>
+          &copy; Yoko! 2024-{new Date().getFullYear()}. All rights reserved.
+        </span>
       </div>
       <span className="c-footer__version">v 1.0.0</span>
       <div className="c-footer__data">
