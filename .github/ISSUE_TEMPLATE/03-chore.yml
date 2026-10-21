@@ -1,0 +1,26 @@
+name: 🔧 Chore
+description: Manutenção, refactor, configuração ou dívida técnica
+labels: ["chore"]
+projects: ["lauvivans/4"]
+body:
+  - type: textarea
+    id: oque
+    attributes:
+      label: O que fazer
+    validations:
+      required: true
+  - type: textarea
+    id: porque
+    attributes:
+      label: Por quê
+      description: Motivo para fazer agora.
+    validations:
+      required: true
+  - type: textarea
+    id: pronto
+    attributes:
+      label: Definição de pronto
+      value: |
+        - [ ]
+    validations:
+      required: true

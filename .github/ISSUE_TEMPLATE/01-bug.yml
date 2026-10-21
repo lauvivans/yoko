@@ -1,0 +1,56 @@
+name: 🐛 Bug
+description: Algo não funciona como deveria
+labels: ["bug"]
+projects: ["lauvivans/4"]
+body:
+  - type: textarea
+    id: resumo
+    attributes:
+      label: Resumo
+      description: Uma ou duas frases sobre o problema.
+    validations:
+      required: true
+  - type: textarea
+    id: atual
+    attributes:
+      label: Comportamento atual
+      description: O que acontece hoje.
+    validations:
+      required: true
+  - type: textarea
+    id: esperado
+    attributes:
+      label: Comportamento esperado
+      description: O que deveria acontecer.
+    validations:
+      required: true
+  - type: dropdown
+    id: onde
+    attributes:
+      label: Onde acontece
+      options:
+        - Homepage
+        - Events view
+        - Actions view
+        - Calendar view
+        - Outro
+    validations:
+      required: true
+  - type: textarea
+    id: causa
+    attributes:
+      label: Causa provável
+      description: Opcional. Arquivo, função ou hipótese do que está causando o problema.
+  - type: textarea
+    id: evidencias
+    attributes:
+      label: Evidências
+      description: Opcional. Prints, vídeos ou logs.
+  - type: textarea
+    id: criterios
+    attributes:
+      label: Critérios de aceite
+      value: |
+        - [ ]
+    validations:
+      required: true
