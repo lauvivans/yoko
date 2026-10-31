@@ -43,3 +43,41 @@ jobs:
           # See https://github.com/anthropics/claude-code-action/blob/main/docs/usage.md
           # or https://code.claude.com/docs/en/cli-reference for available options
 
+  issue-checklist:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pull-requests: read
+      issues: write
+      id-token: write
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+
+      - name: Tick delivered checklist items
+        uses: anthropics/claude-code-action@v1
+        with:
+          claude_code_oauth_token: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
+          prompt: |
+            REPO: ${{ github.repository }}
+            PR NUMBER: ${{ github.event.pull_request.number }}
+
+            1. Read the PR body with `gh pr view` and find the issues it closes
+               (`Closes #n`, `Fixes #n` or `Resolves #n`). If there are none, stop.
+            2. For each closing issue, read its body with `gh issue view` and find
+               the unchecked checklist items (`- [ ]`).
+            3. Read the PR diff with `gh pr diff`. An item is delivered only if the
+               diff clearly does what the item says. When in doubt, leave it unchecked.
+            4. Edit the issue body with `gh issue edit --body-file`, changing only
+               `- [ ]` to `- [x]` on the delivered items. Keep every other character
+               of the body as it was. Never untick an item.
+            5. Comment on the PR with `gh pr comment` listing, per issue, the items
+               you ticked and the items left unchecked, each with a one-line reason.
+               If nothing is left unchecked, say so in one line. Check the existing
+               comments with `gh pr view --comments` first: if a checklist comment is
+               already there and you ticked nothing new in this run, don't comment again.
+          claude_args: '--allowedTools "Bash(gh pr view:*),Bash(gh pr diff:*),Bash(gh issue view:*),Bash(gh issue edit:*),Bash(gh pr comment:*),Write"'
+
