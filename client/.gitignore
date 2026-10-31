@@ -23,11 +23,6 @@ dist-ssr
 *.sln
 *.sw?
 
-# Docusaurus
-docs/.docusaurus
-docs/build
-docs/node_modules
-
 .eslintcache
 
 main.css

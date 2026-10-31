@@ -9,9 +9,8 @@ Everything in the repository and on GitHub is in English: code, docs, file names
 ## Structure
 
 - `client/`: front-end (React, Vite, TypeScript, SASS). Node 22 (`client/.nvmrc`).
-- `client/docs/`: documentation site (Docusaurus), published on Cloudflare Pages. Moving to `docs/` (#135).
 - `api/`: back-end, still empty.
-- `docs/`: general documentation.
+- `docs/`: documentation. Also the Docusaurus site published on Cloudflare Pages (`overview/`, `dev-docs/`, `src/`, `static/`).
   - `docs/engineering-guidelines.md`: rules for writing and reviewing code.
   - `docs/decisions/`: one decision per file, numbered. Every spike ends with a file here.
   - `docs/prototypes/`: HTML prototypes.
@@ -33,7 +32,7 @@ Follow the guidelines below when implementing and when reviewing PRs. They are i
 
 - **Base branch:** `develop`. PRs target it, not `main`.
 - **Branch name:** `<type>/kebab-case-name`, for example `chore/claude-md` or `fix/occurrence-delete`.
-- **Commits and PR title:** [Conventional Commits](https://www.conventionalcommits.org/), for example `chore: add spike issue template`. Details in `client/docs/dev-docs/patterns.mdx`.
+- **Commits and PR title:** [Conventional Commits](https://www.conventionalcommits.org/), for example `chore: add spike issue template`. Details in `docs/dev-docs/patterns.mdx`.
 - **PR body:** ends with `Closes #<issue>`.
 - **Attribution:** no `Co-Authored-By` or "Generated with Claude Code" in commits and PRs.
 
