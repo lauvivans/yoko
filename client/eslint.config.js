@@ -15,7 +15,8 @@ export default defineConfig(
       'dist',
       'node_modules',
       '.github',
-      '.husky',
+      '.husky',
+
       'vite-env.d.ts',
       'vite.config.ts',
     ],
