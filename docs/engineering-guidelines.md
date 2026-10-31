@@ -149,3 +149,8 @@ How to comment:
 - State the problem, why it matters and a concrete fix.
 - Don't repeat style nits that prettier fixes on its own.
 - Anything outside the PR's scope becomes a suggested issue, not a blocker.
+
+Closing issue checklist:
+
+- Tick the checklist items of the issue the PR closes that the PR delivers. Never untick an item.
+- An item left unchecked without a reason in the PR is **Blocking**.
