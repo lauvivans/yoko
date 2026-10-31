@@ -1,3 +1,7 @@
 
 # Claude Code (personal settings)
 .claude/settings.local.json
+
+# Environment files. Only .env.example is versioned.
+.env*
+!.env.example
