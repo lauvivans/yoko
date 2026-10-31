@@ -93,5 +93,33 @@ export default defineConfig(
       ],
     },
   },
+
+  // File size limits from docs/engineering-guidelines.md. Later blocks win,
+  // so the order goes from the broadest match to the most specific one.
+  {
+    files: ['src/**/*.tsx'],
+    rules: { 'max-lines': ['warn', 300] },
+  },
+  {
+    files: [
+      'src/**/hooks/**/*.{ts,tsx}',
+      'src/**/helpers/**/*.ts',
+      'src/store/**/*.ts',
+    ],
+    rules: { 'max-lines': ['warn', 150] },
+  },
+  {
+    files: ['src/**/*.spec.{ts,tsx}'],
+    rules: { 'max-lines': ['warn', 300] },
+  },
+  {
+    files: [
+      'src/types/**',
+      'src/**/enum/**',
+      'src/**/schemas/**',
+      'src/components/display/icons/**',
+    ],
+    rules: { 'max-lines': 'off' },
+  },
   prettierConfig
 );
