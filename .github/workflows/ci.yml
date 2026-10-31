@@ -1,0 +1,79 @@
+name: CI
+
+on:
+  pull_request:
+    branches: [main, develop]
+    paths:
+      - 'client/**'
+      - '.github/workflows/ci.yml'
+  # Reused by release.yml before deploying.
+  workflow_call:
+
+permissions:
+  contents: read
+
+# A new push to a PR cancels its previous run. Runs called by release.yml are
+# grouped by commit, so they never cancel a deploy.
+concurrency:
+  group: ci-${{ github.event.pull_request.number || github.sha }}
+  cancel-in-progress: true
+
+jobs:
+  ci:
+    name: Type check, lint, format, tests and build
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: client
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          # Full history, so the format check can diff against the base branch.
+          fetch-depth: 0
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version-file: client/.nvmrc
+          cache: npm
+          cache-dependency-path: client/package-lock.json
+
+      - name: Install dependencies
+        id: install
+        run: npm ci --no-audit --no-fund
+
+      # Each check runs even if the one before failed, so a single run shows
+      # every problem. The job still fails if any of them fails.
+      - name: Type check
+        if: ${{ !cancelled() && steps.install.outcome == 'success' }}
+        run: npm run type-check
+
+      - name: Lint
+        if: ${{ !cancelled() && steps.install.outcome == 'success' }}
+        run: npm run lint:all
+
+      # Formatting has no effect on other files, so only the files the PR
+      # changes are checked. Pushes from release.yml have no base branch to diff
+      # against, and the PR already checked them.
+      - name: Check formatting of changed files
+        if: ${{ !cancelled() && steps.install.outcome == 'success' && github.base_ref != '' }}
+        env:
+          BASE: ${{ github.base_ref }}
+        run: |
+          files=$(git diff --name-only --relative --diff-filter=ACMR "origin/$BASE...HEAD" \
+            | grep -E '\.(js|jsx|ts|tsx|json|css|scss|md)$' || true)
+          if [ -z "$files" ]; then
+            echo "No changed files to check."
+            exit 0
+          fi
+          echo "$files" | xargs -d '\n' npx prettier --check
+
+      - name: Run tests
+        if: ${{ !cancelled() && steps.install.outcome == 'success' }}
+        run: npx vitest run
+
+      - name: Build
+        if: ${{ !cancelled() && steps.install.outcome == 'success' }}
+        run: npm run build
