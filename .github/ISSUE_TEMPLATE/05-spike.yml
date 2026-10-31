@@ -1,0 +1,49 @@
+name: 🔎 Spike
+description: Investigação com tempo limitado que entrega uma decisão, não código
+labels: ["spike"]
+projects: ["lauvivans/4"]
+body:
+  - type: textarea
+    id: pergunta
+    attributes:
+      label: Pergunta
+      description: O que precisa ser respondido.
+    validations:
+      required: true
+  - type: textarea
+    id: contexto
+    attributes:
+      label: Contexto
+      description: Por que isso surgiu e o que depende dessa resposta.
+    validations:
+      required: true
+  - type: input
+    id: timebox
+    attributes:
+      label: Timebox
+      description: Quanto tempo investir antes de parar e decidir.
+      placeholder: ex. ½ dia
+    validations:
+      required: true
+  - type: textarea
+    id: opcoes
+    attributes:
+      label: Opções a avaliar
+      description: Opcional. Alternativas, ferramentas ou abordagens a comparar.
+  - type: textarea
+    id: entregavel
+    attributes:
+      label: Entregável
+      description: O que deve ser produzido ao final.
+      placeholder: ex. Recomendação escrita em docs/, comparativo ou prova de conceito
+    validations:
+      required: true
+  - type: textarea
+    id: criterios
+    attributes:
+      label: Critérios de aceite
+      value: |
+        - [ ] Decisão registrada
+        - [ ] Issues de implementação criadas
+    validations:
+      required: true
