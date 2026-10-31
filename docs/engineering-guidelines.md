@@ -2,7 +2,7 @@
 
 Rules for writing and reviewing code in Yoko. They apply to whoever implements a change and to whoever reviews the PR. The workflow (branches, commits, board) lives in `CLAUDE.md`.
 
-Old code that breaks these rules does not need to be fixed in the same PR. If it gets in the way, open an issue. The exception is lint, prettier and type errors: anything they flag in the files the PR touches is fixed in the same PR.
+Old code that breaks these rules does not need to be fixed in the same PR. If it gets in the way, open an issue. The exception is lint, prettier and type errors: anything they flag in the files the PR touches is fixed in the same PR. The only exception to that is the `max-lines` warning, which follows the file size rules below.
 
 ## Principles
 
@@ -45,6 +45,7 @@ Applies to `client/`. Paths below are relative to it.
 - Lines are counted as the file is, blank lines included.
 - A file that goes past its limit is split by responsibility: a subcomponent, a hook, a helper or another partial. If splitting makes it worse, justify it in the PR.
 - A file already over its limit should not grow. Splitting it is welcome, but only when the PR is already changing that part of the file.
+- ESLint warns with `max-lines` when a `.ts` or `.tsx` file passes its limit. SASS partials are checked in review.
 - The limit is a trigger to look at responsibilities, not a goal. A long file that does one thing well beats several tiny files that only add indirection.
 - Why these numbers: components and tests use the default of ESLint's [`max-lines`](https://eslint.org/docs/latest/rules/max-lines), 300. A component mixes markup, state and handlers, so it gets more room than a hook, helper or partial, which should do one thing. _Clean Code_ (Robert C. Martin, ch. 5) shows large systems built from files typically around 200 lines, with an upper bound of 500. Sonar and CISQ ([CWE-1080](https://cwe.mitre.org/data/definitions/1080.html)) flag files only past 1000 lines, which is a ceiling, not a target.
 
