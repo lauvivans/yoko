@@ -1,8 +1,12 @@
 # Yoko!
 
 [![License: MIT](https://img.shields.io/github/license/lauvivans/yoko)](LICENSE)
+[![App](https://img.shields.io/badge/app-yoko.arualvivan.com-8a2be2)](https://yoko.arualvivan.com)
+[![Docs](https://img.shields.io/badge/docs-yoko--docs.arualvivan.com-blue)](https://yoko-docs.arualvivan.com)
 
 A self-management app that keeps your recurring actions, events, tasks, notes and mood in one place.
+
+**[Try it at yoko.arualvivan.com](https://yoko.arualvivan.com)**
 
 ## Why Yoko
 
@@ -29,6 +33,8 @@ Planned:
 Each feature's rules are in the [product requirements](docs/product/requirements.md).
 
 ## Preview
+
+The app is live at [yoko.arualvivan.com](https://yoko.arualvivan.com), always showing the latest release.
 
 The screens are designed in [Figma](https://www.figma.com/design/s9HB9I0wyGOTvnlWuWkOu6/yoko-?node-id=0-1&t=QBeoAmwyvJ2a6apC-1). HTML prototypes are in [`docs/prototypes/`](docs/prototypes/).
 
@@ -81,6 +87,8 @@ Other commands, all inside `client/`:
 
 ## Documentation
 
+The documentation site is at [yoko-docs.arualvivan.com](https://yoko-docs.arualvivan.com). In the repository:
+
 - [Product requirements](docs/product/requirements.md)
 - [Data model](docs/architecture/data-model.md)
 - [Decisions](docs/decisions/)
@@ -97,4 +105,4 @@ Other commands, all inside `client/`:
 
 ## License
 
-[MIT](LICENSE) © Laura Vivan Gonçalves
+[MIT](LICENSE) © 2024–2026 Laura Vivan Gonçalves
