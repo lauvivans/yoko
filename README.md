@@ -97,7 +97,7 @@ The documentation site is at [yoko-docs.arualvivan.com](https://yoko-docs.arualv
 
 ## Contributing
 
-- Work is tracked on the [Yoko! board](https://github.com/users/lauvivans/projects/4). Open an issue with one of the [templates](.github/ISSUE_TEMPLATE/) before starting.
+- Open an issue with one of the [templates](.github/ISSUE_TEMPLATE/) before starting.
 - Branches are named `<type>/kebab-case-name` and PRs target `develop`.
 - Commits and PR titles follow [Conventional Commits](https://www.conventionalcommits.org/).
 - Code follows the [engineering guidelines](docs/engineering-guidelines.md). Every PR is reviewed against them.
