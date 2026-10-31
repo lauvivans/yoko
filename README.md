@@ -34,7 +34,7 @@ Each feature's rules are in the [product requirements](docs/product/requirements
 
 ## Preview
 
-The app is live at [yoko.arualvivan.com](https://yoko.arualvivan.com), always showing the latest release.
+The app is live at [yoko.arualvivan.com](https://yoko.arualvivan.com).
 
 The screens are designed in [Figma](https://www.figma.com/design/s9HB9I0wyGOTvnlWuWkOu6/yoko-?node-id=0-1&t=QBeoAmwyvJ2a6apC-1). HTML prototypes are in [`docs/prototypes/`](docs/prototypes/).
 
