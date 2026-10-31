@@ -14,7 +14,7 @@ How do we document Yoko (front-end and API) in an open-source repository without
 - Docusaurus moves out of `client/docs/` and becomes the site for `docs/`, covering the whole project.
 - Database diagrams, architecture and endpoints **can** be documented. They are not secrets, because the code already reveals them.
 - What never goes anywhere in the repo (code, docs or issues) are **secrets and infrastructure details**. The list is below.
-- **API exception (OWASP API9):** documenting endpoints in markdown in the repo is fine. What is not allowed is exposing interactive documentation (Swagger/OpenAPI UI) on the API's production host, or publishing the environment inventory (staging URLs, internal hosts).
+- **API exception (OWASP API9):** documenting endpoints in markdown in the repo is fine. What is not allowed is exposing interactive documentation (Swagger/OpenAPI UI) on the API's production host, or publishing internal hosts. Preview and staging URLs may appear, because those environments sit behind a login (see [Previews and staging](#previews-and-staging)).
 - We won't keep private documentation for now. If the need comes up, it goes to a separate private repository, never to a git-ignored folder.
 
 ## The database diagram premise
@@ -44,13 +44,27 @@ GOV.UK notes that publishing exact stack versions makes outdated software easier
 | Database diagram, schema and migrations                         | Environment variable values (`.env`), keys, tokens, passwords          |
 | Architecture and flow between `client/` and `api/`              | Connection strings, hosts and IPs of databases or internal servers     |
 | Endpoint list and contracts (including auth), in markdown       | Interactive Swagger/OpenAPI UI on the API's production host            |
-| Environment variable names (without values), via `.env.example` | Environment inventory: staging URLs, previews and internal hosts       |
+| Environment variable names (without values), via `.env.example` | Internal hosts, and URLs of environments that aren't behind a login    |
 | Security rules (e.g. Firebase Security Rules)                   | Cloud account IDs and admin dashboards                                 |
 | Patterns, decisions, prototypes, design tokens                  | Real user data, including in screenshots and examples                  |
 | How to run the project locally                                  | Unfixed vulnerabilities (they go through private reporting, see below) |
 |                                                                 | Incident runbooks with infrastructure details                          |
 
 **Rule of thumb:** if the information can be deduced by reading the public code, it can be documented. If it only exists in the cloud dashboard or in `.env`, it can't.
+
+## Previews and staging
+
+_Updated on 2026-10-31 (#170)._
+
+This decision first said preview and staging URLs should never be published. That rule protected nothing:
+
+- Cloudflare Pages URLs follow a predictable pattern (`<branch>.<project>.pages.dev`).
+- The staging deploy prints its URL in the Actions logs, which are public in a public repository.
+- Cloudflare posts the preview URLs of the docs site on every PR.
+
+So the protection moved from hiding the URL to requiring a login. The preview and staging deployments of both Cloudflare Pages projects, `yoko` (the app) and `yoko-docs` (this site), are behind Cloudflare Access: only the maintainer's account can open them. Their URLs may appear in PRs, comments and logs.
+
+Production (`yoko.arualvivan.com` and `yoko-docs.arualvivan.com`) stays public.
 
 ## How other open-source projects do it
 
