@@ -1,48 +1,50 @@
 # Yoko!
 
-App de autogestão (ações recorrentes, eventos, tarefas, notas, humor). Monorepo público.
+Self-management app (recurring actions, events, tasks, notes, mood). Public monorepo.
 
-## Estrutura
+## Language
+
+Everything in the repository and on GitHub is in English: code, docs, file names, issues, PRs, commits and reviews. Published platforms offer Portuguese through the `/pt-BR/` URL prefix. See `docs/decisoes/002-language-policy.md`.
+
+## Structure
 
 - `client/`: front-end (React, Vite, TypeScript, SASS). Node 22 (`client/.nvmrc`).
-- `client/docs/`: site de documentação (Docusaurus), publicado no Cloudflare Pages. Vai para `docs/` (#135).
-- `api/`: back-end, ainda vazio.
-- `docs/`: documentação geral.
-  - `docs/decisoes/`: uma decisão por arquivo, numerada. Todo spike termina com um arquivo aqui.
-  - `docs/prototipos/`: protótipos HTML.
+- `client/docs/`: documentation site (Docusaurus), published on Cloudflare Pages. Moving to `docs/` (#135).
+- `api/`: back-end, still empty.
+- `docs/`: general documentation.
+  - `docs/engineering-guidelines.md`: rules for writing and reviewing code.
+  - `docs/decisoes/`: one decision per file, numbered. Every spike ends with a file here.
+  - `docs/prototipos/`: HTML prototypes.
 
-## Comandos (rodar dentro de `client/`)
+## Engineering guidelines
 
-- `npm run dev`: deixe rodando durante a implementação, para que as mudanças possam ser acompanhadas.
+Follow `docs/engineering-guidelines.md` when implementing and when reviewing PRs.
+
+## Commands (run inside `client/`)
+
+- `npm run dev`: keep it running during implementation, so the changes can be followed.
 - `npm run build`, `npm run type-check`, `npm run lint:all`, `npm run format:check:all`.
-- `npm test`: Vitest com Testing Library. Ainda não há testes E2E configurados.
-- O pre-commit (husky + lint-staged) roda prettier, eslint e `vitest related` nos arquivos alterados.
+- `npm test`: Vitest with Testing Library. No E2E tests set up yet.
+- The pre-commit hook (husky + lint-staged) runs prettier, eslint and `vitest related` on the changed files.
 
-## Testes
+## Workflow
 
-Antes de implementar, mapeie os casos mais importantes: comportamento principal, casos de borda e fluxos críticos.
+- **Base branch:** `develop`. PRs target it, not `main`.
+- **Branch name:** `<type>/kebab-case-name`, for example `chore/claude-md` or `fix/occurrence-delete`.
+- **Commits and PR title:** [Conventional Commits](https://www.conventionalcommits.org/), for example `chore: add spike issue template`. Details in `client/docs/dev-docs/patterns.mdx`.
+- **PR body:** ends with `Closes #<issue>`.
+- **Attribution:** no `Co-Authored-By` or "Generated with Claude Code" in commits and PRs.
 
-- Testing Library para componentes e interação.
-- Vitest puro para lógica isolada.
+## Issues and board
 
-## Fluxo de trabalho
+- **Issues:** use the templates in `.github/ISSUE_TEMPLATE/` (bug, feature, chore, design, spike). The type goes in the label, not in the title. Documentation counts as `chore`.
+- **Board:** "Yoko!" (GitHub Project #4 of `lauvivans`). Status: Backlog → Ready → In progress → In review → Done.
+  - When starting an issue, move it to **In progress**.
+  - When opening the PR, move it to **In review**.
+  - Merging moves the issue to **Done**.
+- **Sprints:** 15 days long, in the `Sprint` field. Issues in Ready in the current sprint are the day's tasks.
+- **Draft before creating:** show the full text of any issue or PR and only create it after approval.
 
-- **Branch base:** `develop`. Os PRs apontam para ela, não para `main`.
-- **Nome de branch:** `<tipo>/nome-em-kebab-case`, por exemplo `chore/claude-md` ou `fix/occurrence-delete`.
-- **Commits e título de PR:** [Conventional Commits](https://www.conventionalcommits.org/), por exemplo `chore: add spike issue template`. Os detalhes estão em `client/docs/dev-docs/patterns.mdx`.
-- **Corpo do PR:** em português, terminando com `Closes #<issue>`.
-- **Atribuição:** sem `Co-Authored-By` ou "Generated with Claude Code" em commits e PRs.
+## Security
 
-## Issues e board
-
-- **Issues:** em português, com os templates de `.github/ISSUE_TEMPLATE/` (bug, feature, chore, design, spike). O tipo vai no label, não no título. Documentação entra como `chore`.
-- **Board:** "Yoko!" (GitHub Project #4 de `lauvivans`). Status: Backlog → Ready → In progress → In review → Done.
-  - Ao começar uma issue, mova-a para **In progress**.
-  - Ao abrir o PR, mova-a para **In review**.
-  - O merge leva a issue para **Done**.
-- **Sprints:** de 15 dias, no campo `Sprint`. Issues em Ready na sprint atual são as tarefas do dia.
-- **Rascunho antes de criar:** mostre o texto completo de qualquer issue ou PR e só crie depois de aprovado.
-
-## Segurança
-
-O repositório é público. Nunca commite valores de `.env`, chaves, tokens, hosts internos ou dados de usuários. O que pode e o que não pode ser publicado está em `docs/decisoes/001-estrategia-de-documentacao.md`.
+The repository is public. Never commit `.env` values, keys, tokens, internal hosts or user data. What can and cannot be published is in `docs/decisoes/001-estrategia-de-documentacao.md`.
