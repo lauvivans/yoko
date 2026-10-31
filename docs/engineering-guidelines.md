@@ -87,7 +87,7 @@ Before implementing, map the most important cases: main behavior, edge cases and
 - Features and fixes ship with a test of the behavior. A fix starts with a test that reproduces the bug.
 - Test behavior, not implementation. Query by what the user sees (`getByRole`, `getByText`) and interact like they would.
 - The test sits next to the code, in `<File>.spec.tsx`.
-- Before opening the PR, `type-check`, `lint:all`, `format:check:all`, `test` and `build` must pass.
+- Before opening the PR, `type-check`, `lint:all`, `test` and `build` must pass on the whole client, since a change can break other files. Formatting only has to pass on the files the PR changes (`npm run format:check -- <files>`). CI runs the same checks.
 
 #### Unit or integration
 
