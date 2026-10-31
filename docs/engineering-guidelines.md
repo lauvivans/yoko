@@ -2,16 +2,56 @@
 
 Rules for writing and reviewing code in Yoko. They apply to whoever implements a change and to whoever reviews the PR. The workflow (branches, commits, board) lives in `CLAUDE.md`.
 
-Old code that breaks these rules does not need to be fixed in the same PR. If it gets in the way, open an issue. The exception is lint, prettier and type errors: anything they flag in the files the PR touches is fixed in the same PR. The only exception to that is the `max-lines` warning, which follows the file size rules below.
-
 ## Principles
 
-- Make the smallest change that fully solves the issue. Improvements spotted along the way become issues, not part of the PR.
+- Make the smallest change that fully solves the issue, plus the small cleanups described in [Scope of a PR](#scope-of-a-pr).
 - No premature abstraction. Extract a component, hook or helper only when there is a second real use.
 - Before creating something, look for what already exists in the codebase and in the dependencies.
 - A new dependency needs a justification in the PR.
 - Readable beats clever. Names describe what the thing is.
-- Comments explain why, not what.
+
+## Scope of a PR
+
+A PR solves the issue it closes. Along the way, leave the code a bit better than you found it (the boy scout rule): fix small debts in the files the PR already touches, even if the issue doesn't mention them.
+
+A cleanup fits in the PR when it:
+
+- is in a file the PR already changes;
+- is small, such as removing commented-out code, renaming a confusing variable, fixing a lint warning or a typo, or deleting an unused import;
+- doesn't change behavior, or the change is covered by a test;
+- doesn't hide the main change. A reviewer should still see what the PR is about.
+
+List these cleanups in the PR description, under "Also cleaned up".
+
+Anything bigger, or in files the PR doesn't touch, becomes an issue.
+
+Lint, prettier and type errors in the files the PR touches are always fixed in the same PR. The only exception is the `max-lines` warning, which follows the [file size](#file-size) rules.
+
+## Comments
+
+The default is no comment. If code needs a comment to explain what it does, rename or extract until it doesn't.
+
+Write a comment only when the reason can't be read from the code:
+
+- a workaround for a bug in a library or browser, with a link to it;
+- a business rule that looks odd, with a link to the requirement or issue;
+- an order of operations, timing or performance trade-off that matters;
+- a security or privacy constraint.
+
+Never:
+
+- restate what the code does;
+- leave commented-out code. Git keeps the history;
+- write a TODO without an issue. Use `// TODO(#123): what is left`;
+- add authors, dates or change logs. Git has them;
+- use a comment to name a magic value. Use a named constant.
+
+Keep comments short, in English, next to the code they explain. When the code changes, update or delete the comment in the same PR.
+
+Lint and type escapes always say why:
+
+- `// eslint-disable-next-line <rule> -- <reason>`
+- `// @ts-expect-error <reason>`, never `@ts-ignore`
 
 ## Security
 
@@ -137,7 +177,7 @@ When a mock is needed:
 
 What to check, in this order:
 
-1. The PR solves the issue it closes, and only that issue.
+1. The PR solves the issue it closes. Anything else is a small cleanup listed in the description (see [Scope of a PR](#scope-of-a-pr)).
 2. Bugs and edge cases.
 3. Tests cover the new or fixed behavior.
 4. Security.
@@ -146,10 +186,12 @@ What to check, in this order:
 
 How to comment:
 
-- Tag each comment as **Blocking** (bug, security flaw, new behavior without a test, lint or type error in a touched file, a file over its size limit without justification, a broken rule from this document), **Suggestion** (optional improvement) or **Question**.
+- Tag each comment as **Blocking**, **Suggestion** (optional improvement) or **Question**.
+- **Blocking:** a bug, a security flaw, new behavior without a test, a lint or type error in a touched file, a file over its size limit without justification, a code comment that contradicts the code, commented-out code, a TODO without an issue, a lint or type escape without a reason, a cleanup that changes behavior without a test or hides the main change, or any other broken rule from this document.
+- **Suggestion:** a quick cleanup in a touched file, or a comment that only restates the code. Not doing a cleanup never blocks a PR.
 - State the problem, why it matters and a concrete fix.
 - Don't repeat style nits that prettier fixes on its own.
-- Anything outside the PR's scope becomes a suggested issue, not a blocker.
+- Anything bigger than a quick cleanup, or outside the touched files, becomes a suggested issue, not a blocker.
 
 Closing issue checklist:
 
