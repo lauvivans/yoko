@@ -27,7 +27,7 @@ body:
     attributes:
       label: Entregável
       description: O que deve ser produzido.
-      placeholder: ex. Protótipo HTML em client/docs/prototipos/
+      placeholder: ex. Protótipo HTML em docs/prototipos/
     validations:
       required: true
   - type: textarea

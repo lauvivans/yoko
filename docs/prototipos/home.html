@@ -1,0 +1,173 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Yoko — Home</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@300..700&display=swap" rel="stylesheet">
+  <!--
+    Mirrors the real app styles from client/src/assets/sass
+    (main.scss, _header.scss, _footer.scss, pages/homepage) and uses
+    the original mascot and icons.
+  -->
+  <style>
+    /* reset.scss */
+    *,*::before,*::after{box-sizing:border-box}
+    *{margin:0}
+    body{line-height:1.5;-webkit-font-smoothing:antialiased}
+    img,svg{display:block;max-width:100%}
+    button{font:inherit}
+
+    /* main.scss */
+    :root{color:#262626;font-family:'Quicksand',sans-serif;font-weight:400;font-size:16px;line-height:1.5;--aside-size:50px}
+    body{max-width:1800px;min-height:100vh;margin:0 auto;background:#fff}
+    #root{position:relative;height:100vh;width:100%}
+
+    .app{display:flex;flex-direction:column;height:100%;width:100%;overflow:hidden;position:relative}
+    .app__main-wrapper{height:100%;width:100%}
+    .app__main-wrapper > img{position:absolute;bottom:-10px;width:200px;right:0;z-index:90}
+    @media (min-width:481px){.app__main-wrapper > img{bottom:-85px;width:300px}}
+
+    .app__outlet-wrapper{display:flex;flex:1;height:100%;width:100%}
+
+    .app__aside{display:flex;flex-direction:column;height:100%;width:var(--aside-size);flex-shrink:0;padding:20px 0;background-color:#f8f8f8}
+    .app__aside ul{display:flex;flex-direction:column;align-items:center;row-gap:5px;list-style:none;padding:0}
+    .app__aside li{display:block;cursor:pointer;padding:5px}
+    .app__aside li:hover{background-color:#fff;border-radius:10px}
+    .app__aside li img{width:30px;height:30px}
+    .app__aside a,.app__aside button{all:unset;display:block;cursor:pointer}
+    .app__aside a svg,.app__aside button svg{width:28px;height:28px}
+    .app__aside__top{margin-bottom:auto}
+    .app__aside__bottom{margin-top:auto}
+
+    .app__main{display:flex;flex-direction:column;height:100%;width:100%}
+    .app__outlet{min-height:0;height:100%;width:100%;margin:5px 5px 0 0;overflow-y:auto;background-color:rgba(248,248,248,.3);border-radius:10px}
+
+    /* _header.scss */
+    .c-header{display:flex;max-width:max-content;column-gap:20px;padding:5px 15px;align-items:center;flex-shrink:0;background-color:#fff;border:1px solid rgba(255,97,94,.1);border-radius:24px;box-shadow:0 4px 7px 5px rgba(0,0,0,.1);right:30px;top:20px;z-index:1800;position:absolute;user-select:none;cursor:grab}
+    .c-header:active{cursor:grabbing}
+    .c-header__period{font-size:16px;font-weight:600}
+    .c-header__right-side{display:flex;align-items:center}
+    .c-header__right-side button{all:unset;padding:7px;cursor:pointer;border-radius:10px}
+    .c-header__right-side button:hover{background-color:#f8f8f8}
+    .c-header__right-side svg{width:25px;height:25px}
+
+    /* _footer.scss */
+    .c-footer{display:flex;flex-wrap:wrap;flex-shrink:0;background-color:#fff;padding:5px 30px;justify-content:space-between;align-items:flex-end;z-index:100}
+    .c-footer__copyright{position:relative}
+    .c-footer__copyright > div{position:absolute;top:-10px;left:30px}
+    .c-footer__copyright img{width:19px;height:19px}
+    .c-footer__version{align-self:center}
+    .c-footer__data{display:flex;flex-direction:column;row-gap:2px}
+    .c-footer__data span{font-size:14px}
+
+    /* pages/homepage */
+    .p-homepage{display:flex;justify-content:center;align-items:center;width:100%;height:100%}
+    .p-homepage > div{display:flex;flex-direction:column;align-items:center;margin:0 auto;row-gap:30px;max-width:50%}
+    .p-homepage__intro{display:flex;align-items:center}
+    .p-homepage__intro h1{background-color:#f8f8f8;padding:0 20px 0 10px;border-radius:5px;font-size:35px;font-weight:600;line-height:1.5}
+    .p-homepage__intro h3{font-size:16px;font-weight:400;text-align:center}
+    .p-homepage__cards{display:grid;grid-template-columns:1fr;gap:10px;padding-bottom:40px}
+    @media (min-width:481px){.p-homepage__cards{grid-template-columns:repeat(2,1fr);margin:auto}}
+
+    /* info-card */
+    .c-info-card{display:flex;background-color:rgba(181,224,255,.8);border-radius:5px;padding:20px;cursor:pointer;border:1px solid #1a1a1a;transition:background-color .3s;min-height:130px}
+    .c-info-card a{all:unset;display:flex;flex-direction:column;flex:1}
+    .c-info-card__title{font-size:16px;font-weight:600;line-height:1.5;margin-bottom:10px;background-color:#f8f8f8;width:max-content;border-radius:5px;padding:2px 5px;transition:background-color .3s}
+    .c-info-card__desc{font-size:14px;line-height:1.5}
+    .c-info-card:hover{background-color:#f8f8f8}
+    .c-info-card:hover .c-info-card__title{background-color:rgba(181,224,255,.7)}
+    .c-info-card--disabled:hover{background-color:rgba(181,224,255,.8)}
+    .c-info-card--disabled:hover .c-info-card__title{background-color:#f8f8f8}
+  </style>
+</head>
+<body>
+  <div id="root">
+    <div class="app light">
+      <header class="c-header">
+        <div><span class="c-header__period">Good morning</span></div>
+        <div class="c-header__right-side">
+          <button type="button" aria-label="Open mood selector" title="Mood selector">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><g stroke="#292D32" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"><path d="M9 22h6c5 0 7-2 7-7V9c0-5-2-7-7-7H9C4 2 2 4 2 9v6c0 5 2 7 7 7Z"/><path stroke-miterlimit="10" d="M15.5 9.75a1.5 1.5 0 1 0 0-3 1.5 1.5 0 0 0 0 3ZM8.5 9.75a1.5 1.5 0 1 0 0-3 1.5 1.5 0 0 0 0 3ZM8.4 13.3h7.2c.5 0 .9.4.9.9 0 2.490-2.010 4.5-4.5 4.5s-4.5-2.010-4.5-4.5c0-.5.4-.9.9-.9Z"/></g></svg>
+          </button>
+          <button type="button" aria-label="Search" title="Search">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><g stroke="#292D32" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"><path d="M11.5 21a9.5 9.5 0 1 0 0-19 9.5 9.5 0 0 0 0 19ZM22 22l-2-2"/></g></svg>
+          </button>
+        </div>
+      </header>
+
+      <div class="app__main-wrapper">
+        <div class="app__outlet-wrapper">
+          <aside class="app__aside">
+            <ul class="app__aside__top">
+              <li title="Home"><a href="#"><img src="../../public/mascot.svg" alt="Yoko"></a></li>
+              <li title="Theme">
+                <button type="button" aria-label="Switch theme">
+                  <svg viewBox="0 0 24 24" fill="none"><path d="M12 18.5C15.5899 18.5 18.5 15.5899 18.5 12C18.5 8.41015 15.5899 5.5 12 5.5C8.41015 5.5 5.5 8.41015 5.5 12C5.5 15.5899 8.41015 18.5 12 18.5Z" stroke="#292D32" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/><path d="M19.14 19.14L19.01 19.01M19.01 4.99L19.14 4.86L19.01 4.99ZM4.86 19.14L4.99 19.01L4.86 19.14ZM12 2.08V2V2.08ZM12 22V21.92V22ZM2.08 12H2H2.08ZM22 12H21.92H22ZM4.99 4.99L4.86 4.86L4.99 4.99Z" stroke="#292D32" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                </button>
+              </li>
+            </ul>
+            <ul class="app__aside__middle">
+              <li title="Occurrences"><a href="occurrences-events.html" aria-label="Go to occurrences">
+                <svg viewBox="0 0 24 24" fill="none"><path d="M22 12C22 17.52 17.52 22 12 22C6.48 22 2 17.52 2 12C2 6.48 6.48 2 12 2C17.52 2 22 6.48 22 12Z" stroke="#292D32" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/><path d="M15.71 15.18L12.61 13.33C12.07 13.01 11.63 12.24 11.63 11.61V7.51001" stroke="#292D32" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              </a></li>
+              <li title="Notes"><a href="#" aria-label="Go to notes">
+                <svg viewBox="0 0 24 24" fill="none"><g stroke="#292D32" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21.6601 10.44L20.6801 14.62C19.8401 18.23 18.1801 19.69 15.0601 19.39C14.5601 19.35 14.0201 19.26 13.4401 19.12L11.7601 18.72C7.59006 17.73 6.30006 15.67 7.28006 11.49L8.26006 7.30001C8.46006 6.45001 8.70006 5.71001 9.00006 5.10001C10.1701 2.68001 12.1601 2.03001 15.5001 2.82001L17.1701 3.21001C21.3601 4.19001 22.6401 6.26001 21.6601 10.44Z"/><path d="M15.06 19.39C14.44 19.81 13.66 20.16 12.71 20.47L11.13 20.99C7.15998 22.27 5.06997 21.2 3.77997 17.23L2.49997 13.28C1.21997 9.30998 2.27997 7.20998 6.24997 5.92998L7.82997 5.40998C8.23997 5.27998 8.62997 5.16998 8.99997 5.09998C8.69997 5.70998 8.45997 6.44998 8.25997 7.29998L7.27997 11.49C6.29997 15.67 7.58998 17.73 11.76 18.72L13.44 19.12C14.02 19.26 14.56 19.35 15.06 19.39Z"/><path d="M12.64 8.53003L17.49 9.76003"/><path d="M11.66 12.4L14.56 13.14"/></g></svg>
+              </a></li>
+              <li title="Tasks"><a href="#" aria-label="Go to tasks">
+                <svg viewBox="0 0 24 24" fill="none"><g stroke="#292D32" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12.37 8.87988H17.62"/><path d="M6.38 8.87988L7.13 9.62988L9.38 7.37988"/><path d="M12.37 15.8799H17.62"/><path d="M6.38 15.8799L7.13 16.6299L9.38 14.3799"/><path d="M9 22H15C20 22 22 20 22 15V9C22 4 20 2 15 2H9C4 2 2 4 2 9V15C2 20 4 22 9 22Z"/></g></svg>
+              </a></li>
+              <li title="Mood history"><a href="#" aria-label="Go to mood history">
+                <svg viewBox="0 0 24 24" fill="none"><g stroke="#292D32" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"><path d="M14 6.2V10c-2.79.05-3.95 1.21-4 4H6.2C3.2 14 2 12.8 2 9.8V6.2C2 3.2 3.2 2 6.2 2h3.6c3 0 4.2 1.2 4.2 4.2Z"/><path stroke-miterlimit="10" d="M6.96 5.87c-.53-.36-1.230-.36-1.76.02M10.96 5.87c-.53-.36-1.230-.36-1.76.02M8.16 11.42H5.84c-.3 0-.54-.24-.54-.54 0-1.490 1.210-2.7 2.7-2.7.64 0 1.230.22 1.690.59"/><path d="M22 14.2v3.6c0 3-1.2 4.2-4.2 4.2h-3.6c-3 0-4.2-1.2-4.2-4.2V14c.05-2.79 1.21-3.95 4-4h3.8c3 0 4.2 1.2 4.2 4.2Z"/><path stroke-miterlimit="10" d="M14.96 13.62c-.53.36-1.230.36-1.76-.02M18.96 13.62c-.53.36-1.230.36-1.76-.02M13.84 16.18h4.32c.3 0 .54.24.54.54 0 1.490-1.210 2.7-2.7 2.7-1.490 0-2.7-1.210-2.7-2.7 0-.3.24-.54.54-.54Z"/></g></svg>
+              </a></li>
+            </ul>
+            <ul class="app__aside__bottom">
+              <li title="Sign in">
+                <button type="button" aria-label="Sign in">
+                  <svg viewBox="0 0 24 24" fill="none"><g stroke="#292D32" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M8.90002 7.55999C9.21002 3.95999 11.06 2.48999 15.11 2.48999H15.24C19.71 2.48999 21.5 4.27999 21.5 8.74999V15.27C21.5 19.74 19.71 21.53 15.24 21.53H15.11C11.09 21.53 9.24002 20.08 8.91002 16.54"/><path d="M2 12H14.88"/><path d="M12.65 8.6499L16 11.9999L12.65 15.3499"/></g></svg>
+                </button>
+              </li>
+            </ul>
+          </aside>
+
+          <div class="app__main">
+            <div class="app__outlet">
+              <main class="p-homepage">
+                <div>
+                  <div class="p-homepage__intro">
+                    <div>
+                      <h1>Welcome to Yoko!</h1>
+                      <h3>Pick a card to get started.</h3>
+                    </div>
+                  </div>
+                  <div class="p-homepage__cards">
+                    <article class="c-info-card"><a href="occurrences-events.html"><h2 class="c-info-card__title">Occurrences</h2><p class="c-info-card__desc">Access all your important events and recurring actions and keep track on their counting days</p></a></article>
+                    <article class="c-info-card c-info-card--disabled"><a href="#"><h2 class="c-info-card__title">Notes</h2><p class="c-info-card__desc">Access all your annotations</p></a></article>
+                    <article class="c-info-card c-info-card--disabled"><a href="#"><h2 class="c-info-card__title">Tasks</h2><p class="c-info-card__desc">Access all your daily tasks</p></a></article>
+                    <article class="c-info-card c-info-card--disabled"><a href="#"><h2 class="c-info-card__title">Mood history</h2><p class="c-info-card__desc">Access your mood history and get mood analysis</p></a></article>
+                  </div>
+                </div>
+              </main>
+            </div>
+
+            <footer class="c-footer">
+              <div class="c-footer__copyright">
+                <div><img src="../../public/mascot.svg" alt=""></div>
+                <span>&copy; Yoko! 2024-2026. All rights reserved.</span>
+              </div>
+              <span class="c-footer__version">v 1.0.0</span>
+              <div class="c-footer__data">
+                <span>Export all my data</span>
+                <span>Import my data</span>
+              </div>
+            </footer>
+          </div>
+        </div>
+        <img src="../../public/mascot.svg" alt="" aria-hidden="true">
+      </div>
+    </div>
+  </div>
+</body>
+</html>
