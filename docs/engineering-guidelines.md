@@ -45,6 +45,8 @@ Applies to `client/`. Paths below are relative to it.
 - Lines are counted as the file is, blank lines included.
 - A file that goes past its limit is split by responsibility: a subcomponent, a hook, a helper or another partial. If splitting makes it worse, justify it in the PR.
 - A file already over its limit should not grow. Splitting it is welcome, but only when the PR is already changing that part of the file.
+- The limit is a trigger to look at responsibilities, not a goal. A long file that does one thing well beats several tiny files that only add indirection.
+- Why these numbers: _Clean Code_ (Robert C. Martin, ch. 5) shows large systems built from files typically around 200 lines, with an upper bound of 500. ESLint's [`max-lines`](https://eslint.org/docs/latest/rules/max-lines) defaults to 300. Sonar and CISQ ([CWE-1080](https://cwe.mitre.org/data/definitions/1080.html)) flag files only past 1000 lines, which is a ceiling, not a target.
 
 ### React and TypeScript
 
