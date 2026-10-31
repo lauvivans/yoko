@@ -2,18 +2,29 @@
 
 Rules for writing and reviewing code in Yoko. They apply to whoever implements a change and to whoever reviews the PR. The workflow (branches, commits, board) lives in `CLAUDE.md`.
 
-Old code that breaks these rules does not need to be fixed in the same PR. If it gets in the way, open an issue.
+Old code that breaks these rules does not need to be fixed in the same PR. If it gets in the way, open an issue. The exception is lint, prettier and type errors: anything they flag in the files the PR touches is fixed in the same PR.
 
 ## Principles
 
 - Make the smallest change that fully solves the issue. Improvements spotted along the way become issues, not part of the PR.
 - No premature abstraction. Extract a component, hook or helper only when there is a second real use.
-- Before creating something, look for what already exists: components in `src/components/`, helpers in `src/helpers/` and the dependencies in `package.json`.
+- Before creating something, look for what already exists in the codebase and in the dependencies.
 - A new dependency needs a justification in the PR.
 - Readable beats clever. Names describe what the thing is.
 - Comments explain why, not what.
 
-## Front-end structure
+## Security
+
+- Follow the "can and cannot publish" table in `docs/decisoes/001-estrategia-de-documentacao.md`.
+- No `dangerouslySetInnerHTML` without sanitizing the content, and no `eval`.
+- User input is validated before it is saved.
+- Before adding a dependency, check that it is maintained and that its license is compatible.
+
+## Front-end
+
+Applies to `client/`. Paths below are relative to it.
+
+### Structure
 
 - `src/components/{action,display,utils}`: generic components, no business rules.
 - `src/pages/<feature>/`: whatever belongs to a feature stays with it, in `components/`, `hooks/`, `helpers/`, `schemas/` and `enum/`. It moves up to `src/` only when another feature needs it.
@@ -21,7 +32,21 @@ Old code that breaks these rules does not need to be fixed in the same PR. If it
 - `src/types/`: shared domain types.
 - Imports use the `@/` alias.
 
-## React and TypeScript
+### File size
+
+| File                                 | Max lines |
+| ------------------------------------ | --------- |
+| Component (`.tsx`)                   | 200       |
+| Hook, helper or store                | 150       |
+| SASS partial                         | 150       |
+| Test (`.spec.tsx`, `.spec.ts`)       | 300       |
+| Types, enums, schemas, icon wrappers | no limit  |
+
+- Lines are counted as the file is, blank lines included.
+- A file that goes past its limit is split by responsibility: a subcomponent, a hook, a helper or another partial. If splitting makes it worse, justify it in the PR.
+- A file already over its limit should not grow. Splitting it is welcome, but only when the PR is already changing that part of the file.
+
+### React and TypeScript
 
 - Components are functions. Props are typed with `interface <Component>Props`.
 - No `any`, and no `as` to silence the compiler. Outside data (localStorage, API, URL) goes through a zod schema.
@@ -30,13 +55,13 @@ Old code that breaks these rules does not need to be fixed in the same PR. If it
 - `useEffect` is only for syncing with something external. Derived values are computed during render.
 - Lists use a stable id as `key`, never the index.
 
-## Styles
+### Styles
 
 - Styles live in `src/assets/sass/`, mirroring the component or page folder.
 - Classes follow BEM, prefixed with `c-` for components and `p-` for pages. Examples: `c-default-button--error`, `p-homepage__intro`.
 - Colors, breakpoints and effects come from `src/assets/sass/tokens/`. No loose values.
 
-### Flexbox or grid
+#### Flexbox or grid
 
 - **Flexbox:** content-first. Items flow in one direction and the layout mostly happens on the children. Good for alignment and small pieces, such as a toolbar or a card's content.
 - **Grid:** layout-first. Grid is defined on the parent, which places the children in rows, columns or both. Good for page structure, consistent gaps between blocks and overlapping elements.
@@ -46,13 +71,13 @@ Old code that breaks these rules does not need to be fixed in the same PR. If it
 - Space siblings with `gap` on the parent, not with margins on each child.
 - Further reading: [CSS flexbox vs. CSS grid](https://blog.logrocket.com/css-flexbox-vs-css-grid/) (LogRocket) and [What's the difference between flexbox and grid?](https://css-tricks.com/quick-whats-the-difference-between-flexbox-and-grid/) (CSS-Tricks).
 
-## Accessibility
+### Accessibility
 
 - Use the right native element: `button` for actions, `a` for navigation.
 - An icon-only button needs an `aria-label`. Every field has an associated label.
 - Everything works with the keyboard, with a visible focus.
 
-## Tests
+### Tests
 
 Before implementing, map the most important cases: main behavior, edge cases and critical flows.
 
@@ -61,13 +86,13 @@ Before implementing, map the most important cases: main behavior, edge cases and
 - The test sits next to the code, in `<File>.spec.tsx`.
 - Before opening the PR, `type-check`, `lint:all`, `format:check:all`, `test` and `build` must pass.
 
-### Unit or integration
+#### Unit or integration
 
 - **Unit:** one isolated piece (a helper, a hook, a store), with plain Vitest.
 - **Integration:** pieces working together (a component with its context, store and mocked outside world), with Testing Library. Testing Library is integration-driven by design.
 - A page with no logic worth isolating gets integration tests only.
 
-### Mocks
+#### Mocks
 
 Mock only the edges of the app:
 
@@ -91,26 +116,19 @@ When a mock is needed:
 - A mock for a single test goes in that test file with `vi.mock`, which overrides the one in `__mocks__/`.
 - Reset mocks between tests (`vi.restoreAllMocks()` in `afterEach`) so one test doesn't leak into another.
 
-### Organization
+#### Organization
 
 - One top-level `describe` naming what is under test, wrapping every test of that scope. Example: `describe('OccurrenceCreateEdit - editing an event')`.
 - Use nested `describe` blocks only to separate contexts, and avoid deep nesting.
 - Choose matchers on purpose: `toBeInTheDocument` checks that the element exists, `toBeVisible` checks that the user can see it.
 
-### Further reading
+#### Further reading
 
 - [The Testing Trophy and Testing Classifications](https://kentcdodds.com/blog/the-testing-trophy-and-testing-classifications), Kent C. Dodds
 - [Static vs Unit vs Integration vs E2E Tests](https://kentcdodds.com/blog/static-vs-unit-vs-integration-vs-e2e-tests), Kent C. Dodds
 - [Write tests. Not too many. Mostly integration.](https://kentcdodds.com/blog/write-tests), Kent C. Dodds
 - [React testing best practices](https://infinum.com/handbook/frontend/react/testing/best-practices), Infinum handbook
 - [Frontend testing guide](https://www.chromatic.com/frontend-testing-guide), Chromatic
-
-## Security
-
-- Follow the "can and cannot publish" table in `docs/decisoes/001-estrategia-de-documentacao.md`.
-- No `dangerouslySetInnerHTML` without sanitizing the content, and no `eval`.
-- User input is validated before it is saved.
-- Before adding a dependency, check that it is maintained and that its license is compatible.
 
 ## Reviewing a PR
 
@@ -125,7 +143,7 @@ What to check, in this order:
 
 How to comment:
 
-- Tag each comment as **Blocking** (bug, security flaw, new behavior without a test, a broken rule from this document), **Suggestion** (optional improvement) or **Question**.
+- Tag each comment as **Blocking** (bug, security flaw, new behavior without a test, lint or type error in a touched file, a file over its size limit without justification, a broken rule from this document), **Suggestion** (optional improvement) or **Question**.
 - State the problem, why it matters and a concrete fix.
-- Don't comment on what lint and prettier already catch.
+- Don't repeat style nits that prettier fixes on its own.
 - Anything outside the PR's scope becomes a suggested issue, not a blocker.
