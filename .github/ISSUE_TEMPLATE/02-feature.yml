@@ -1,0 +1,38 @@
+name: ✨ Feature
+description: Nova funcionalidade ou melhoria
+labels: ["feature"]
+projects: ["lauvivans/4"]
+body:
+  - type: textarea
+    id: problema
+    attributes:
+      label: Problema
+      description: Que necessidade essa feature resolve?
+      placeholder: Como usuário, quero … para …
+    validations:
+      required: true
+  - type: textarea
+    id: proposta
+    attributes:
+      label: Proposta
+      description: Como a feature deve funcionar.
+    validations:
+      required: true
+  - type: textarea
+    id: fora-escopo
+    attributes:
+      label: Fora do escopo
+      description: Opcional. O que não entra nesta issue.
+  - type: textarea
+    id: design
+    attributes:
+      label: Design e referências
+      description: Opcional. Links de protótipos, Figma ou issues de design.
+  - type: textarea
+    id: criterios
+    attributes:
+      label: Critérios de aceite
+      value: |
+        - [ ] Dado … quando … então …
+    validations:
+      required: true

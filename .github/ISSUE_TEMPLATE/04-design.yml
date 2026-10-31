@@ -1,0 +1,40 @@
+name: 🎨 Design
+description: Desenho de tela ou fluxo antes da implementação
+labels: ["design"]
+projects: ["lauvivans/4"]
+body:
+  - type: input
+    id: tela
+    attributes:
+      label: Tela ou fluxo
+      placeholder: ex. Página de notes
+    validations:
+      required: true
+  - type: textarea
+    id: objetivo
+    attributes:
+      label: Objetivo
+      description: O que o usuário precisa conseguir fazer nessa tela.
+    validations:
+      required: true
+  - type: textarea
+    id: referencias
+    attributes:
+      label: Referências
+      description: Opcional. Inspirações, telas existentes, issues relacionadas.
+  - type: textarea
+    id: entregavel
+    attributes:
+      label: Entregável
+      description: O que deve ser produzido.
+      placeholder: ex. Protótipo HTML em client/docs/prototipos/
+    validations:
+      required: true
+  - type: textarea
+    id: criterios
+    attributes:
+      label: Critérios de aceite
+      value: |
+        - [ ]
+    validations:
+      required: true
