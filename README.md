@@ -1,5 +1,6 @@
 # Yoko!
 
+[![CI](https://github.com/lauvivans/yoko/actions/workflows/release.yml/badge.svg?branch=develop)](https://github.com/lauvivans/yoko/actions/workflows/release.yml)
 [![License: MIT](https://img.shields.io/github/license/lauvivans/yoko)](LICENSE)
 [![App](https://img.shields.io/badge/app-yoko.arualvivan.com-8a2be2)](https://yoko.arualvivan.com)
 [![Docs](https://img.shields.io/badge/docs-yoko--docs.arualvivan.com-blue)](https://yoko-docs.arualvivan.com)
