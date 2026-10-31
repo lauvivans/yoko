@@ -66,9 +66,21 @@ jobs:
           echo "issues=$issues" >> "$GITHUB_OUTPUT"
           [ -z "$issues" ] && exit 0
 
-          gh pr diff "$PR" --repo "$REPO" > "$RUNNER_TEMP/diff.patch"
+          gh api "repos/$REPO/pulls/$PR/files" --paginate --jq '.[]' | jq -s . > "$RUNNER_TEMP/files.json"
+
+          # Lockfiles and removed files would fill the size limit before the
+          # files that matter, so they stay out of the diff. The file list
+          # always goes in full.
+          jq -r '.[]
+            | select(.status != "removed" and .patch != null)
+            | select(.filename | test("(^|/)(package-lock\\.json|yarn\\.lock|pnpm-lock\\.yaml)$") | not)
+            | "### \(.filename) (\(.status))\n\(.patch)\n"' "$RUNNER_TEMP/files.json" > "$RUNNER_TEMP/diff.patch"
+
           {
-            echo "## PR diff (truncated at 60 KB)"
+            echo "## Changed files"
+            jq -r '.[] | "- \(.status): \(.filename)" + (if .previous_filename then " (from \(.previous_filename))" else "" end)' "$RUNNER_TEMP/files.json"
+            echo
+            echo "## Diff of added and changed files, without lockfiles (truncated at 60 KB)"
             head -c 60000 "$RUNNER_TEMP/diff.patch"
             for n in $issues; do
               gh issue view "$n" --repo "$REPO" --json body --jq .body > "$RUNNER_TEMP/issue-$n.md"
