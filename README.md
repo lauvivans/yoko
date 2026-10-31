@@ -63,7 +63,7 @@ The screens are designed in [Figma](https://www.figma.com/design/s9HB9I0wyGOTvnl
 .
 ├── client/   # front-end (React, Vite, TypeScript, SASS)
 ├── api/      # back-end, not started yet
-└── docs/     # product requirements, architecture, decisions, design and prototypes
+└── docs/     # docs site, product requirements, architecture, decisions, design and prototypes
 ```
 
 ## Getting started

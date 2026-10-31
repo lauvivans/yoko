@@ -4,9 +4,12 @@ import type * as Preset from '@docusaurus/preset-classic';
 
 // This runs in Node.js - Don't use client-side code here (browser APIs, JSX...)
 
+const repoUrl = 'https://github.com/lauvivans/yoko';
+
 const config: Config = {
   title: 'Yoko!',
-  tagline: '',
+  tagline:
+    'Self-management for your recurring actions, events, tasks, notes and mood.',
   favicon: 'img/mascot.svg',
 
   // Future flags, see https://docusaurus.io/docs/api/docusaurus-config#future
@@ -19,17 +22,11 @@ const config: Config = {
   },
   themes: ['@docusaurus/theme-mermaid'],
 
-  // Set the production url of your site here
-  url: 'https://your-docusaurus-site.example.com',
-  // Set the /<baseUrl>/ pathname under which your site is served
-  // For GitHub pages deployment, it is often '/<projectName>/'
+  url: 'https://yoko-docs.arualvivan.com',
   baseUrl: '/',
 
   onBrokenLinks: 'throw',
 
-  // Even if you don't use internationalization, you can use this field to set
-  // useful metadata like html lang. For example, if your site is Chinese, you
-  // may want to replace "en" with "zh-Hans".
   i18n: {
     defaultLocale: 'en',
     locales: ['en'],
@@ -40,12 +37,12 @@ const config: Config = {
       'classic',
       {
         docs: {
+          path: 'overview',
+          routeBasePath: 'docs',
           sidebarPath: './sidebars.ts',
-          // Please change this to your repo.
-          // Remove this to remove the "edit this page" links.
-          editUrl:
-            'https://github.com/facebook/docusaurus/tree/main/packages/create-docusaurus/templates/shared/',
+          editUrl: `${repoUrl}/tree/develop/docs/`,
         },
+        blog: false,
         theme: {
           customCss: './src/css/custom.css',
         },
@@ -60,32 +57,36 @@ const config: Config = {
         id: 'dev-docs',
         path: 'dev-docs',
         routeBasePath: 'dev-docs',
+        editUrl: `${repoUrl}/tree/develop/docs/`,
       },
     ],
   ],
 
   themeConfig: {
-    // Replace with your project's social card
-    image: 'img/docusaurus-social-card.jpg',
     colorMode: {
       respectPrefersColorScheme: true,
     },
     navbar: {
       title: 'Yoko!',
       logo: {
-        alt: 'Yoko! Logo',
+        alt: 'Yoko! mascot',
         src: 'img/mascot.svg',
       },
       items: [
         {
           type: 'docSidebar',
-          sidebarId: 'tutorialSidebar',
+          sidebarId: 'docsSidebar',
           position: 'left',
-          label: 'Tutorial',
+          label: 'Docs',
         },
         { to: '/dev-docs', label: 'Dev docs', position: 'left' },
         {
-          href: 'https://github.com/lauravivan/yoko',
+          href: 'https://yoko.arualvivan.com',
+          label: 'App',
+          position: 'right',
+        },
+        {
+          href: repoUrl,
           label: 'GitHub',
           position: 'right',
         },
@@ -97,23 +98,19 @@ const config: Config = {
         {
           title: 'Docs',
           items: [
-            {
-              label: 'Tutorial',
-              to: '/docs/intro',
-            },
+            { label: 'What is Yoko', to: '/docs/intro' },
+            { label: 'Dev docs', to: '/dev-docs' },
           ],
         },
         {
           title: 'More',
           items: [
-            {
-              label: 'GitHub',
-              href: 'https://github.com/lauravivan/yoko',
-            },
+            { label: 'App', href: 'https://yoko.arualvivan.com' },
+            { label: 'GitHub', href: repoUrl },
           ],
         },
       ],
-      copyright: `Copyright © 2024 Yoko!, Inc. Built with Docusaurus.`,
+      copyright: `Copyright © 2024–${new Date().getFullYear()} Laura Vivan Gonçalves. Built with Docusaurus.`,
     },
     prism: {
       theme: prismThemes.github,

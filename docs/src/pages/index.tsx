@@ -22,7 +22,7 @@ function HomepageHeader() {
             className="button button--secondary button--lg"
             to="/docs/intro"
           >
-            Yoko! Tutorial - 5min ⏱️
+            What is Yoko?
           </Link>
         </div>
       </div>
@@ -35,8 +35,8 @@ export default function Home(): ReactNode {
 
   return (
     <Layout
-      title={`Hello from ${siteConfig.title}`}
-      description="Description will go into a meta tag in <head />"
+      title="Home"
+      description={siteConfig.tagline}
     >
       <HomepageHeader />
       <main>
