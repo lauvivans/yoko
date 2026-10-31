@@ -4,7 +4,7 @@ Self-management app (recurring actions, events, tasks, notes, mood). Public mono
 
 ## Language
 
-Everything in the repository and on GitHub is in English: code, docs, file names, issues, PRs, commits and reviews. Published platforms offer Portuguese through the `/pt-BR/` URL prefix. See `docs/decisoes/002-language-policy.md`.
+Everything in the repository and on GitHub is in English: code, docs, file names, issues, PRs, commits and reviews. Published platforms offer Portuguese through the `/pt-BR/` URL prefix. See `docs/decisions/002-language-policy.md`.
 
 ## Structure
 
@@ -13,8 +13,8 @@ Everything in the repository and on GitHub is in English: code, docs, file names
 - `api/`: back-end, still empty.
 - `docs/`: general documentation.
   - `docs/engineering-guidelines.md`: rules for writing and reviewing code.
-  - `docs/decisoes/`: one decision per file, numbered. Every spike ends with a file here.
-  - `docs/prototipos/`: HTML prototypes.
+  - `docs/decisions/`: one decision per file, numbered. Every spike ends with a file here.
+  - `docs/prototypes/`: HTML prototypes.
 
 ## Engineering guidelines
 
@@ -49,4 +49,4 @@ Follow the guidelines below when implementing and when reviewing PRs. They are i
 
 ## Security
 
-The repository is public. Never commit `.env` values, keys, tokens, internal hosts or user data. What can and cannot be published is in `docs/decisoes/001-estrategia-de-documentacao.md`.
+The repository is public. Never commit `.env` values, keys, tokens, internal hosts or user data. What can and cannot be published is in `docs/decisions/001-documentation-strategy.md`.

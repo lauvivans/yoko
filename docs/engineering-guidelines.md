@@ -15,7 +15,7 @@ Old code that breaks these rules does not need to be fixed in the same PR. If it
 
 ## Security
 
-- Follow the "can and cannot publish" table in `docs/decisoes/001-estrategia-de-documentacao.md`.
+- Follow the "can and cannot publish" table in `docs/decisions/001-documentation-strategy.md`.
 - No `dangerouslySetInnerHTML` without sanitizing the content, and no `eval`.
 - User input is validated before it is saved.
 - Before adding a dependency, check that it is maintained and that its license is compatible.

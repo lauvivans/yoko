@@ -1,55 +1,55 @@
 name: 🐛 Bug
-description: Algo não funciona como deveria
+description: Something doesn't work as it should
 labels: ["bug"]
 projects: ["lauvivans/4"]
 body:
   - type: textarea
-    id: resumo
+    id: summary
     attributes:
-      label: Resumo
-      description: Uma ou duas frases sobre o problema.
+      label: Summary
+      description: One or two sentences about the problem.
     validations:
       required: true
   - type: textarea
-    id: atual
+    id: current
     attributes:
-      label: Comportamento atual
-      description: O que acontece hoje.
+      label: Current behavior
+      description: What happens today.
     validations:
       required: true
   - type: textarea
-    id: esperado
+    id: expected
     attributes:
-      label: Comportamento esperado
-      description: O que deveria acontecer.
+      label: Expected behavior
+      description: What should happen.
     validations:
       required: true
   - type: dropdown
-    id: onde
+    id: where
     attributes:
-      label: Onde acontece
+      label: Where it happens
       options:
         - Homepage
         - Events view
         - Actions view
         - Calendar view
-        - Outro
+        - Other
     validations:
       required: true
   - type: textarea
-    id: causa
+    id: cause
     attributes:
-      label: Causa provável
-      description: Opcional. Arquivo, função ou hipótese do que está causando o problema.
+      label: Likely cause
+      description: Optional. File, function or hypothesis about what causes the problem.
   - type: textarea
-    id: evidencias
+    id: evidence
     attributes:
-      label: Evidências
-      description: Opcional. Prints, vídeos ou logs.
+      label: Evidence
+      description: Optional. Screenshots, videos or logs.
   - type: textarea
-    id: criterios
+    id: acceptance
     attributes:
-      label: Critérios de aceite
+      label: Acceptance criteria
       value: |
         - [ ]
     validations:

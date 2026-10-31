@@ -1,38 +1,38 @@
 name: ✨ Feature
-description: Nova funcionalidade ou melhoria
+description: New feature or improvement
 labels: ["feature"]
 projects: ["lauvivans/4"]
 body:
   - type: textarea
-    id: problema
+    id: problem
     attributes:
-      label: Problema
-      description: Que necessidade essa feature resolve?
-      placeholder: Como usuário, quero … para …
+      label: Problem
+      description: Which need does this feature solve?
+      placeholder: As a user, I want … so that …
     validations:
       required: true
   - type: textarea
-    id: proposta
+    id: proposal
     attributes:
-      label: Proposta
-      description: Como a feature deve funcionar.
+      label: Proposal
+      description: How the feature should work.
     validations:
       required: true
   - type: textarea
-    id: fora-escopo
+    id: out-of-scope
     attributes:
-      label: Fora do escopo
-      description: Opcional. O que não entra nesta issue.
+      label: Out of scope
+      description: Optional. What this issue doesn't cover.
   - type: textarea
     id: design
     attributes:
-      label: Design e referências
-      description: Opcional. Links de protótipos, Figma ou issues de design.
+      label: Design and references
+      description: Optional. Links to prototypes, Figma or design issues.
   - type: textarea
-    id: criterios
+    id: acceptance
     attributes:
-      label: Critérios de aceite
+      label: Acceptance criteria
       value: |
-        - [ ] Dado … quando … então …
+        - [ ] Given … when … then …
     validations:
       required: true

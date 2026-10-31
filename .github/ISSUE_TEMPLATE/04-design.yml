@@ -1,39 +1,39 @@
 name: 🎨 Design
-description: Desenho de tela ou fluxo antes da implementação
+description: Screen or flow design before implementation
 labels: ["design"]
 projects: ["lauvivans/4"]
 body:
   - type: input
-    id: tela
+    id: screen
     attributes:
-      label: Tela ou fluxo
-      placeholder: ex. Página de notes
+      label: Screen or flow
+      placeholder: e.g. Notes page
     validations:
       required: true
   - type: textarea
-    id: objetivo
+    id: goal
     attributes:
-      label: Objetivo
-      description: O que o usuário precisa conseguir fazer nessa tela.
+      label: Goal
+      description: What the user needs to be able to do on this screen.
     validations:
       required: true
   - type: textarea
-    id: referencias
+    id: references
     attributes:
-      label: Referências
-      description: Opcional. Inspirações, telas existentes, issues relacionadas.
+      label: References
+      description: Optional. Inspiration, existing screens, related issues.
   - type: textarea
-    id: entregavel
+    id: deliverable
     attributes:
-      label: Entregável
-      description: O que deve ser produzido.
-      placeholder: ex. Protótipo HTML em docs/prototipos/
+      label: Deliverable
+      description: What should be produced.
+      placeholder: e.g. HTML prototype in docs/prototypes/
     validations:
       required: true
   - type: textarea
-    id: criterios
+    id: acceptance
     attributes:
-      label: Critérios de aceite
+      label: Acceptance criteria
       value: |
         - [ ]
     validations:

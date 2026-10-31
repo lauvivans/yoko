@@ -1,49 +1,49 @@
 name: 🔎 Spike
-description: Investigação com tempo limitado que entrega uma decisão, não código
+description: Time-boxed investigation that delivers a decision, not code
 labels: ["spike"]
 projects: ["lauvivans/4"]
 body:
   - type: textarea
-    id: pergunta
+    id: question
     attributes:
-      label: Pergunta
-      description: O que precisa ser respondido.
+      label: Question
+      description: What needs to be answered.
     validations:
       required: true
   - type: textarea
-    id: contexto
+    id: context
     attributes:
-      label: Contexto
-      description: Por que isso surgiu e o que depende dessa resposta.
+      label: Context
+      description: Why this came up and what depends on the answer.
     validations:
       required: true
   - type: input
     id: timebox
     attributes:
       label: Timebox
-      description: Quanto tempo investir antes de parar e decidir.
-      placeholder: ex. ½ dia
+      description: How much time to invest before stopping and deciding.
+      placeholder: e.g. ½ day
     validations:
       required: true
   - type: textarea
-    id: opcoes
+    id: options
     attributes:
-      label: Opções a avaliar
-      description: Opcional. Alternativas, ferramentas ou abordagens a comparar.
+      label: Options to evaluate
+      description: Optional. Alternatives, tools or approaches to compare.
   - type: textarea
-    id: entregavel
+    id: deliverable
     attributes:
-      label: Entregável
-      description: O que deve ser produzido ao final.
-      placeholder: ex. Recomendação escrita em docs/, comparativo ou prova de conceito
+      label: Deliverable
+      description: What should be produced at the end.
+      placeholder: e.g. Written recommendation in docs/, comparison or proof of concept
     validations:
       required: true
   - type: textarea
-    id: criterios
+    id: acceptance
     attributes:
-      label: Critérios de aceite
+      label: Acceptance criteria
       value: |
-        - [ ] Decisão registrada
-        - [ ] Issues de implementação criadas
+        - [ ] Decision recorded
+        - [ ] Implementation issues created
     validations:
       required: true
