@@ -18,7 +18,9 @@ Everything in the repository and on GitHub is in English: code, docs, file names
 
 ## Engineering guidelines
 
-Follow `docs/engineering-guidelines.md` when implementing and when reviewing PRs.
+Follow the guidelines below when implementing and when reviewing PRs. They are imported from `docs/engineering-guidelines.md`, so edit them there.
+
+@docs/engineering-guidelines.md
 
 ## Commands (run inside `client/`)
 
