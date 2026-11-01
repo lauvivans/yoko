@@ -176,7 +176,7 @@
         <label class="c-field"><span>From</span><input type="time" name="start" required></label>
         <label class="c-field"><span>To</span><input type="time" name="end" required></label>
       </div>
-      <label class="c-field"><span>Status</span><select name="status" id="task-status"></select></label>
+      <label class="c-field"><span>Status</span><select class="c-select__native" name="status" id="task-status"></select></label>
       <div class="c-dialog__actions">
         <button class="c-button c-button--module" type="submit" id="submit-form">Create</button>
       </div>
@@ -201,6 +201,7 @@
 
   <script src="mascots.js"></script>
   <script src="shell.js"></script>
+  <script src="select.js"></script>
   <script src="components.js"></script>
   <script>
     (() => {
@@ -345,7 +346,7 @@
       // Create in a dialog, edit in the panel
       const form = $('task-form');
       const field = (name) => form.elements.namedItem(name);
-      field('status').innerHTML = statuses.map((s) => `<option value="${s.id}">${s.label}</option>`).join('');
+      field('status').innerHTML = statuses.map((s) => `<option style="--option-color:var(--bg-status-${s.id})" value="${s.id}">${s.label}</option>`).join('');
       const editor = workspace({ root: $('workspace'), panel: $('edit-panel'), dialog: $('task-dialog'), form, onChange: () => render() });
 
       const openForm = (t = null) => {

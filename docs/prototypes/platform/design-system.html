@@ -9,6 +9,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@300..700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="tokens.css">
   <link rel="stylesheet" href="shell.css">
+  <link rel="stylesheet" href="components.css">
   <style>
     .p-tokens{display:grid;gap:28px;padding:16px 16px 40px}
     .p-tokens h1{font-size:var(--text-lg);font-weight:var(--font-bold)}
@@ -32,6 +33,8 @@
     .c-samples{display:flex;flex-wrap:wrap;gap:14px}
     .c-sample{display:grid;place-items:center;gap:6px;width:130px;height:96px;padding:8px;text-align:center;font-size:var(--text-xs);background:var(--bg-surface);border:var(--border-w-default) solid var(--border-color-line)}
     .c-sample span{color:var(--text-color-muted)}
+
+    .c-states{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:14px}
 
     .c-breakpoints{width:100%;border-collapse:collapse;font-size:var(--text-sm)}
     .c-breakpoints th,.c-breakpoints td{padding:8px 10px;text-align:left;border-bottom:var(--border-w-default) solid var(--border-color-line)}
@@ -86,6 +89,18 @@
             <div class="c-samples" id="opacity-list"></div>
           </section>
 
+          <section aria-labelledby="select-title">
+            <h2 id="select-title">Select</h2>
+            <p class="p-tokens__intro">Write a native <code>&lt;select class="c-select__native"&gt;</code>. Inside a <code>c-field</code> it takes the full width; alone it fits its content. <code>select.js</code> turns it into a button and a list that look the same in every browser, while the native select keeps the value. Errors use <code>aria-invalid="true"</code>; options with a color (status, category) set <code>--option-color</code>.</p>
+            <div class="c-states">
+              <label class="c-field"><span>Default</span><select class="c-select__native"><option>Personal</option><option>Work</option></select></label>
+              <label class="c-field"><span>Error</span><select class="c-select__native" aria-invalid="true"><option>Choose a category</option></select></label>
+              <label class="c-field"><span>Disabled</span><select class="c-select__native" disabled><option>Personal</option></select></label>
+              <label class="c-field"><span>With colors</span><select class="c-select__native"><option style="--option-color:var(--bg-status-todo)">To do</option><option style="--option-color:var(--bg-status-in-progress)">In progress</option><option style="--option-color:var(--bg-status-blocked)">Blocked</option></select></label>
+              <div><select class="c-select__native" aria-label="Standalone example"><option>1 hour before</option><option>1 day before</option></select></div>
+            </div>
+          </section>
+
           <section aria-labelledby="breakpoints-title">
             <h2 id="breakpoints-title">Breakpoints</h2>
             <p class="p-tokens__intro">Mobile first: base styles are the phone, and larger screens are added with <code>min-width</code>.</p>
@@ -105,6 +120,7 @@
   </div>
 
   <script src="shell.js"></script>
+  <script src="select.js"></script>
   <script>
     // Values are read from the computed styles, so this page always matches tokens.css.
     const root = document.documentElement;

@@ -326,6 +326,7 @@ field('category').replaceChildren(
   ...Object.keys(categories).map((name) => {
     const option = document.createElement('option');
     option.textContent = name;
+    option.style.setProperty('--option-color', categories[name]);
     return option;
   }),
 );

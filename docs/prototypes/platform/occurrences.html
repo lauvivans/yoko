@@ -80,7 +80,7 @@
     .c-repeat{display:grid;gap:12px;min-width:0;margin:0;padding:12px;border:1px solid var(--border-color-line);border-radius:var(--border-r-default)}
     .c-repeat legend,.c-ends__label{padding:0 4px;font-size:var(--text-xs);font-weight:var(--font-bold);letter-spacing:.04em;text-transform:uppercase;color:var(--text-color-muted)}
     .c-inline-field{display:flex;flex-wrap:wrap;align-items:center;gap:8px;font-size:var(--text-sm);font-weight:var(--font-highlight)}
-    .c-inline-field input:not([type="radio"]),.c-inline-field select{padding:7px 10px;border-radius:var(--border-r-default);border:1px solid var(--border-color-line);background:var(--bg-surface-raised);color:var(--text-color-default);font:inherit;font-size:var(--text-sm)}
+    .c-inline-field input:not([type="radio"]){padding:9px 12px;border-radius:var(--border-r-default);border:1px solid var(--border-color-line);background:var(--bg-surface-raised);color:var(--text-color-default);font:inherit;font-size:var(--text-sm)}
     .c-inline-field input[type="number"]{width:72px}
     .c-inline-field input:disabled{opacity:.5}
     .c-inline-field input[type="radio"]{width:18px;height:18px;margin:0;accent-color:var(--text-color-default)}
@@ -301,7 +301,7 @@
         <div class="c-inline-field">
           <span id="every-label">Every</span>
           <input type="number" name="every" min="1" max="99" step="1" aria-labelledby="every-label">
-          <select name="unit" aria-label="Repeat unit">
+          <select class="c-select__native" name="unit" aria-label="Repeat unit">
             <option value="week">week</option>
             <option value="month">month</option>
             <option value="year">year</option>
@@ -352,6 +352,7 @@
 
   <script src="mascots.js"></script>
   <script src="shell.js"></script>
+  <script src="select.js"></script>
   <script src="occurrences.js"></script>
 </body>
 </html>
