@@ -233,8 +233,8 @@
           return null;
         }
       };
-      // A cover is an uploaded image, or a gradient in the sample data.
-      const coverImage = (cover) => (!cover ? 'none' : cover.startsWith('linear-gradient') ? cover : `url("${cover}")`);
+      // A cover is an uploaded image, or a gradient with a photo icon in the sample data.
+      const coverImage = (cover) => (!cover ? 'none' : cover.startsWith('linear-gradient') ? `var(--photo-placeholder), ${cover}` : `url("${cover}")`);
       const matches = (i) => !query || `${i.text} ${i.note}`.toLowerCase().includes(query);
 
       const itemRow = (i) => {

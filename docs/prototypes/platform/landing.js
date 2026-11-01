@@ -61,7 +61,7 @@ $('yoko').addEventListener('click', () => {
   bubbleTimer = setTimeout(hideBubble, BUBBLE_MS);
 });
 
-/* Places demo. Sample data, the same as the Places prototype; photos are gradients. */
+/* Places demo. Sample data, the same as the Places prototype; photos are gradients with a photo icon, and busy ones get a texture. */
 
 const MAX_NEW_PLACES = 3;
 const categories = {
@@ -80,7 +80,7 @@ const places = [
     photos: [['#b4a7d6', '#674ea7', 'The tower of books'], ['#d5a6bd', '#a64d79', 'Reading room']] },
   { id: 3, title: 'Borough Market', where: 'Southwark, London', x: 54, y: 83, category: 'Social', visited: '15 Mar 2025', fav: true,
     note: 'Lunch with friends. Go before noon on Saturdays or it gets packed.',
-    photos: [['#ffd966', '#e69138', 'Food stalls'], ['#ea9999', '#cc0000', 'Strawberries'], ['#b6d7a8', '#6aa84f', 'Green market']] },
+    photos: [['#ffd966', '#e69138', 'Food stalls', 'busy'], ['#ea9999', '#cc0000', 'Strawberries'], ['#b6d7a8', '#6aa84f', 'Green market', 'busy']] },
   { id: 4, title: 'Tower Bridge', where: 'Tower Hamlets, London', x: 65, y: 73, category: 'Travel', visited: '15 Mar 2025', fav: false,
     note: 'Walked across at night. The glass floor of the walkway is scary and worth it.',
     photos: [['#6fa8dc', '#1c4587', 'At night'], ['#a2c4c9', '#45818e', 'From the river']] },
@@ -89,7 +89,7 @@ const places = [
     photos: [['#f4cccc', '#e06666', 'Rose garden'], ['#d9ead3', '#93c47d', 'Boating lake']] },
 ];
 const calendarIcon = '<svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" d="M8 2v3M16 2v3M3.5 9.09h17M21 8.5V17c0 3-1.5 5-5 5H8c-3.5 0-5-2-5-5V8.5c0-3 1.5-5 5-5h8c3.5 0 5 2 5 5Z"/></svg>';
-const gradient = ([from, to]) => `linear-gradient(135deg, ${from}, ${to})`;
+const gradient = ([from, to, , busy]) => ['var(--photo-placeholder)', busy && 'var(--photo-texture)', `linear-gradient(135deg, ${from}, ${to})`].filter(Boolean).join(', ');
 
 const markers = new Map();
 let selected = null;
