@@ -1,0 +1,668 @@
+<!doctype html>
+<html lang="en" data-theme="light">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Yoko — Links</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@400..700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="tokens.css">
+  <link rel="stylesheet" href="shell.css">
+  <link rel="stylesheet" href="components.css">
+  <style>
+    .p-links{display:flex;flex-direction:column}
+
+    /* Collections: a scrolling row on mobile, a column on desktop */
+    .p-links__collections{display:flex;gap:4px;padding:10px;border-bottom:1px solid var(--border-color-line);overflow-x:auto}
+    .p-links__collections h2{display:none;font-size:var(--text-xs);font-weight:var(--font-bold);letter-spacing:.06em;text-transform:uppercase;color:var(--text-color-muted);padding:0 10px 6px}
+    .c-collection{all:unset;flex-shrink:0;display:flex;align-items:center;justify-content:space-between;gap:8px;padding:7px 10px;border-radius:var(--border-r-default);font-size:var(--text-sm);font-weight:var(--font-highlight);cursor:pointer;text-transform:capitalize}
+    .c-collection:hover{background:var(--bg-surface-raised)}
+    .c-collection:focus-visible{outline:2px solid var(--accent)}
+    .c-collection[aria-current="true"]{background:var(--module);color:var(--dark);box-shadow:inset 0 0 0 1px var(--dark)}
+    .c-collection span{font-size:var(--text-xs);font-weight:var(--font-bold);opacity:.65}
+
+    /* List */
+    .p-links__list{display:flex;flex-direction:column;gap:16px;padding:14px 12px;overflow-y:auto;min-width:0}
+    .p-links__head{display:flex;flex-wrap:wrap;align-items:center;gap:10px}
+    .p-links__head h1{font-size:var(--text-lg);font-weight:var(--font-bold);text-transform:capitalize;margin-right:auto}
+    .c-status-filter{display:inline-flex;padding:3px;gap:3px;border-radius:var(--border-r-pill);background:var(--bg-surface-raised);border:1px solid var(--border-color-line)}
+    .c-status-filter button{all:unset;padding:4px 12px;border-radius:var(--border-r-pill);font-size:var(--text-xs);font-weight:var(--font-bold);cursor:pointer;color:var(--text-color-muted)}
+    .c-status-filter button[aria-pressed="true"]{background:var(--bg-surface);color:var(--text-color-default);box-shadow:0 1px 3px rgba(0,0,0,.15)}
+    .c-status-filter button:focus-visible{outline:2px solid var(--accent)}
+    .p-links__groups{display:grid;gap:28px}
+    .p-links__group h2{font-size:var(--text-xs);font-weight:var(--font-bold);color:var(--text-color-muted);text-transform:uppercase;letter-spacing:.06em;margin-bottom:8px}
+    .p-links__group ul{display:flex;flex-direction:column;gap:8px;list-style:none;padding:0}
+
+    .c-link{all:unset;box-sizing:border-box;display:grid;grid-template-columns:36px minmax(0,1fr) auto;align-items:center;gap:12px;width:100%;padding:10px 12px;border-radius:var(--border-r-default);border:1px solid var(--border-color-line);background:var(--bg-surface);cursor:pointer;transition:border-color .15s,box-shadow .15s}
+    .c-link:hover{border-color:var(--text-color-muted)}
+    .c-link:focus-visible{outline:2px solid var(--accent)}
+    .c-link[aria-current="true"]{border-color:var(--dark);box-shadow:0 6px 0 -1px var(--dark)}
+    [data-theme="dark"] .c-link[aria-current="true"]{border-color:var(--blue);box-shadow:0 6px 0 -1px var(--blue)}
+    .c-link__favicon{display:grid;place-items:center;width:36px;height:36px;border-radius:var(--border-r-default);background:var(--fav-color);color:var(--dark);font-weight:var(--font-bold);font-size:var(--text-base);text-transform:uppercase}
+    .c-link__text{min-width:0}
+    .c-link__title{display:block;font-size:var(--text-base);font-weight:var(--font-bold);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+    .c-link__host{display:block;font-size:var(--text-xs);color:var(--text-color-muted)}
+    .c-status{display:inline-flex;align-items:center;gap:5px;padding:3px 9px;border-radius:var(--border-r-pill);font-size:var(--text-xs);font-weight:var(--font-bold);white-space:nowrap;color:var(--dark);background:var(--status-color)}
+    .c-status::before{content:'';width:7px;height:7px;border-radius:50%;background:currentColor;opacity:.6}
+
+    /* Detail */
+    /* Detail: full screen on mobile, a panel over the list on tablets and laptops, a column from $desktop-lg-min */
+    .p-links{position:relative}
+    .p-links__detail{position:fixed;inset:0;z-index:700;display:flex;flex-direction:column;gap:14px;padding:16px 20px 20px;overflow-y:auto;background:var(--bg-surface-raised)}
+    .p-links__detail[hidden]{display:none}
+    @media (prefers-reduced-motion:no-preference){.p-links__detail{animation:panel-in var(--duration-default) var(--ease-out)}}
+    .p-links__detail-head{display:flex;align-items:center;justify-content:space-between;gap:10px}
+    .p-links__detail-head .c-icon-btn:hover{background:var(--bg-surface)}
+    .p-links__detail h2{font-size:var(--text-lg);font-weight:var(--font-bold);line-height:1.25}
+    .p-links__detail .c-link__host{font-size:var(--text-xs)}
+    .p-links__desc{font-size:var(--text-sm);line-height:1.6}
+    .p-links__desc:empty::before{content:'No description yet.';color:var(--text-color-muted);font-style:italic}
+    .p-links__label{font-size:var(--text-xs);font-weight:var(--font-bold);letter-spacing:.06em;text-transform:uppercase;color:var(--text-color-muted)}
+    .p-links__statuses{display:flex;gap:6px;flex-wrap:wrap}
+    .p-links__statuses button{all:unset;padding:5px 12px;border-radius:var(--border-r-pill);font-size:var(--text-xs);font-weight:var(--font-bold);cursor:pointer;border:1px solid var(--border-color-line);background:var(--bg-surface)}
+    .p-links__statuses button[aria-pressed="true"]{background:var(--status-color);color:var(--dark);border-color:var(--dark)}
+    .p-links__statuses button:focus-visible{outline:2px solid var(--accent)}
+    .p-links__note{width:100%;min-height:90px;padding:10px 12px;border-radius:var(--border-r-default);border:1px solid var(--border-color-line);background:var(--bg-surface);color:var(--text-color-default);font:inherit;font-size:var(--text-sm);resize:vertical}
+    .p-links__note:focus{outline:2px solid var(--accent)}
+    .c-goal{display:flex;flex-direction:column;gap:6px;padding:12px;border-radius:var(--border-r-default);background:var(--blue);color:var(--dark);border:1px solid var(--dark)}
+    .c-goal strong{font-size:var(--text-sm)}
+    .c-goal small{font-size:var(--text-xs);font-weight:var(--font-highlight)}
+    .c-goal__bar{height:8px;border-radius:var(--border-r-pill);background:rgba(26,26,26,.15);overflow:hidden}
+    .c-goal__bar span{display:block;height:100%;background:var(--dark);border-radius:inherit}
+    .p-links__actions{display:flex;gap:8px;margin-top:auto}
+    .p-links__actions .c-button{flex:1;justify-content:center;text-decoration:none}
+    .p-links__empty{padding:30px;text-align:center;color:var(--text-color-muted);border:2px dashed var(--border-color-line);border-radius:var(--border-r-default)}
+    .p-links__end{display:flex;flex-direction:column;align-items:center;gap:6px;padding:12px 0 4px;color:var(--text-color-muted);font-size:var(--text-xs);font-weight:var(--font-highlight)}
+    .p-links__end img{width:140px;height:auto;transform:rotate(-8deg)}
+
+    @media (min-width:769px){
+      .p-links{display:grid;grid-template-columns:180px minmax(0,1fr);height:100%}
+      .p-links__collections{flex-direction:column;padding:18px 12px;border-bottom:0;border-right:1px solid var(--border-color-line);overflow-x:visible;overflow-y:auto}
+      .p-links__collections h2{display:block}
+      .p-links__list{padding:18px 20px}
+      .p-links__detail{position:absolute;inset:0 0 0 auto;width:min(380px,100%);border-left:1px solid var(--border-color-line);box-shadow:var(--shadow-lg)}
+    }
+    @media (min-width:1280px){
+      .p-links{grid-template-columns:200px minmax(0,1fr)}
+      .p-links.has-detail{grid-template-columns:200px minmax(0,1fr) 320px}
+      .p-links__detail{position:static;width:auto;box-shadow:none;animation:none}
+    }
+  </style>
+</head>
+<body data-page="links" data-search="Search links">
+  <div class="app">
+    <div class="app__main">
+      <main class="app__content">
+        <div class="p-links" id="links-root">
+          <nav class="p-links__collections" aria-label="Collections">
+            <h2>Collections</h2>
+            <div id="collections" style="display:contents"></div>
+          </nav>
+
+          <section class="p-links__list" aria-labelledby="list-title">
+            <div class="p-links__head">
+              <h1 id="list-title">All links</h1>
+              <div class="c-status-filter" id="status-filter" role="group" aria-label="Filter by status"></div>
+              <button class="c-button c-button--module" type="button" id="save-link" data-new>
+                <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path stroke="currentColor" stroke-width="1.8" stroke-linecap="round" d="M12 5v14M5 12h14"/></svg>
+                Save link
+              </button>
+            </div>
+            <div class="p-links__groups" id="groups"></div>
+          </section>
+
+          <aside class="p-links__detail" id="detail" aria-label="Link details" hidden></aside>
+        </div>
+      </main>
+    </div>
+  </div>
+
+  <dialog class="c-dialog c-confirm" id="delete-dialog" aria-labelledby="delete-title">
+    <form method="dialog">
+      <div class="c-dialog__head">
+        <h2 id="delete-title">Are you sure you want to delete <b id="delete-name"></b>?</h2>
+        <button class="c-icon-btn" value="cancel" aria-label="Close">
+          <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path stroke="currentColor" stroke-width="1.8" stroke-linecap="round" d="M18 6 6 18M6 6l12 12"/></svg>
+        </button>
+      </div>
+      <p class="c-confirm__note">This can’t be undone.</p>
+      <div class="c-dialog__actions">
+        <button class="c-button c-button--ghost" value="cancel">Cancel</button>
+        <button class="c-button c-button--danger" value="delete">Delete</button>
+      </div>
+    </form>
+  </dialog>
+
+  <dialog class="c-dialog" id="link-dialog" aria-labelledby="link-form-title">
+    <form class="c-form" id="link-form" novalidate>
+      <div class="c-dialog__head">
+        <h2 id="link-form-title">Save a link</h2>
+        <button class="c-icon-btn" type="button" id="close-link-form" aria-label="Close">
+          <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path stroke="currentColor" stroke-width="1.8" stroke-linecap="round" d="M18 6 6 18M6 6l12 12"/></svg>
+        </button>
+      </div>
+      <label class="c-field"><span>Link</span><input name="url" inputmode="url" placeholder="https://" autocomplete="off" required></label>
+      <label class="c-field"><span>Title</span><input name="title" maxlength="120" placeholder="Uses the site name if empty" autocomplete="off"></label>
+      <div class="c-dialog__row">
+        <label class="c-field"><span>Collection</span><input name="collection" list="collection-options" maxlength="30" placeholder="books, guides…" autocomplete="off" required></label>
+        <label class="c-field"><span>Tag</span><input name="tag" maxlength="30" placeholder="tech" autocomplete="off"></label>
+      </div>
+      <datalist id="collection-options"></datalist>
+      <label class="c-field"><span>Status</span><select name="status"></select></label>
+      <label class="c-field"><span>Description</span><textarea name="desc" rows="2" maxlength="300" placeholder="What is it about?"></textarea></label>
+      <div class="c-dialog__actions">
+        <button class="c-button c-button--ghost" type="button" id="cancel-link">Cancel</button>
+        <button class="c-button c-button--module" type="submit">Save</button>
+      </div>
+    </form>
+  </dialog>
+
+  <script src="shell.js"></script>
+  <script src="components.js"></script>
+  <script>
+    // Sample taken from the Koda links (public), as they would look after the move.
+    // The list always ends with Yoko and a line, also when it is empty.
+    const endOfList = (text) => `<div class="p-links__end"><img src="../../../client/public/mascot.svg" alt=""><span>${text}</span></div>`;
+
+    const links = [
+      {
+        "id": 1,
+        "collection": "books",
+        "tag": "tech",
+        "title": "Typescript in 50 lessons",
+        "url": "https://typescript-book.com/",
+        "desc": "Everything you need to know about TypeScript in 50 short lessons",
+        "status": "done"
+      },
+      {
+        "id": 2,
+        "collection": "books",
+        "tag": "tech",
+        "title": "concorrencia101",
+        "url": "https://concorrencia101.leandronsp.com/",
+        "desc": "",
+        "status": "done"
+      },
+      {
+        "id": 3,
+        "collection": "books",
+        "tag": "tech",
+        "title": "Engenharia de Software Moderna",
+        "url": "https://engsoftmoderna.info/",
+        "desc": "",
+        "status": "want"
+      },
+      {
+        "id": 4,
+        "collection": "books",
+        "tag": "tech",
+        "title": "Redes de Computadores para quem está começando: entenda a jornada por trás de cada clique",
+        "url": "https://a.co/d/0fD9GkmJ",
+        "desc": "",
+        "status": "want"
+      },
+      {
+        "id": 5,
+        "collection": "books",
+        "tag": "tech",
+        "title": "Atomic Design",
+        "url": "https://atomicdesign.bradfrost.com/",
+        "desc": "",
+        "status": "reading"
+      },
+      {
+        "id": 6,
+        "collection": "books",
+        "tag": "design",
+        "title": "The Non-Designer's Design Book: Design and Typographic Principles for the Visual Novice",
+        "url": "https://a.co/d/09Q6zjHi",
+        "desc": "",
+        "status": "done"
+      },
+      {
+        "id": 7,
+        "collection": "guides",
+        "tag": "tech",
+        "title": "Fundamentos do Git, um guia completo",
+        "url": "https://leandronsp.com/articles/pt-br-fundamentos-do-git-um-guia-completo-2djh",
+        "desc": "",
+        "status": "done"
+      },
+      {
+        "id": 8,
+        "collection": "guides",
+        "tag": "tech",
+        "title": "Front End Interview Handbook",
+        "url": "https://www.frontendinterviewhandbook.com/",
+        "desc": "",
+        "status": "want"
+      },
+      {
+        "id": 9,
+        "collection": "guides",
+        "tag": "tech",
+        "title": "Tech Interview Handbook",
+        "url": "https://www.techinterviewhandbook.org/",
+        "desc": "",
+        "status": "want"
+      },
+      {
+        "id": 10,
+        "collection": "guides",
+        "tag": "tech",
+        "title": "Windows CMD commands",
+        "url": "https://ss64.com/nt/",
+        "desc": "",
+        "status": "reading"
+      },
+      {
+        "id": 11,
+        "collection": "articles",
+        "tag": "tech",
+        "title": "CSS Tricks",
+        "url": "https://css-tricks.com",
+        "desc": "",
+        "status": "done"
+      },
+      {
+        "id": 12,
+        "collection": "articles",
+        "tag": "tech",
+        "title": "HTTP headers",
+        "url": "https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers",
+        "desc": "",
+        "status": "done"
+      },
+      {
+        "id": 13,
+        "collection": "articles",
+        "tag": "tech",
+        "title": "How to check for undefined in JavaScript",
+        "url": "https://ui.dev/check-for-undefined-javascript",
+        "desc": "",
+        "status": "want"
+      },
+      {
+        "id": 14,
+        "collection": "articles",
+        "tag": "tech",
+        "title": "O processo de software",
+        "url": "https://www.macoratti.net/proc_sw1.htm",
+        "desc": "",
+        "status": "want"
+      },
+      {
+        "id": 15,
+        "collection": "podcasts",
+        "tag": "tech",
+        "title": "Dev show",
+        "url": "https://devshow.com.br/",
+        "desc": "",
+        "status": "reading"
+      },
+      {
+        "id": 16,
+        "collection": "courses",
+        "tag": "tech",
+        "title": "dio",
+        "url": "https://www.dio.me/en",
+        "desc": "",
+        "status": "done"
+      },
+      {
+        "id": 17,
+        "collection": "courses",
+        "tag": "tech",
+        "title": "speakerdeck/jessilyneh",
+        "url": "https://speakerdeck.com/jessilyneh",
+        "desc": "",
+        "status": "done"
+      },
+      {
+        "id": 18,
+        "collection": "courses",
+        "tag": "tech",
+        "title": "speakerdeck.com/camilacampos",
+        "url": "https://speakerdeck.com/camilacampos",
+        "desc": "",
+        "status": "want"
+      },
+      {
+        "id": 19,
+        "collection": "tooling",
+        "tag": "image",
+        "title": "tinify",
+        "url": "https://tinypng.com/",
+        "desc": "Smart AVIF, WebP, PNG and JPEG Compression for Faster Websites",
+        "status": "want"
+      },
+      {
+        "id": 20,
+        "collection": "tooling",
+        "tag": "image",
+        "title": "GRATISPNG",
+        "url": "https://www.gratispng.com/",
+        "desc": "",
+        "status": "reading"
+      },
+      {
+        "id": 21,
+        "collection": "tooling",
+        "tag": "image",
+        "title": "Shopify stock photos",
+        "url": "https://www.shopify.com/stock-photos",
+        "desc": "",
+        "status": "done"
+      },
+      {
+        "id": 22,
+        "collection": "cool stuff",
+        "tag": "cool stuff",
+        "title": "DRIVEN AND LISTEN",
+        "url": "https://driveandlisten.herokuapp.com/",
+        "desc": "",
+        "status": "done"
+      },
+      {
+        "id": 23,
+        "collection": "cool stuff",
+        "tag": "cool stuff",
+        "title": "LETMEGOOGLETHAT",
+        "url": "https://letmegooglethat.com/",
+        "desc": "",
+        "status": "want"
+      },
+      {
+        "id": 24,
+        "collection": "cool stuff",
+        "tag": "cool stuff",
+        "title": "EMOJIPEDIA",
+        "url": "https://emojipedia.org/",
+        "desc": "",
+        "status": "want"
+      }
+    ];
+
+    const { escapeHtml, closeOnBackdrop, swipeRows } = window.YokoUI;
+    const $ = (id) => document.getElementById(id);
+    const statuses = {
+      later: { label: 'Later', color: 'var(--bg-cat-home)' },
+      progress: { label: 'In progress', color: 'var(--blue)' },
+      done: { label: 'Done', color: 'var(--bg-cat-reading)' },
+    };
+    const statusFromSample = { want: 'later', reading: 'progress', done: 'done' };
+    links.forEach((l) => {
+      l.status = statusFromSample[l.status] ?? 'later';
+      l.note = '';
+    });
+
+    const faviconColors = ['var(--bg-cat-personal)', 'var(--bg-cat-work)', 'var(--bg-cat-study)', 'var(--bg-cat-finance)', 'var(--bg-cat-family)', 'var(--bg-cat-travel)', 'var(--bg-cat-social)', 'var(--bg-cat-hobby)'];
+    const hostOf = (url) => new URL(url).hostname.replace(/^www\./, '');
+    const colorOf = (text) => faviconColors[[...text].reduce((a, c) => a + c.charCodeAt(0), 0) % faviconColors.length];
+
+    // Goal from the occurrences module, as in the product requirements.
+    const goal = { title: 'Read 2 books a month', target: 2 };
+
+    // From $desktop-lg-min the detail is a column next to the list; below it, a panel over the list.
+    const wideScreen = matchMedia('(min-width: 1280px)');
+
+    let collection = 'all';
+    let status = 'all';
+    let query = '';
+    let selectedId = wideScreen.matches ? links[0]?.id : null;
+    let nextId = Math.max(...links.map((l) => l.id)) + 1;
+
+    const collectionsEl = $('collections');
+    const collectionNames = () => [...new Set(links.map((l) => l.collection))];
+
+    function renderCollections() {
+      const buttons = ['all', ...collectionNames()].map((name) => {
+        const count = name === 'all' ? links.length : links.filter((l) => l.collection === name).length;
+        const button = document.createElement('button');
+        button.type = 'button';
+        button.className = 'c-collection';
+        button.setAttribute('aria-current', String(name === collection));
+        const countEl = document.createElement('span');
+        countEl.textContent = count;
+        button.append(name === 'all' ? 'All links' : name, countEl);
+        button.addEventListener('click', () => {
+          collection = name;
+          render();
+        });
+        return button;
+      });
+      collectionsEl.replaceChildren(...buttons);
+    }
+
+    const statusFilter = $('status-filter');
+    [['all', 'All'], ...Object.entries(statuses).map(([k, v]) => [k, v.label])].forEach(([key, label]) => {
+      const button = document.createElement('button');
+      button.type = 'button';
+      button.dataset.key = key;
+      button.textContent = label;
+      button.addEventListener('click', () => {
+        status = key;
+        render();
+      });
+      statusFilter.appendChild(button);
+    });
+
+    $('search').addEventListener('input', (e) => {
+      query = e.target.value.trim().toLowerCase();
+      render();
+    });
+
+    function visibleLinks() {
+      return links.filter(
+        (l) =>
+          (collection === 'all' || l.collection === collection) &&
+          (status === 'all' || l.status === status) &&
+          (!query || l.title.toLowerCase().includes(query) || hostOf(l.url).includes(query) || l.tag.toLowerCase().includes(query))
+      );
+    }
+
+    function render() {
+      renderCollections();
+      statusFilter.querySelectorAll('button').forEach((b) => b.setAttribute('aria-pressed', String(b.dataset.key === status)));
+      $('list-title').textContent = collection === 'all' ? 'All links' : collection;
+
+      const groupsEl = $('groups');
+      const list = visibleLinks();
+      if (!list.some((l) => l.id === selectedId)) selectedId = null;
+      if (!list.length) {
+        groupsEl.innerHTML = endOfList('Nothing here yet. Save a link to read later.');
+      } else {
+        const byGroup = {};
+        list.forEach((l) => {
+          const key = collection === 'all' ? l.collection : l.tag || 'no tag';
+          (byGroup[key] ??= []).push(l);
+        });
+        groupsEl.innerHTML = Object.entries(byGroup)
+          .map(
+            ([group, items]) => `
+            <div class="p-links__group">
+              <h2>${escapeHtml(group)}</h2>
+              <ul>${items
+                .map(
+                  (l) => `
+                <li class="c-swipe"><button class="c-swipe__action" type="button" data-delete="${l.id}" inert>Delete</button><button class="c-link c-swipe__card" type="button" data-id="${l.id}" aria-current="${l.id === selectedId}">
+                  <span class="c-link__favicon" style="--fav-color:${colorOf(hostOf(l.url))}">${escapeHtml(hostOf(l.url)[0])}</span>
+                  <span class="c-link__text"><span class="c-link__title">${escapeHtml(l.title)}</span><span class="c-link__host">${escapeHtml(hostOf(l.url))}${l.tag ? ` · ${escapeHtml(l.tag)}` : ''}</span></span>
+                  <span class="c-status" style="--status-color:${statuses[l.status].color}">${statuses[l.status].label}</span>
+                </button></li>`
+                )
+                .join('')}</ul>
+            </div>`
+          )
+          .join('') + endOfList("That's everything for now.");
+        groupsEl.querySelectorAll('.c-link').forEach((b) =>
+          b.addEventListener('click', () => {
+            selectedId = Number(b.dataset.id);
+            render();
+            $('close-detail').focus();
+          })
+        );
+      }
+      renderDetail();
+    }
+
+    function closeDetail() {
+      const id = selectedId;
+      selectedId = null;
+      render();
+      $('groups').querySelector(`.c-link[data-id="${id}"]`)?.focus();
+    }
+
+    function renderDetail() {
+      const detail = $('detail');
+      const link = links.find((l) => l.id === selectedId);
+      detail.hidden = !link;
+      $('links-root').classList.toggle('has-detail', Boolean(link));
+      if (!link) return;
+      const booksDone = links.filter((l) => l.collection === 'books' && l.status === 'done').length;
+      const goalCard =
+        link.collection === 'books'
+          ? `<div class="c-goal">
+              <small>Counts toward a goal</small>
+              <strong>${goal.title}</strong>
+              <div class="c-goal__bar"><span style="width:${Math.min(100, (booksDone / goal.target) * 100)}%"></span></div>
+              <small>${Math.min(booksDone, goal.target)} of ${goal.target} this month</small>
+            </div>`
+          : '';
+      detail.innerHTML = `
+        <div class="p-links__detail-head">
+          <span class="c-tag c-tag--plain">${escapeHtml(link.collection)}${link.tag ? ` · ${escapeHtml(link.tag)}` : ''}</span>
+          <button class="c-icon-btn" type="button" id="close-detail" aria-label="Close link details">
+            <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path stroke="currentColor" stroke-width="1.8" stroke-linecap="round" d="M18 6 6 18M6 6l12 12"/></svg>
+          </button>
+        </div>
+        <div>
+          <h2>${escapeHtml(link.title)}</h2>
+          <span class="c-link__host">${escapeHtml(hostOf(link.url))}</span>
+        </div>
+        <p class="p-links__desc">${escapeHtml(link.desc ?? '')}</p>
+        <div>
+          <p class="p-links__label">Status</p>
+          <div class="p-links__statuses">${Object.entries(statuses)
+            .map(([k, v]) => `<button type="button" data-status="${k}" style="--status-color:${v.color}" aria-pressed="${link.status === k}">${v.label}</button>`)
+            .join('')}</div>
+        </div>
+        ${goalCard}
+        <label>
+          <span class="p-links__label">My note</span>
+          <textarea class="p-links__note" placeholder="Why did you save it?">${escapeHtml(link.note)}</textarea>
+        </label>
+        <div class="p-links__actions">
+          <button class="c-button c-button--danger" type="button" id="delete-link">Delete</button>
+          <a class="c-button c-button--module" href="${escapeHtml(link.url)}" target="_blank" rel="noopener noreferrer">Open link</a>
+        </div>`;
+      $('delete-link').addEventListener('click', () => confirmDelete(link));
+      $('close-detail').addEventListener('click', closeDetail);
+      detail.querySelectorAll('[data-status]').forEach((b) =>
+        b.addEventListener('click', () => {
+          link.status = b.dataset.status;
+          render();
+        })
+      );
+      detail.querySelector('textarea').addEventListener('input', (e) => {
+        link.note = e.target.value;
+      });
+    }
+
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape' && selectedId !== null && !document.querySelector('dialog[open]')) closeDetail();
+    });
+
+    // Delete, from the detail panel or a swiped row
+    const deleteDialog = $('delete-dialog');
+    closeOnBackdrop(deleteDialog);
+    let toDelete = null;
+    const confirmDelete = (link) => {
+      toDelete = link;
+      $('delete-name').textContent = link.title;
+      deleteDialog.returnValue = '';
+      deleteDialog.showModal();
+    };
+    deleteDialog.addEventListener('close', () => {
+      const link = toDelete;
+      toDelete = null;
+      if (deleteDialog.returnValue !== 'delete' || !link) return;
+      links.splice(links.indexOf(link), 1);
+      if (selectedId === link.id) selectedId = null;
+      if (!links.some((l) => l.collection === collection)) collection = 'all';
+      render();
+    });
+    swipeRows({
+      list: $('groups'),
+      onAction: (button) => confirmDelete(links.find((l) => l.id === Number(button.dataset.delete))),
+    });
+
+    // Save a link
+    const linkDialog = $('link-dialog');
+    const linkForm = $('link-form');
+    const field = (name) => linkForm.elements.namedItem(name);
+    closeOnBackdrop(linkDialog);
+    field('status').replaceChildren(
+      ...Object.entries(statuses).map(([key, v]) => {
+        const option = document.createElement('option');
+        option.value = key;
+        option.textContent = v.label;
+        return option;
+      })
+    );
+
+    const parseUrl = (text) => {
+      try {
+        const url = new URL(/^[a-z]+:\/\//i.test(text) ? text : `https://${text}`);
+        return ['http:', 'https:'].includes(url.protocol) ? url : null;
+      } catch {
+        return null;
+      }
+    };
+
+    $('save-link').addEventListener('click', () => {
+      linkForm.reset();
+      field('collection').value = collection === 'all' ? '' : collection;
+      $('collection-options').replaceChildren(
+        ...collectionNames().map((name) => {
+          const option = document.createElement('option');
+          option.value = name;
+          return option;
+        })
+      );
+      linkForm.querySelectorAll('input').forEach((input) => input.setCustomValidity(''));
+      linkDialog.showModal();
+    });
+    $('close-link-form').addEventListener('click', () => linkDialog.close());
+    $('cancel-link').addEventListener('click', () => linkDialog.close());
+
+    linkForm.addEventListener('submit', (e) => {
+      e.preventDefault();
+      const url = parseUrl(field('url').value.trim());
+      const collectionName = field('collection').value.trim().toLowerCase();
+      field('url').setCustomValidity(url ? '' : 'Paste a web address, like https://example.com.');
+      field('collection').setCustomValidity(collectionName ? '' : 'Pick a collection or type a new one.');
+      if (!linkForm.reportValidity()) return;
+      const link = {
+        id: nextId++,
+        collection: collectionName,
+        tag: field('tag').value.trim().toLowerCase(),
+        title: field('title').value.trim() || hostOf(url.href),
+        url: url.href,
+        desc: field('desc').value.trim(),
+        status: statuses[field('status').value] ? field('status').value : 'later',
+        note: '',
+      };
+      links.unshift(link);
+      collection = link.collection;
+      status = 'all';
+      selectedId = link.id;
+      linkDialog.close();
+      render();
+    });
+
+    render();
+  </script>
+</body>
+</html>

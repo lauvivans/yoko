@@ -1,0 +1,43 @@
+<!doctype html>
+<html lang="en" data-theme="light">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Page not found · Yoko</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@300..700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="tokens.css">
+  <link rel="stylesheet" href="shell.css">
+  <style>
+    body{display:grid;place-items:center;padding:24px 16px;background:color-mix(in srgb, var(--red) 35%, var(--bg-page))}
+    .p-404{display:grid;gap:14px;justify-items:center;max-width:720px;text-align:center}
+    .p-404 img{width:180px;height:auto;transform:rotate(-8deg)}
+    .p-404 h1{font-size:var(--text-lg);font-weight:var(--font-bold);line-height:1.2}
+    .p-404 h1 span{display:block;font-size:var(--text-xl)}
+    .p-404 p{max-width:34ch;font-size:var(--text-base)}
+    .p-404 .c-button{text-decoration:none}
+    .p-404 .c-button:focus-visible{outline:2px solid var(--dark);outline-offset:3px}
+    @media (min-width:769px){
+      .p-404{grid-template-columns:auto auto;align-items:center;justify-items:start;gap:16px 40px;text-align:left}
+      .p-404 img{grid-column:2;grid-row:1 / span 3;width:280px}
+    }
+  </style>
+</head>
+<body>
+  <main class="p-404">
+    <img src="../../../client/public/mascot.svg" alt="">
+    <h1><span>404</span> Page not found</h1>
+    <p>Yoko looked everywhere, even under the rocks, and couldn’t find this page.</p>
+    <a class="c-button c-button--module" href="home.html">Go home</a>
+  </main>
+  <script>
+    try {
+      const saved = localStorage.getItem('yoko-prototype-theme');
+      if (saved) document.documentElement.dataset.theme = saved;
+    } catch {
+      // Storage blocked: keep the light theme.
+    }
+  </script>
+</body>
+</html>

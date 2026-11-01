@@ -13,7 +13,7 @@ Everything in the repository and on GitHub is in English: code, docs, file names
 - `docs/`: documentation. Also the Docusaurus site published on Cloudflare Pages (`overview/`, `dev-docs/`, `src/`, `static/`).
   - `docs/engineering-guidelines.md`: rules for writing and reviewing code.
   - `docs/decisions/`: one decision per file, numbered. Every spike ends with a file here.
-  - `docs/prototypes/`: HTML prototypes.
+  - `docs/prototypes/`: HTML prototypes. `docs/prototypes/platform/` is the living reference for screens and design tokens (decision 005).
 
 ## Engineering guidelines
 
@@ -30,6 +30,7 @@ Follow the guidelines below when implementing and when reviewing PRs. They are i
 
 ## Workflow
 
+- **Visual changes:** change the prototype in `docs/prototypes/platform/` first, validate it, then implement it in `client/` (decision 005).
 - **Base branch:** `develop`. PRs target it, not `main`.
 - **Branch name:** `<type>/kebab-case-name`, for example `chore/claude-md` or `fix/occurrence-delete`.
 - **Commits and PR title:** [Conventional Commits](https://www.conventionalcommits.org/), for example `chore: add spike issue template`. Details in `docs/dev-docs/patterns.mdx`.

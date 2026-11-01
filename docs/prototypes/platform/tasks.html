@@ -1,0 +1,666 @@
+<!doctype html>
+<html lang="en" data-theme="light">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Yoko — Tasks</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@300..700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="tokens.css">
+  <link rel="stylesheet" href="shell.css">
+  <link rel="stylesheet" href="components.css">
+  <style>
+    .p-tasks{padding:16px 12px 40px}
+    .p-tasks .c-workspace__list{gap:14px}
+    .p-tasks__head{display:flex;flex-wrap:wrap;align-items:center;gap:12px}
+    .p-tasks__head h1{font-size:var(--text-lg);font-weight:var(--font-bold)}
+
+    /* Day navigation: tasks belong to a day and stay in the history */
+    .c-day-nav{position:relative;display:flex;align-items:center;gap:6px}
+    .c-day-nav h2{min-width:15ch;font-size:var(--text-base);font-weight:var(--font-bold);text-align:center}
+    .c-day-nav__title{all:unset;display:inline-flex;align-items:center;gap:8px;padding:6px 10px;border-radius:var(--border-r-default);cursor:pointer}
+    .c-day-nav__title::after{content:"";width:6px;height:6px;border-right:2px solid currentColor;border-bottom:2px solid currentColor;rotate:45deg;translate:0 -2px;transition:rotate var(--duration-fast),translate var(--duration-fast)}
+    .c-day-nav__title[aria-expanded="true"]::after{rotate:225deg;translate:0 2px}
+    .c-day-nav__title:hover,.c-day-nav__title[aria-expanded="true"]{background:var(--bg-surface-raised)}
+    .c-day-nav__title:focus-visible{outline:2px solid var(--accent)}
+
+    /* Day picker: a month to jump to any day. Dots show the statuses of the day's tasks. */
+    .c-datepicker{position:absolute;top:calc(100% + 8px);left:0;z-index:60;display:grid;gap:10px;width:min(300px,calc(100vw - 32px));padding:14px;border-radius:var(--border-r-default);border:var(--border-w-default) solid var(--border-color-line);background:var(--bg-surface);box-shadow:var(--shadow-lg)}
+    .c-datepicker__head{display:flex;align-items:center;justify-content:space-between;gap:8px}
+    .c-datepicker__head strong{font-size:var(--text-sm)}
+    .c-datepicker__grid{display:grid;grid-template-columns:repeat(7,1fr);gap:2px}
+    .c-datepicker__weekday{padding:4px 0;text-align:center;font-size:var(--text-xs);font-weight:var(--font-bold);color:var(--text-color-muted)}
+    .c-datepicker__day{all:unset;display:grid;justify-items:center;align-content:center;gap:3px;height:40px;border-radius:var(--border-r-default);font-size:var(--text-sm);font-weight:var(--font-highlight);cursor:pointer}
+    .c-datepicker__day:hover{background:var(--bg-surface-raised)}
+    .c-datepicker__day:focus-visible{outline:2px solid var(--accent)}
+    .c-datepicker__day.is-outside{color:var(--text-color-muted)}
+    .c-datepicker__day[aria-current="date"]{box-shadow:inset 0 0 0 1px var(--text-color-default)}
+    .c-datepicker__day[aria-pressed="true"]{background:var(--module);color:var(--dark);box-shadow:inset 0 0 0 1px var(--dark)}
+    .c-datepicker__dots{display:flex;gap:2px;height:6px}
+    .c-datepicker__dots i{width:6px;height:6px;border-radius:var(--border-r-full);border:var(--border-w-default) solid var(--border-color-dark);background:var(--dot-color)}
+    .c-datepicker__foot{display:flex;justify-content:flex-end}
+    .c-day-nav__btn{all:unset;display:grid;place-items:center;width:34px;height:34px;border-radius:var(--border-r-default);border:var(--border-w-default) solid var(--border-color-line);background:var(--bg-surface-raised);font-size:var(--text-lg);font-weight:var(--font-bold);cursor:pointer}
+    .c-day-nav__btn:focus-visible{outline:2px solid var(--accent)}
+
+    .p-tasks__progress{display:grid;gap:6px;font-size:var(--text-sm);font-weight:var(--font-highlight)}
+
+    /* Task rows: time, description and status. On phones the status drops below. */
+    .p-tasks__list{display:grid;gap:8px;list-style:none;padding:0;margin:0}
+    .c-swipe:has(.c-task__status[aria-expanded="true"]){z-index:2}
+    .c-task{position:relative;display:grid;grid-template-columns:auto minmax(0,1fr);align-items:center;gap:6px 12px;padding:10px 12px;border-radius:var(--border-r-default);border:var(--border-w-default) solid var(--border-color-line);border-left:6px solid var(--status-color);background:var(--bg-surface)}
+    .c-task.is-editing,.c-task:has(.c-task__check:checked){box-shadow:0 0 0 2px var(--text-color-default)}
+    .c-task__check{width:18px;height:18px;margin:0;accent-color:var(--text-color-default);cursor:pointer}
+    .c-task__main{display:grid;min-width:0}
+    .c-task__time{font-size:var(--text-xs);font-weight:var(--font-highlight);color:var(--text-color-muted)}
+    .c-task__open{all:unset;cursor:pointer;font-size:var(--text-sm);font-weight:var(--font-highlight);overflow-wrap:anywhere}
+    .c-task__open:focus-visible{outline:2px solid var(--accent);outline-offset:2px;border-radius:var(--border-r-soft)}
+    .c-task.is-done .c-task__open{text-decoration:line-through;color:var(--text-color-muted)}
+    .c-status-menu{position:relative;grid-column:2;justify-self:start}
+    .c-task__status{display:inline-flex;align-items:center;gap:8px;padding:4px 10px;border-radius:var(--border-r-pill);border:var(--border-w-default) solid var(--border-color-dark);background:var(--status-color);color:var(--text-color-on-color);font:inherit;font-size:var(--text-xs);font-weight:var(--font-bold);cursor:pointer}
+    .c-task__status:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+    .c-task[data-status="cancelled"] .c-task__status{color:var(--text-color-on-dark)}
+    .c-task__status::after{content:"";width:6px;height:6px;border-right:2px solid currentColor;border-bottom:2px solid currentColor;rotate:45deg;translate:0 -2px;transition:rotate var(--duration-fast),translate var(--duration-fast)}
+    .c-task__status[aria-expanded="true"]::after{rotate:225deg;translate:0 2px}
+    .c-status-list{position:absolute;top:calc(100% + 6px);left:0;z-index:60;display:grid;gap:2px;min-width:170px;margin:0;padding:6px;list-style:none;border-radius:var(--border-r-default);border:var(--border-w-default) solid var(--border-color-line);background:var(--bg-surface);color:var(--text-color-default);box-shadow:var(--shadow-lg)}
+    .c-status-list:focus{outline:0}
+    .c-status-list [role="option"]{display:flex;align-items:center;gap:8px;padding:7px 10px;border-radius:var(--border-r-soft);font-size:var(--text-xs);font-weight:var(--font-highlight);white-space:nowrap;cursor:pointer}
+    .c-status-list [role="option"]::before{content:"";flex:none;width:10px;height:10px;border-radius:var(--border-r-full);border:var(--border-w-default) solid var(--border-color-dark);background:var(--option-color)}
+    .c-status-list [role="option"].is-active{background:var(--bg-surface-raised)}
+    .c-status-list:focus-visible [role="option"].is-active{box-shadow:inset 0 0 0 2px var(--text-color-default)}
+    .c-status-list [aria-selected="true"]{font-weight:var(--font-bold)}
+    .c-status-list [aria-selected="true"]::after{content:"✓";margin-left:auto;padding-left:12px}
+
+    .p-tasks__message{display:flex;flex-direction:column;align-items:center;gap:10px;padding:32px 0;text-align:center;color:var(--text-color-muted);font-size:var(--text-sm);font-weight:var(--font-highlight)}
+    .p-tasks__message img{width:140px;height:auto;transform:rotate(-8deg)}
+
+    @media (min-width:481px){
+      .c-task{grid-template-columns:auto minmax(0,1fr) auto}
+      .c-status-menu{grid-column:3}
+      .c-status-list{left:auto;right:0}
+    }
+    @media (min-width:769px){
+      .p-tasks{padding:22px 24px 40px}
+      .p-tasks__head .c-button{margin-left:auto}
+    }
+  </style>
+</head>
+<body data-page="tasks" data-search="Search tasks">
+  <div class="app">
+    <div class="app__main">
+      <main class="app__content">
+        <div class="p-tasks c-workspace" id="workspace">
+          <div class="c-workspace__list">
+            <div class="p-tasks__head">
+              <h1>Tasks</h1>
+              <div class="c-day-nav">
+                <button class="c-day-nav__btn" type="button" id="day-prev" aria-label="Previous day">‹</button>
+                <h2 aria-live="polite"><button class="c-day-nav__title" type="button" id="day-title" aria-haspopup="dialog" aria-expanded="false" aria-controls="day-picker"></button></h2>
+                <button class="c-day-nav__btn" type="button" id="day-next" aria-label="Next day">›</button>
+                <div class="c-datepicker" id="day-picker" role="dialog" aria-label="Pick a day" hidden>
+                  <div class="c-datepicker__head">
+                    <button class="c-day-nav__btn" type="button" id="picker-prev" aria-label="Previous month">‹</button>
+                    <strong id="picker-month" aria-live="polite"></strong>
+                    <button class="c-day-nav__btn" type="button" id="picker-next" aria-label="Next month">›</button>
+                  </div>
+                  <div class="c-datepicker__grid" id="picker-grid"></div>
+                  <div class="c-datepicker__foot"><button class="c-button c-button--ghost" type="button" id="picker-today">Today</button></div>
+                </div>
+              </div>
+              <button class="c-button c-button--module" type="button" id="add-task" data-new>
+                <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path stroke="currentColor" stroke-width="1.8" stroke-linecap="round" d="M12 5v14M5 12h14"/></svg>
+                Add task
+              </button>
+            </div>
+
+            <div class="c-list-toolbar">
+              <div class="c-dropdown">
+                <button class="c-list-toolbar__btn" type="button" id="filter-toggle" aria-expanded="false" aria-controls="filter-popover">
+                  <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path stroke="currentColor" stroke-width="1.5" stroke-linecap="round" d="M3 7h18M6 12h12M10 17h4"/></svg>
+                  <span id="filter-label">Any status · All day</span>
+                </button>
+                <div class="c-popover" id="filter-popover" hidden>
+                  <h2>Filter by</h2>
+                  <h3 id="status-label">Status</h3>
+                  <div class="c-popover__chips" role="group" aria-labelledby="status-label" id="status-options"></div>
+                  <h3 id="time-label">Time</h3>
+                  <div class="c-popover__chips" role="group" aria-labelledby="time-label" id="time-options"></div>
+                  <button class="c-button c-button--ghost" type="button" id="reset-filters">Reset filters</button>
+                </div>
+              </div>
+              <div class="c-dropdown">
+                <button class="c-list-toolbar__btn" type="button" id="sort-toggle" aria-expanded="false" aria-controls="sort-popover">
+                  <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" d="M10.45 6.72 6.73 3 3.01 6.72M6.73 21V3M13.55 17.28 17.27 21l3.72-3.72M17.27 3v18"/></svg>
+                  <span id="sort-label">Sort: time</span>
+                </button>
+                <div class="c-popover c-popover--narrow" id="sort-popover" hidden>
+                  <h2 id="sort-title">Sort by</h2>
+                  <div class="c-popover__chips" role="group" aria-labelledby="sort-title" id="sort-options"></div>
+                </div>
+              </div>
+              <button class="c-list-toolbar__btn c-list-toolbar__btn--danger" type="button" id="delete" aria-disabled="true">
+                <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" d="M21 5.98c-3.33-.33-6.68-.5-10.02-.5-1.98 0-3.96.1-5.94.3L3 5.98M8.5 4.97l.22-1.31C8.88 2.71 9 2 10.69 2h2.62c1.69 0 1.82.75 1.97 1.67l.22 1.3M18.85 9.14l-.65 10.07C18.09 20.78 18 22 15.21 22H8.79C6 22 5.91 20.78 5.8 19.21L5.15 9.14M10.33 16.5h3.33M9.5 12.5h5"/></svg>
+                <span>Delete (<span id="selected-count">0</span> selected)</span>
+              </button>
+            </div>
+
+            <div class="p-tasks__progress" id="progress">
+              <span id="progress-text"></span>
+              <span class="c-progress" role="progressbar" aria-labelledby="progress-text" aria-valuemin="0" id="progress-bar"><span></span></span>
+            </div>
+            <ul class="p-tasks__list" id="tasks"></ul>
+            <div class="p-tasks__message" id="message" hidden>
+              <img src="../../../client/public/mascot.svg" alt="">
+              <p id="message-text"></p>
+              <button class="c-button c-button--ghost" type="button" id="message-reset" hidden>Reset filters</button>
+            </div>
+          </div>
+
+          <section class="c-workspace__panel" id="edit-panel" aria-label="Edit task" hidden>
+          </section>
+        </div>
+      </main>
+    </div>
+  </div>
+
+  <dialog class="c-dialog" id="task-dialog" aria-labelledby="task-form-title">
+    <form class="c-form" id="task-form" novalidate>
+      <div class="c-dialog__head">
+        <h2 id="task-form-title">New task</h2>
+        <button class="c-icon-btn c-workspace__close" type="button" id="close-form" aria-label="Close">
+          <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path stroke="currentColor" stroke-width="1.8" stroke-linecap="round" d="M18 6 6 18M6 6l12 12"/></svg>
+        </button>
+      </div>
+      <label class="u-visually-hidden" for="task-description">Task</label>
+      <input class="c-dialog__title" id="task-description" name="description" placeholder="What do you need to do?" maxlength="80" autocomplete="off" required>
+      <div class="c-dialog__row">
+        <label class="c-field"><span>From</span><input type="time" name="start" required></label>
+        <label class="c-field"><span>To</span><input type="time" name="end" required></label>
+      </div>
+      <label class="c-field"><span>Status</span><select name="status" id="task-status"></select></label>
+      <div class="c-dialog__actions">
+        <button class="c-button c-button--module" type="submit" id="submit-form">Create</button>
+      </div>
+    </form>
+  </dialog>
+
+  <dialog class="c-dialog c-confirm" id="delete-dialog" aria-labelledby="delete-title">
+    <form method="dialog">
+      <div class="c-dialog__head">
+        <h2 id="delete-title">Are you sure you want to delete <b id="delete-count">1 task</b>?</h2>
+        <button class="c-icon-btn" value="cancel" aria-label="Close">
+          <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path stroke="currentColor" stroke-width="1.8" stroke-linecap="round" d="M18 6 6 18M6 6l12 12"/></svg>
+        </button>
+      </div>
+      <p class="c-confirm__note">This can’t be undone.</p>
+      <div class="c-dialog__actions">
+        <button class="c-button c-button--ghost" value="cancel">Cancel</button>
+        <button class="c-button c-button--danger" value="delete">Delete</button>
+      </div>
+    </form>
+  </dialog>
+
+  <script src="shell.js"></script>
+  <script src="components.js"></script>
+  <script>
+    (() => {
+      const { escapeHtml, closeOnBackdrop, dropdowns, renderChips, workspace, swipeRows } = window.YokoUI;
+      const $ =(id) => document.getElementById(id);
+
+      const statuses = [
+        { id: 'todo', label: 'To do' },
+        { id: 'in-progress', label: 'In progress' },
+        { id: 'on-hold', label: 'On hold' },
+        { id: 'blocked', label: 'Blocked' },
+        { id: 'completed', label: 'Completed' },
+        { id: 'deferred', label: 'Deferred' },
+        { id: 'cancelled', label: 'Cancelled' },
+      ];
+      const statusLabel = (id) => statuses.find((s) => s.id === id).label;
+      const timeOptions = [
+        { id: 'all', label: 'All day' },
+        { id: 'morning', label: 'Morning' },
+        { id: 'afternoon', label: 'Afternoon' },
+        { id: 'evening', label: 'Evening' },
+      ];
+      const periodOf = (time) => (time < '12:00' ? 'morning' : time < '18:00' ? 'afternoon' : 'evening');
+
+      const dayKey = (d) => d.toISOString().slice(0, 10);
+      const shiftDay = (d, n) => new Date(d.getFullYear(), d.getMonth(), d.getDate() + n, 12);
+      const today = shiftDay(new Date(), 0);
+      // A search result can open a given day (?day=offset from today).
+      let day = shiftDay(today, Math.trunc(Number(new URLSearchParams(location.search).get('day'))) || 0);
+
+      let nextId = 1;
+      const task = (offset, start, end, description, status = 'todo') => ({ id: nextId++, day: dayKey(shiftDay(today, offset)), start, end, description, status });
+      const tasks = [
+        task(0, '07:30', '08:00', 'Morning run', 'completed'),
+        task(0, '09:00', '10:30', 'Write the Places issue', 'in-progress'),
+        task(0, '11:00', '11:30', 'Reply to the landlord', 'blocked'),
+        task(0, '14:00', '15:00', 'Review the prototype with Ana'),
+        task(0, '16:00', '16:30', 'Buy groceries', 'on-hold'),
+        task(0, '19:00', '20:00', 'Spanish lesson'),
+        task(0, '21:00', '21:30', 'Plan tomorrow', 'deferred'),
+        task(-1, '10:00', '11:00', 'Dentist', 'completed'),
+        task(-1, '15:00', '16:00', 'Gym', 'cancelled'),
+        task(1, '09:00', '12:00', 'Study for the exam'),
+      ];
+
+      const sortOptions = [
+        { id: 'time', label: 'Time (default)' },
+        { id: 'status', label: 'Status' },
+      ];
+      const sorters = {
+        time: (a, b) => a.start.localeCompare(b.start),
+        status: (a, b) => statuses.findIndex((s) => s.id === a.status) - statuses.findIndex((s) => s.id === b.status) || a.start.localeCompare(b.start),
+      };
+      const defaultFilters = { status: 'all', time: 'all' };
+      let filters = { ...defaultFilters };
+      let sortBy = 'time';
+      let query = '';
+      let editing = null;
+
+      const toStatus = (value) => statuses.find((s) => s.id === value)?.id ?? 'todo';
+      const formatTime = (time) => {
+        const [h, m] = time.split(':').map(Number);
+        return `${h % 12 || 12}:${String(m).padStart(2, '0')} ${h < 12 ? 'AM' : 'PM'}`;
+      };
+      const statusMenu = (t) => {
+        const label = statuses.find((s) => s.id === t.status).label;
+        return `<div class="c-status-menu"><button class="c-task__status" type="button" data-id="${t.id}" aria-haspopup="listbox" aria-expanded="false" aria-label="Status of ${escapeHtml(t.description)}: ${label}">${label}</button></div>`;
+      };
+
+      const list = $('tasks');
+      const popovers = dropdowns(['filter', 'sort']);
+
+      const render = () => {
+        const isToday = dayKey(day) === dayKey(today);
+        $('day-title').textContent = `${isToday ? 'Today · ' : ''}${day.toLocaleDateString('en-GB', { weekday: 'short', day: 'numeric', month: 'short' })}`;
+
+        const ofDay = tasks.filter((t) => t.day === dayKey(day));
+        const done = ofDay.filter((t) => t.status === 'completed').length;
+        $('progress').hidden = ofDay.length === 0;
+        $('progress-text').textContent = `${done} of ${ofDay.length} completed`;
+        $('progress-bar').setAttribute('aria-valuemax', ofDay.length);
+        $('progress-bar').setAttribute('aria-valuenow', done);
+        $('progress-bar').firstElementChild.style.width = `${ofDay.length ? (done / ofDay.length) * 100 : 0}%`;
+
+        const checked = new Set([...list.querySelectorAll('.c-task__check:checked')].map((input) => input.value));
+        const visible = ofDay
+          .filter((t) => filters.status === 'all' || t.status === filters.status)
+          .filter((t) => filters.time === 'all' || periodOf(t.start) === filters.time)
+          .filter((t) => !query || t.description.toLowerCase().includes(query))
+          .sort(sorters[sortBy]);
+        list.innerHTML = visible
+          .map(
+            (t) => `<li class="c-swipe"><button class="c-swipe__action" type="button" data-delete="${t.id}" inert>Delete</button><div class="c-swipe__card c-task${t.status === 'completed' ? ' is-done' : ''}${editor.isEditing() && editing?.id === t.id ? ' is-editing' : ''}" data-status="${t.status}" style="--status-color:var(--bg-status-${t.status})">
+              <input class="c-task__check" type="checkbox" value="${t.id}" aria-label="Select ${escapeHtml(t.description)}"${checked.has(String(t.id)) ? ' checked' : ''}>
+              <div class="c-task__main">
+                <span class="c-task__time">${formatTime(t.start)} – ${formatTime(t.end)}</span>
+                <button class="c-task__open" type="button" data-id="${t.id}">${escapeHtml(t.description)}</button>
+              </div>
+              ${statusMenu(t)}
+            </div></li>`,
+          )
+          .join('');
+        updateSelection();
+
+        $('message').hidden = visible.length > 0;
+        $('message-reset').hidden = true;
+        if (ofDay.length === 0) $('message-text').textContent = 'Nothing planned for this day.';
+        else if (query) $('message-text').textContent = `No tasks match “${query}”.`;
+        else {
+          $('message-text').textContent = 'No tasks were found with these filters.';
+          $('message-reset').hidden = false;
+        }
+        renderControls();
+      };
+
+      const renderControls = () => {
+        renderChips($('status-options'), [{ id: 'all', label: 'All' }, ...statuses], filters.status, (id) => {
+          filters.status = id;
+          render();
+        });
+        renderChips($('time-options'), timeOptions, filters.time, (id) => {
+          filters.time = id;
+          render();
+        });
+        renderChips($('sort-options'), sortOptions, sortBy, (id) => {
+          sortBy = id;
+          popovers.close();
+          render();
+        });
+        const status = filters.status === 'all' ? 'Any status' : statusLabel(filters.status);
+        $('filter-label').textContent = `${status} · ${timeOptions.find((o) => o.id === filters.time).label}`;
+        $('filter-toggle').classList.toggle('is-active', JSON.stringify(filters) !== JSON.stringify(defaultFilters));
+        $('sort-label').textContent = `Sort: ${sortOptions.find((o) => o.id === sortBy).label.replace(' (default)', '').toLowerCase()}`;
+      };
+
+      const updateSelection = () => {
+        const selected = list.querySelectorAll('.c-task__check:checked').length;
+        $('selected-count').textContent = selected;
+        $('delete').setAttribute('aria-disabled', String(selected === 0));
+      };
+
+      // Create in a dialog, edit in the panel
+      const form = $('task-form');
+      const field = (name) => form.elements.namedItem(name);
+      field('status').innerHTML = statuses.map((s) => `<option value="${s.id}">${s.label}</option>`).join('');
+      const editor = workspace({ root: $('workspace'), panel: $('edit-panel'), dialog: $('task-dialog'), form, onChange: () => render() });
+
+      const openForm = (t = null) => {
+        editing = t;
+        const heading = $('task-form-title');
+        heading.textContent = t ? 'Edit ' : 'New task';
+        if (t) {
+          const name = document.createElement('b');
+          name.textContent = t.description;
+          heading.append(name);
+        }
+        field('description').value = t?.description ?? '';
+        field('start').value = t?.start ?? '09:00';
+        field('end').value = t?.end ?? '10:00';
+        // New tasks start as To do (product requirements).
+        field('status').value = t?.status ?? 'todo';
+        [...form.elements].forEach((el) => el.setCustomValidity?.(''));
+        $('submit-form').textContent = t ? 'Save' : 'Create';
+        editor.open(Boolean(t));
+      };
+
+      const closeForm = () => {
+        const id = editing?.id;
+        editor.close();
+        if (id) document.querySelector(`.c-task__open[data-id="${id}"]`)?.focus();
+      };
+
+      form.addEventListener('input', (e) => e.target.setCustomValidity?.(''));
+      form.addEventListener('submit', (e) => {
+        e.preventDefault();
+        const description = field('description').value.trim();
+        const start = field('start').value;
+        const end = field('end').value;
+        field('description').setCustomValidity(description ? '' : 'Describe the task.');
+        field('end').setCustomValidity(start && end && end <= start ? 'The end has to be after the start.' : '');
+        if (!form.reportValidity()) return;
+        const status = toStatus(field('status').value);
+        if (editing) Object.assign(editing, { description, start, end, status });
+        else tasks.push({ id: nextId++, day: dayKey(day), description, start, end, status });
+        closeForm();
+        render();
+      });
+
+      $('add-task').addEventListener('click', () => openForm());
+      $('close-form').addEventListener('click', closeForm);
+      list.addEventListener('change', updateSelection);
+
+      swipeRows({
+        list,
+        ignore: 'input, .c-status-menu',
+        onAction: (button) => {
+          const task = tasks.find((t) => t.id === Number(button.dataset.delete));
+          swipedDelete = task.id;
+          $('delete-count').textContent = task.description;
+          deleteDialog.returnValue = '';
+          deleteDialog.showModal();
+        },
+      });
+
+      // Status menu: one listbox, moved under the button that opens it.
+      const statusList = document.createElement('ul');
+      statusList.className = 'c-status-list';
+      statusList.setAttribute('role', 'listbox');
+      statusList.setAttribute('aria-label', 'Status');
+      statusList.tabIndex = -1;
+      statusList.hidden = true;
+      statusList.append(
+        ...statuses.map((s) => {
+          const option = document.createElement('li');
+          option.id = `status-option-${s.id}`;
+          option.setAttribute('role', 'option');
+          option.dataset.id = s.id;
+          option.style.setProperty('--option-color', `var(--bg-status-${s.id})`);
+          option.textContent = s.label;
+          return option;
+        }),
+      );
+      const statusOptions = [...statusList.children];
+      let menuButton = null;
+      let activeIndex = 0;
+
+      const setActive = (index) => {
+        activeIndex = (index + statuses.length) % statuses.length;
+        statusOptions.forEach((option, i) => option.classList.toggle('is-active', i === activeIndex));
+        statusList.setAttribute('aria-activedescendant', statusOptions[activeIndex].id);
+      };
+      const closeStatus = (returnFocus = true) => {
+        if (!menuButton) return;
+        statusList.hidden = true;
+        menuButton.setAttribute('aria-expanded', 'false');
+        if (returnFocus) menuButton.focus();
+        menuButton = null;
+      };
+      const openStatus = (button) => {
+        closeStatus(false);
+        menuButton = button;
+        const current = tasks.find((t) => t.id === Number(button.dataset.id)).status;
+        statusOptions.forEach((option) => option.setAttribute('aria-selected', String(option.dataset.id === current)));
+        button.after(statusList);
+        statusList.hidden = false;
+        button.setAttribute('aria-expanded', 'true');
+        setActive(statuses.findIndex((s) => s.id === current));
+        statusList.focus();
+      };
+      const chooseStatus = (index) => {
+        const id = menuButton.dataset.id;
+        tasks.find((t) => t.id === Number(id)).status = statuses[index].id;
+        closeStatus(false);
+        render();
+        list.querySelector(`.c-task__status[data-id="${id}"]`)?.focus();
+      };
+
+      statusList.addEventListener('keydown', (e) => {
+        const actions = {
+          ArrowDown: () => setActive(activeIndex + 1),
+          ArrowUp: () => setActive(activeIndex - 1),
+          Home: () => setActive(0),
+          End: () => setActive(statuses.length - 1),
+          Enter: () => chooseStatus(activeIndex),
+          ' ': () => chooseStatus(activeIndex),
+          Escape: () => closeStatus(),
+          Tab: () => closeStatus(false),
+        };
+        if (!actions[e.key]) return;
+        if (e.key !== 'Tab') e.preventDefault();
+        e.stopPropagation();
+        actions[e.key]();
+      });
+      statusList.addEventListener('mousemove', (e) => {
+        const option = e.target.closest('[role="option"]');
+        if (option) setActive(statusOptions.indexOf(option));
+      });
+      document.addEventListener('click', (e) => {
+        if (menuButton && !e.target.closest('.c-status-menu')) closeStatus(false);
+      });
+
+      list.addEventListener('click', (e) => {
+        const statusButton = e.target.closest('.c-task__status');
+        if (statusButton) {
+          if (statusButton === menuButton) closeStatus();
+          else openStatus(statusButton);
+          return;
+        }
+        const option = e.target.closest('.c-status-list [role="option"]');
+        if (option) {
+          chooseStatus(statusOptions.indexOf(option));
+          return;
+        }
+        const open = e.target.closest('.c-task__open');
+        if (open) openForm(tasks.find((t) => t.id === Number(open.dataset.id)));
+      });
+
+      // Delete with confirmation, from the selection or from a swiped row
+      const deleteDialog = $('delete-dialog');
+      closeOnBackdrop(deleteDialog);
+      let swipedDelete = null;
+      $('delete').addEventListener('click', () => {
+        const selected = list.querySelectorAll('.c-task__check:checked').length;
+        if (selected === 0) return;
+        swipedDelete = null;
+        $('delete-count').textContent = `${selected} ${selected === 1 ? 'task' : 'tasks'}`;
+        deleteDialog.returnValue = '';
+        deleteDialog.showModal();
+      });
+      deleteDialog.addEventListener('close', () => {
+        if (deleteDialog.returnValue !== 'delete') {
+          swipedDelete = null;
+          return;
+        }
+        if (swipedDelete !== null) {
+          tasks.splice(tasks.findIndex((t) => t.id === swipedDelete), 1);
+          swipedDelete = null;
+          render();
+          return;
+        }
+        list.querySelectorAll('.c-task__check:checked').forEach((input) => {
+          tasks.splice(tasks.findIndex((t) => t.id === Number(input.value)), 1);
+          input.checked = false;
+        });
+        render();
+      });
+
+      const resetFilters = () => {
+        filters = { ...defaultFilters };
+        render();
+      };
+      $('reset-filters').addEventListener('click', resetFilters);
+      $('message-reset').addEventListener('click', resetFilters);
+      const selectDay = (d) => {
+        if (editor.isEditing()) closeForm();
+        day = d;
+        render();
+      };
+      const moveDay = (n) => selectDay(shiftDay(day, n));
+
+      // Day picker
+      const picker = $('day-picker');
+      const weekdayNames = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+      const MAX_DOTS = 3;
+      let pickerMonth = day;
+      let focusDay = day;
+      const monthOf = (d, n = 0) => new Date(d.getFullYear(), d.getMonth() + n, 1, 12);
+
+      const dayButton = (d) => {
+        const key = dayKey(d);
+        const ofDay = tasks.filter((t) => t.day === key);
+        const button = document.createElement('button');
+        button.type = 'button';
+        button.className = 'c-datepicker__day' + (d.getMonth() === pickerMonth.getMonth() ? '' : ' is-outside');
+        button.dataset.key = key;
+        button.tabIndex = key === dayKey(focusDay) ? 0 : -1;
+        button.setAttribute('aria-pressed', String(key === dayKey(day)));
+        if (key === dayKey(today)) button.setAttribute('aria-current', 'date');
+        const name = d.toLocaleDateString('en-GB', { weekday: 'long', day: 'numeric', month: 'long' });
+        button.setAttribute('aria-label', ofDay.length ? `${name}, ${ofDay.length} ${ofDay.length === 1 ? 'task' : 'tasks'}` : name);
+        const number = document.createElement('span');
+        number.textContent = d.getDate();
+        const dots = document.createElement('span');
+        dots.className = 'c-datepicker__dots';
+        dots.setAttribute('aria-hidden', 'true');
+        [...new Set(ofDay.map((t) => t.status))].slice(0, MAX_DOTS).forEach((status) => {
+          const dot = document.createElement('i');
+          dot.style.setProperty('--dot-color', `var(--bg-status-${status})`);
+          dots.append(dot);
+        });
+        button.append(number, dots);
+        return button;
+      };
+
+      const renderPicker = (focus) => {
+        $('picker-month').textContent = pickerMonth.toLocaleDateString('en-GB', { month: 'long', year: 'numeric' });
+        const start = shiftDay(pickerMonth, -pickerMonth.getDay());
+        const heads = weekdayNames.map((n) => {
+          const head = document.createElement('span');
+          head.className = 'c-datepicker__weekday';
+          head.setAttribute('aria-hidden', 'true');
+          head.textContent = n[0];
+          return head;
+        });
+        const days = Array.from({ length: 42 }, (_, i) => dayButton(shiftDay(start, i)));
+        $('picker-grid').replaceChildren(...heads, ...days);
+        if (focus) $('picker-grid').querySelector('[tabindex="0"]')?.focus();
+      };
+
+      const openPicker = () => {
+        pickerMonth = monthOf(day);
+        focusDay = day;
+        picker.hidden = false;
+        $('day-title').setAttribute('aria-expanded', 'true');
+        renderPicker(true);
+      };
+      const closePicker = (returnFocus = true) => {
+        if (picker.hidden) return;
+        picker.hidden = true;
+        $('day-title').setAttribute('aria-expanded', 'false');
+        if (returnFocus) $('day-title').focus();
+      };
+      const focusOn = (d) => {
+        focusDay = d;
+        if (d.getMonth() !== pickerMonth.getMonth() || d.getFullYear() !== pickerMonth.getFullYear()) pickerMonth = monthOf(d);
+        renderPicker(true);
+      };
+      const pickDay = (d) => {
+        closePicker();
+        selectDay(d);
+      };
+      const showMonth = (n) => {
+        pickerMonth = monthOf(pickerMonth, n);
+        focusDay = pickerMonth;
+        renderPicker(false);
+      };
+
+      $('day-title').addEventListener('click', () => (picker.hidden ? openPicker() : closePicker()));
+      $('picker-prev').addEventListener('click', () => showMonth(-1));
+      $('picker-next').addEventListener('click', () => showMonth(1));
+      $('picker-today').addEventListener('click', () => pickDay(today));
+      $('picker-grid').addEventListener('click', (e) => {
+        const button = e.target.closest('.c-datepicker__day');
+        if (button) pickDay(new Date(`${button.dataset.key}T12:00`));
+      });
+      $('picker-grid').addEventListener('keydown', (e) => {
+        const moves = {
+          ArrowLeft: () => shiftDay(focusDay, -1),
+          ArrowRight: () => shiftDay(focusDay, 1),
+          ArrowUp: () => shiftDay(focusDay, -7),
+          ArrowDown: () => shiftDay(focusDay, 7),
+          Home: () => shiftDay(focusDay, -focusDay.getDay()),
+          End: () => shiftDay(focusDay, 6 - focusDay.getDay()),
+          PageUp: () => new Date(focusDay.getFullYear(), focusDay.getMonth() - 1, Math.min(focusDay.getDate(), 28), 12),
+          PageDown: () => new Date(focusDay.getFullYear(), focusDay.getMonth() + 1, Math.min(focusDay.getDate(), 28), 12),
+        };
+        if (!moves[e.key]) return;
+        e.preventDefault();
+        focusOn(moves[e.key]());
+      });
+      picker.addEventListener('keydown', (e) => {
+        if (e.key !== 'Escape') return;
+        e.stopPropagation();
+        closePicker();
+      });
+      document.addEventListener('click', (e) => {
+        if (!picker.hidden && !e.target.closest('.c-day-nav')) closePicker(false);
+      });
+      $('day-prev').addEventListener('click', () => moveDay(-1));
+      $('day-next').addEventListener('click', () => moveDay(1));
+      document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape' && !popovers.closeOpen() && editor.isEditing()) closeForm();
+      });
+      $('search').addEventListener('input', (e) => {
+        query = e.target.value.trim().toLowerCase();
+        render();
+      });
+
+      render();
+    })();
+  </script>
+</body>
+</html>

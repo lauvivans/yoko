@@ -1,0 +1,478 @@
+<!doctype html>
+<html lang="en" data-theme="light">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Yoko — Settings</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@300..700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="tokens.css">
+  <link rel="stylesheet" href="shell.css">
+  <link rel="stylesheet" href="components.css">
+  <style>
+    .p-settings{display:grid;gap:16px;padding:16px 12px 40px}
+    .p-settings h1{font-size:var(--text-lg);font-weight:var(--font-bold)}
+    .p-settings__nav{display:flex;gap:6px;overflow-x:auto;padding-bottom:2px}
+    .p-settings__nav a{flex:none;padding:5px 12px;border-radius:var(--border-r-pill);border:1px solid var(--border-color-line);background:var(--bg-surface-raised);color:inherit;font-size:var(--text-xs);font-weight:var(--font-bold);text-decoration:none}
+    .p-settings__nav a:hover{border-color:var(--text-color-muted)}
+    .p-settings__nav a:focus-visible{outline:2px solid var(--accent)}
+    .p-settings__sections{display:grid;gap:16px;min-width:0}
+    .p-settings__proto{font-size:var(--text-xs);color:var(--text-color-muted)}
+    .p-settings__proto a{color:inherit;font-weight:var(--font-bold)}
+
+    /* A section of settings: a card with a title, a short hint and its rows */
+    .c-settings-section{display:grid;gap:16px;padding:18px 16px;border-radius:var(--border-r-default);border:1px solid var(--border-color-line);background:var(--bg-surface);scroll-margin-top:16px}
+    .c-settings-section__head{display:grid;gap:2px}
+    .c-settings-section h2{font-size:var(--text-base);font-weight:var(--font-bold)}
+    .c-settings-section__head p,.c-settings-hint{font-size:var(--text-xs);color:var(--text-color-muted)}
+    .c-settings-section--danger{border-color:var(--border-color-error)}
+    .c-settings-actions{display:flex;flex-wrap:wrap;align-items:center;gap:8px}
+    .c-settings-status{font-size:var(--text-xs);font-weight:var(--font-bold);color:var(--text-color-muted)}
+
+    /* A row: what it is on the left, the control on the right from tablets up */
+    .c-setting{display:grid;gap:8px;padding-top:14px;border-top:1px solid var(--border-color-line)}
+    .c-setting:first-of-type{padding-top:0;border-top:0}
+    .c-setting__label{display:grid;gap:2px;font-size:var(--text-sm);font-weight:var(--font-highlight)}
+    .c-setting__label small{font-size:var(--text-xs);font-weight:var(--font-regular);color:var(--text-color-muted)}
+    .c-setting__control{display:flex;flex-wrap:wrap;align-items:center;gap:8px}
+    .c-setting__control select,.c-setting__control input[type="time"]{padding:7px 10px;border-radius:var(--border-r-default);border:1px solid var(--border-color-line);background:var(--bg-surface-raised);color:var(--text-color-default);font:inherit;font-size:var(--text-sm)}
+    .c-setting__control :focus-visible{outline:2px solid var(--accent)}
+    [data-theme="dark"] .c-setting__control input{color-scheme:dark}
+
+    /* On/off switch */
+    .c-switch{all:unset;position:relative;flex:none;width:42px;height:24px;border-radius:var(--border-r-pill);border:1px solid var(--border-color-line);background:var(--bg-surface-raised);cursor:pointer;transition:background-color var(--duration-fast)}
+    .c-switch::after{content:"";position:absolute;top:2px;left:2px;width:18px;height:18px;border-radius:var(--border-r-full);background:var(--text-color-muted);transition:transform var(--duration-default) var(--ease-spring),background-color var(--duration-fast)}
+    .c-switch[aria-checked="true"]{border-color:var(--border-color-dark);background:var(--module)}
+    .c-switch[aria-checked="true"]::after{transform:translateX(18px);background:var(--dark)}
+    .c-switch:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+
+    /* Modules: one switch per module */
+    .c-modules{display:grid;gap:4px}
+    .c-module-switch{display:flex;align-items:center;gap:12px;padding:8px 0;border-top:1px solid var(--border-color-line);font-size:var(--text-sm);font-weight:var(--font-highlight)}
+    .c-module-switch:first-child{border-top:0}
+    .c-module-switch__icon{display:grid;place-items:center;flex:none;width:34px;height:34px;border-radius:var(--border-r-default);border:var(--border-w-default) solid var(--border-color-dark);background:var(--module-color);color:var(--dark)}
+    .c-module-switch__icon svg{width:20px;height:20px}
+    .c-module-switch span:nth-child(2){margin-right:auto}
+    .c-module-switch .c-switch[aria-disabled="true"]{cursor:not-allowed;opacity:var(--opacity-strong)}
+
+    /* Account */
+    .c-account{display:flex;align-items:center;gap:12px}
+    .c-account__avatar{display:grid;place-items:center;flex:none;width:48px;height:48px;border-radius:var(--border-r-full);border:1px solid var(--border-color-dark);background:var(--bg-cat-personal);color:var(--dark);font-size:var(--text-lg);font-weight:var(--font-bold)}
+    .c-account__who{display:grid;min-width:0}
+    .c-account__who strong{font-size:var(--text-base)}
+    .c-account__who span{overflow:hidden;text-overflow:ellipsis;font-size:var(--text-sm);color:var(--text-color-muted)}
+    .c-account-form{display:grid;gap:12px}
+    .c-account-form__address{display:grid;gap:10px}
+    .c-guest{display:grid;gap:12px;justify-items:start}
+    .c-guest img{width:90px;height:auto;transform:rotate(-8deg)}
+    .c-guest p{font-size:var(--text-sm)}
+
+    /* Connected devices */
+    .c-devices{display:grid;margin:0;padding:0;list-style:none}
+    .c-device{display:grid;grid-template-columns:auto minmax(0,1fr);align-items:center;gap:6px 12px;padding:12px 0;border-top:1px solid var(--border-color-line)}
+    .c-device:first-child{padding-top:0;border-top:0}
+    .c-device__icon{display:grid;place-items:center;grid-row:span 2;width:40px;height:40px;border-radius:var(--border-r-default);background:var(--bg-surface-raised)}
+    .c-device__icon svg{width:22px;height:22px}
+    .c-device__text{display:grid;gap:2px;min-width:0}
+    .c-device__name{display:flex;flex-wrap:wrap;align-items:center;gap:8px;font-size:var(--text-sm);font-weight:var(--font-bold)}
+    .c-device__meta{font-size:var(--text-xs);color:var(--text-color-muted)}
+    .c-device .c-tag{background:var(--bg-success)}
+    .c-device .c-button{grid-column:2;justify-self:start;padding:5px 12px;font-size:var(--text-xs)}
+
+    @media (min-width:481px){
+      .c-setting{grid-template-columns:minmax(0,1fr) auto;align-items:center;gap:16px}
+      .c-account-form__address{grid-template-columns:repeat(3,minmax(0,1fr))}
+      .c-device{grid-template-columns:auto minmax(0,1fr) auto}
+      .c-device__icon{grid-row:auto}
+      .c-device .c-button{grid-column:auto}
+    }
+    @media (min-width:769px){
+      .p-settings{max-width:820px;padding:22px 24px 40px}
+      .c-settings-section{padding:20px 22px}
+    }
+    @media (min-width:1280px){
+      .p-settings{grid-template-columns:180px minmax(0,1fr);align-items:start;max-width:1000px}
+      .p-settings h1{grid-column:1 / -1}
+      .p-settings__nav{position:sticky;top:22px;flex-direction:column;overflow:visible}
+      .p-settings__nav a{border:0;background:none}
+      .p-settings__nav a:hover{background:var(--bg-surface-raised)}
+      .p-settings__proto{grid-column:2}
+    }
+  </style>
+</head>
+<body data-page="settings">
+  <div class="app">
+    <div class="app__main">
+      <main class="app__content">
+        <div class="p-settings">
+          <h1>Settings</h1>
+          <nav class="p-settings__nav" aria-label="Settings sections">
+            <a href="#account">Account</a>
+            <a href="#devices" data-signed-in>Devices</a>
+            <a href="#preferences">Preferences</a>
+            <a href="#modules">Modules</a>
+            <a href="#notifications">Notifications</a>
+            <a href="#data">Your data</a>
+            <a href="#delete" data-signed-in>Delete account</a>
+          </nav>
+
+          <div class="p-settings__sections">
+            <section class="c-settings-section" id="account" aria-labelledby="account-title">
+              <div class="c-settings-section__head"><h2 id="account-title">Account</h2></div>
+              <div data-signed-in>
+                <form class="c-account-form" id="account-form" novalidate>
+                  <div class="c-account">
+                    <span class="c-account__avatar" id="avatar" aria-hidden="true">L</span>
+                    <span class="c-account__who"><strong id="account-name">Laura</strong><span>laura@example.com</span></span>
+                  </div>
+                  <label class="c-field"><span>Name</span><input name="name" value="Laura" maxlength="40" autocomplete="name" required></label>
+                  <div class="c-field" role="group" aria-labelledby="address-label">
+                    <span id="address-label">Where you live</span>
+                    <div class="c-account-form__address">
+                      <label class="c-field"><span class="u-visually-hidden">Country</span><select name="country" aria-label="Country"><option>Brazil</option><option>Portugal</option><option>United Kingdom</option><option>United States</option></select></label>
+                      <label class="c-field"><span class="u-visually-hidden">State</span><input name="state" value="São Paulo" placeholder="State" aria-label="State" maxlength="40"></label>
+                      <label class="c-field"><span class="u-visually-hidden">City</span><input name="city" value="São Paulo" placeholder="City" aria-label="City" maxlength="60"></label>
+                    </div>
+                    <p class="c-settings-hint">Yoko uses it to know when your mornings and evenings start. Only the city is kept, not your address.</p>
+                  </div>
+                  <div class="c-settings-actions">
+                    <button class="c-button c-button--module" type="submit">Save</button>
+                    <a class="c-button c-button--ghost" href="login.html">Sign out</a>
+                    <span class="c-settings-status" id="account-status" role="status"></span>
+                  </div>
+                </form>
+              </div>
+              <div class="c-guest" data-guest hidden>
+                <img src="../../../client/public/mascot.svg" alt="">
+                <p>You’re using Yoko without an account. What you save stays in this browser.</p>
+                <p class="c-settings-hint">When you sign in, everything you saved here moves to your account, so you can use it on other devices too.</p>
+                <a class="c-button c-button--module" href="login.html">Sign in to keep your data</a>
+              </div>
+            </section>
+
+            <section class="c-settings-section" id="devices" aria-labelledby="devices-title" data-signed-in>
+              <div class="c-settings-section__head">
+                <h2 id="devices-title">Connected devices</h2>
+                <p>Where your account is signed in. If you don’t recognize a device, sign it out. Locations are approximate.</p>
+              </div>
+              <ul class="c-devices" id="devices-list"></ul>
+              <div class="c-settings-actions">
+                <button class="c-button c-button--ghost" type="button" id="sign-out-others">Sign out of all other devices</button>
+              </div>
+            </section>
+
+            <section class="c-settings-section" id="preferences" aria-labelledby="preferences-title">
+              <div class="c-settings-section__head"><h2 id="preferences-title">Preferences</h2></div>
+              <div class="c-setting">
+                <span class="c-setting__label" id="theme-label">Theme<small>System follows your device.</small></span>
+                <div class="c-setting__control">
+                  <div class="c-segmented" role="radiogroup" aria-labelledby="theme-label" id="theme-options">
+                    <label><input class="u-visually-hidden" type="radio" name="theme" value="light">Light</label>
+                    <label><input class="u-visually-hidden" type="radio" name="theme" value="dark">Dark</label>
+                    <label><input class="u-visually-hidden" type="radio" name="theme" value="system">System</label>
+                  </div>
+                </div>
+              </div>
+              <div class="c-setting">
+                <label class="c-setting__label" for="language">Language<small>Portuguese pages live under /pt-BR/.</small></label>
+                <div class="c-setting__control">
+                  <select id="language"><option value="en">English</option><option value="pt-BR" lang="pt-BR">Português (Brasil)</option></select>
+                </div>
+              </div>
+              <div class="c-setting">
+                <span class="c-setting__label" id="week-label">First day of the week</span>
+                <div class="c-setting__control">
+                  <div class="c-segmented" role="radiogroup" aria-labelledby="week-label">
+                    <label><input class="u-visually-hidden" type="radio" name="week" value="sunday" checked>Sunday</label>
+                    <label><input class="u-visually-hidden" type="radio" name="week" value="monday">Monday</label>
+                  </div>
+                </div>
+              </div>
+              <div class="c-setting">
+                <span class="c-setting__label" id="time-label">Time format<small id="time-example">Like 1:30 PM</small></span>
+                <div class="c-setting__control">
+                  <div class="c-segmented" role="radiogroup" aria-labelledby="time-label" id="time-options">
+                    <label><input class="u-visually-hidden" type="radio" name="clock" value="12" checked>12 hour</label>
+                    <label><input class="u-visually-hidden" type="radio" name="clock" value="24">24 hour</label>
+                  </div>
+                </div>
+              </div>
+            </section>
+
+            <section class="c-settings-section" id="modules" aria-labelledby="modules-title">
+              <div class="c-settings-section__head">
+                <h2 id="modules-title">Modules</h2>
+                <p>Choose what shows in the sidebar, on the home page and in the search. Hiding a module keeps everything in it.</p>
+              </div>
+              <div class="c-modules" id="module-switches"></div>
+              <p class="c-settings-status" id="modules-status" role="status"></p>
+            </section>
+
+            <section class="c-settings-section" id="notifications" aria-labelledby="notifications-title">
+              <div class="c-settings-section__head">
+                <h2 id="notifications-title">Notifications</h2>
+                <p>Your browser asks for permission the first time one is turned on.</p>
+              </div>
+              <div class="c-setting">
+                <span class="c-setting__label" id="events-label">Event reminders<small>Before an event starts.</small></span>
+                <div class="c-setting__control">
+                  <select id="events-when" aria-label="When to remind about events"><option>10 minutes before</option><option selected>1 hour before</option><option>1 day before</option></select>
+                  <button class="c-switch" type="button" role="switch" aria-checked="true" aria-labelledby="events-label" data-controls="events-when"></button>
+                </div>
+              </div>
+              <div class="c-setting">
+                <span class="c-setting__label" id="tasks-label">Task reminders<small>When a task’s time comes.</small></span>
+                <div class="c-setting__control">
+                  <button class="c-switch" type="button" role="switch" aria-checked="false" aria-labelledby="tasks-label"></button>
+                </div>
+              </div>
+              <div class="c-setting">
+                <span class="c-setting__label" id="mood-label">Daily mood check-in<small>Yoko asks how you’re feeling.</small></span>
+                <div class="c-setting__control">
+                  <input type="time" id="mood-time" value="20:00" aria-label="Check-in time" hidden>
+                  <button class="c-switch" type="button" role="switch" aria-checked="false" aria-labelledby="mood-label" data-controls="mood-time"></button>
+                </div>
+              </div>
+            </section>
+
+            <section class="c-settings-section" id="data" aria-labelledby="data-title">
+              <div class="c-settings-section__head">
+                <h2 id="data-title">Your data</h2>
+                <p>Take a copy of everything with you, or bring it from a spreadsheet.</p>
+              </div>
+              <div class="c-settings-actions">
+                <button class="c-button c-button--ghost" type="button" data-open="export" id="export-data">Export my data</button>
+                <button class="c-button c-button--ghost" type="button" data-open="import">Import my data</button>
+              </div>
+            </section>
+
+            <section class="c-settings-section c-settings-section--danger" id="delete" aria-labelledby="delete-title" data-signed-in>
+              <div class="c-settings-section__head">
+                <h2 id="delete-title">Delete account</h2>
+                <p>Deletes your account and everything in it. This can’t be undone.</p>
+              </div>
+              <div class="c-settings-actions">
+                <button class="c-button c-button--danger" type="button" id="delete-account">Delete my account</button>
+              </div>
+            </section>
+          </div>
+
+          <p class="p-settings__proto" id="proto-switch"></p>
+        </div>
+      </main>
+    </div>
+  </div>
+
+  <dialog class="c-dialog c-confirm" id="sign-out-dialog" aria-labelledby="sign-out-title">
+    <form method="dialog">
+      <div class="c-dialog__head">
+        <h2 id="sign-out-title"></h2>
+        <button class="c-icon-btn" value="cancel" aria-label="Close">
+          <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path stroke="currentColor" stroke-width="1.8" stroke-linecap="round" d="M18 6 6 18M6 6l12 12"/></svg>
+        </button>
+      </div>
+      <p class="c-confirm__note">They’ll need to sign in again with an email link or Google.</p>
+      <div class="c-dialog__actions">
+        <button class="c-button c-button--ghost" value="cancel">Cancel</button>
+        <button class="c-button c-button--danger" value="confirm">Sign out</button>
+      </div>
+    </form>
+  </dialog>
+
+  <dialog class="c-dialog c-confirm" id="delete-dialog" aria-labelledby="delete-dialog-title">
+    <form method="dialog">
+      <div class="c-dialog__head">
+        <h2 id="delete-dialog-title">Delete your account?</h2>
+        <button class="c-icon-btn" value="cancel" aria-label="Close">
+          <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path stroke="currentColor" stroke-width="1.8" stroke-linecap="round" d="M18 6 6 18M6 6l12 12"/></svg>
+        </button>
+      </div>
+      <p class="c-confirm__note">Your events, tasks, notes, links, places, photos and moods are deleted, and every device is signed out. This can’t be undone.</p>
+      <div class="c-dialog__actions">
+        <button class="c-button c-button--ghost c-dialog__delete" value="export">Export my data first</button>
+        <button class="c-button c-button--ghost" value="cancel">Cancel</button>
+        <button class="c-button c-button--danger" value="delete">Delete account</button>
+      </div>
+    </form>
+  </dialog>
+
+  <script src="shell.js"></script>
+  <script src="components.js"></script>
+  <script src="data.js"></script>
+  <script>
+    (() => {
+      const { closeOnBackdrop } = window.YokoUI;
+      const $ = (id) => document.getElementById(id);
+      const guest = new URLSearchParams(location.search).has('guest');
+
+      // Signed out, the page shows the sign-in prompt and hides what needs an account.
+      document.querySelectorAll('[data-signed-in]').forEach((el) => (el.hidden = guest));
+      document.querySelectorAll('[data-guest]').forEach((el) => (el.hidden = !guest));
+      const protoLink = document.createElement('a');
+      protoLink.href = guest ? 'settings.html' : 'settings.html?guest=1';
+      protoLink.textContent = guest ? 'see it signed in' : 'see it signed out';
+      $('proto-switch').append('Prototype: ', protoLink);
+
+      // Account
+      const form = $('account-form');
+      form.addEventListener('input', () => ($('account-status').textContent = ''));
+      form.addEventListener('submit', (e) => {
+        e.preventDefault();
+        const name = form.elements.name.value.trim();
+        form.elements.name.setCustomValidity(name ? '' : 'Tell Yoko what to call you.');
+        if (!form.reportValidity()) return;
+        $('account-name').textContent = name;
+        $('avatar').textContent = name[0].toUpperCase();
+        $('account-status').textContent = 'Saved.';
+      });
+
+      // Connected devices. Sample data; the real list comes from the account's sessions.
+      const deviceIcons = {
+        computer: '<svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" d="M6.44 2h11.11C21.11 2 22 2.89 22 6.44v6.33c0 3.56-.89 4.44-4.44 4.44H6.44C2.89 17.22 2 16.33 2 12.78V6.44C2 2.89 2.89 2 6.44 2ZM12 17.22V22M2 13h20M7.5 22h9"/></svg>',
+        phone: '<svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" d="M20 7v10c0 4-1 5-5 5H9c-4 0-5-1-5-5V7c0-4 1-5 5-5h6c4 0 5 1 5 5ZM14 5.5h-4M12 19.1a1.55 1.55 0 1 0 0-3.1 1.55 1.55 0 0 0 0 3.1Z"/></svg>',
+      };
+      const devices = [
+        { id: 1, name: 'Chrome on Windows', kind: 'computer', where: 'São Paulo, Brazil', seen: 'Active now', since: '12 Mar 2025', current: true },
+        { id: 2, name: 'Safari on iPhone', kind: 'phone', where: 'São Paulo, Brazil', seen: 'Active 2 hours ago', since: '3 Jan 2026' },
+        { id: 3, name: 'Firefox on Linux', kind: 'computer', where: 'Lisbon, Portugal', seen: 'Active 3 days ago', since: '20 Oct 2026' },
+        { id: 4, name: 'Chrome on Android', kind: 'phone', where: 'Curitiba, Brazil', seen: 'Active 2 weeks ago', since: '8 Aug 2026' },
+      ];
+      const signOutDialog = $('sign-out-dialog');
+      closeOnBackdrop(signOutDialog);
+      let signOutTarget = null;
+
+      const renderDevices = () => {
+        const items = devices.map((device) => {
+          const item = document.createElement('li');
+          item.className = 'c-device';
+          const icon = document.createElement('span');
+          icon.className = 'c-device__icon';
+          icon.insertAdjacentHTML('afterbegin', deviceIcons[device.kind]);
+          const text = document.createElement('div');
+          text.className = 'c-device__text';
+          const name = document.createElement('span');
+          name.className = 'c-device__name';
+          name.append(device.name);
+          if (device.current) {
+            const badge = document.createElement('span');
+            badge.className = 'c-tag';
+            badge.textContent = 'This device';
+            name.append(badge);
+          }
+          const meta = document.createElement('span');
+          meta.className = 'c-device__meta';
+          meta.textContent = `${device.where} · ${device.seen} · Signed in ${device.since}`;
+          text.append(name, meta);
+          item.append(icon, text);
+          if (!device.current) {
+            const button = document.createElement('button');
+            button.type = 'button';
+            button.className = 'c-button c-button--ghost';
+            button.textContent = 'Sign out';
+            button.setAttribute('aria-label', `Sign out ${device.name}`);
+            button.addEventListener('click', () => confirmSignOut(device));
+            item.append(button);
+          }
+          return item;
+        });
+        $('devices-list').replaceChildren(...items);
+        $('sign-out-others').hidden = devices.every((d) => d.current);
+      };
+
+      const confirmSignOut = (device) => {
+        signOutTarget = device ?? 'others';
+        $('sign-out-title').textContent = device ? `Sign out ${device.name}?` : 'Sign out of all other devices?';
+        signOutDialog.returnValue = '';
+        signOutDialog.showModal();
+      };
+      signOutDialog.addEventListener('close', () => {
+        if (signOutDialog.returnValue === 'confirm') {
+          const keep = devices.filter((d) => (signOutTarget === 'others' ? d.current : d !== signOutTarget));
+          devices.splice(0, devices.length, ...keep);
+          renderDevices();
+        }
+        signOutTarget = null;
+      });
+      $('sign-out-others').addEventListener('click', () => confirmSignOut(null));
+      renderDevices();
+
+      // Preferences. The theme is the shell's; the rest is shown only, the prototype keeps no settings.
+      const showThemePreference = () => {
+        const input = document.querySelector(`input[name="theme"][value="${window.YokoTheme.preference()}"]`);
+        if (input) input.checked = true;
+      };
+      showThemePreference();
+      $('theme-options').addEventListener('change', (e) => window.YokoTheme.set(e.target.value));
+      $('theme-toggle').addEventListener('click', showThemePreference);
+      $('time-options').addEventListener('change', (e) => ($('time-example').textContent = e.target.value === '24' ? 'Like 13:30' : 'Like 1:30 PM'));
+
+      // Modules: at least one stays on, so the app always has somewhere to go.
+      const moduleColors = { occurrences: 'var(--blue)', places: 'var(--yellow)', links: 'var(--bg-cat-reading)', notes: 'var(--bg-cat-study)', tasks: 'var(--bg-cat-finance)', mood: 'var(--bg-cat-social)', routines: 'var(--bg-cat-health)', media: 'var(--bg-cat-work)', lists: 'var(--bg-cat-home)' };
+      const renderModuleSwitches = () => {
+        const visibleCount = window.YokoModules.all.filter((m) => window.YokoModules.isVisible(m.id)).length;
+        const rows = window.YokoModules.all.map((m) => {
+          const row = document.createElement('div');
+          row.className = 'c-module-switch';
+          const icon = document.createElement('span');
+          icon.className = 'c-module-switch__icon';
+          icon.style.setProperty('--module-color', moduleColors[m.id]);
+          const svg = document.querySelector(`.c-sidebar [data-module="${m.id}"] svg`);
+          if (svg) icon.append(svg.cloneNode(true));
+          const name = document.createElement('span');
+          name.id = `module-${m.id}`;
+          name.textContent = m.label;
+          const toggle = document.createElement('button');
+          toggle.type = 'button';
+          toggle.className = 'c-switch';
+          toggle.setAttribute('role', 'switch');
+          toggle.setAttribute('aria-labelledby', name.id);
+          const on = window.YokoModules.isVisible(m.id);
+          toggle.setAttribute('aria-checked', String(on));
+          const last = on && visibleCount === 1;
+          toggle.setAttribute('aria-disabled', String(last));
+          toggle.addEventListener('click', () => {
+            if (last) {
+              $('modules-status').textContent = 'Keep at least one module on.';
+              return;
+            }
+            window.YokoModules.setVisible(m.id, !on);
+            $('modules-status').textContent = `${m.label} ${on ? 'hidden' : 'shown'}.`;
+            renderModuleSwitches();
+            $('module-switches').querySelector(`[aria-labelledby="module-${m.id}"]`)?.focus();
+          });
+          row.append(icon, name, toggle);
+          return row;
+        });
+        $('module-switches').replaceChildren(...rows);
+      };
+      renderModuleSwitches();
+
+      // Notifications: a switch shows the option it controls when it's on.
+      document.querySelectorAll('#notifications .c-switch').forEach((toggle) => {
+        const controlled = toggle.dataset.controls && $(toggle.dataset.controls);
+        const sync = () => {
+          if (controlled) controlled.hidden = toggle.getAttribute('aria-checked') !== 'true';
+        };
+        toggle.addEventListener('click', () => {
+          toggle.setAttribute('aria-checked', String(toggle.getAttribute('aria-checked') !== 'true'));
+          sync();
+        });
+        sync();
+      });
+
+      // Delete account
+      const deleteDialog = $('delete-dialog');
+      closeOnBackdrop(deleteDialog);
+      $('delete-account').addEventListener('click', () => {
+        deleteDialog.returnValue = '';
+        deleteDialog.showModal();
+      });
+      deleteDialog.addEventListener('close', () => {
+        if (deleteDialog.returnValue === 'export') $('export-data').click();
+        if (deleteDialog.returnValue === 'delete') location.href = 'landing.html';
+      });
+    })();
+  </script>
+</body>
+</html>

@@ -1,0 +1,136 @@
+/*
+  Yoko design tokens. This file is the reference (decision 005): a token changes here
+  first, gets validated in the prototype, and then is copied to client/src/assets/sass/tokens/.
+  Names match the SASS tokens, with -- instead of $.
+
+  Breakpoints can't be custom properties inside media queries, so they live here as a note
+  and in _breakpoints.scss. Mobile first: base styles are the phone, then min-width.
+    tablet-min      481px   tablets and large phones
+    desktop-sm-min  769px   laptops, tablets in landscape and small desktops
+    desktop-lg-min  1280px  large desktops and monitors
+*/
+
+:root{
+  /* Base colors, from the mascot and the sea */
+  --blue:#b5e0ff;
+  --red:#ff615e;
+  --green:#b8ddb0;
+  --yellow:#fddc5c;
+  --gray:#f8f8f8;
+  --dark-soft:#313131;
+  --dark-md:#262626;
+  --dark:#1a1a1a;
+  --white:#fff;
+
+  /* Category colors */
+  --bg-cat-personal:#ccf0ec;
+  --bg-cat-work:#ccccf0;
+  --bg-cat-study:#dbccf0;
+  --bg-cat-finance:#d8f0cc;
+  --bg-cat-family:#f0ccd8;
+  --bg-cat-travel:#cce1f0;
+  --bg-cat-home:#f0e7cc;
+  --bg-cat-health:#f0d2cc;
+  --bg-cat-reading:#ccf0de;
+  --bg-cat-social:#edccf0;
+  --bg-cat-hobby:#e7f0cc;
+
+  /* Semantic colors that don't change with the theme */
+  --bg-default:var(--blue);
+  --bg-error:var(--red);
+  --bg-success:var(--green);
+  --bg-places:var(--yellow);
+  --text-color-on-color:var(--dark);
+  --text-color-error:var(--red);
+  --border-color-error:var(--red);
+  --border-color-success:var(--green);
+  --border-color-dark:var(--dark);
+
+  /* Task status, shown as a color (product requirements) */
+  --bg-status-todo:var(--gray);
+  --bg-status-in-progress:var(--blue);
+  --bg-status-on-hold:var(--yellow);
+  --bg-status-blocked:var(--red);
+  --bg-status-completed:var(--green);
+  --bg-status-deferred:var(--bg-cat-study);
+  --bg-status-cancelled:var(--dark-soft);
+  --text-color-on-dark:var(--white);
+
+  /* Shell: the sidebar and top bar are always dark */
+  --bg-shell:#393d3f;
+  --bg-shell-hover:rgba(253,253,255,.12);
+  --text-color-shell:#fdfdff;
+  --text-color-shell-muted:rgba(253,253,255,.6);
+  --border-color-shell:rgba(253,253,255,.14);
+
+  /* Typography */
+  --font-family:'Quicksand',sans-serif;
+  --text-xs:13px;
+  --text-sm:14px;
+  --text-base:16px;
+  --text-lg:21px;
+  --text-xl:40px;
+  --font-light:300;
+  --font-regular:400;
+  --font-highlight:600;
+  --font-bold:700;
+
+  /* Effects */
+  --border-r-soft:5px;
+  --border-r-default:10px;
+  --border-r-pill:999px;
+  --border-r-full:100%;
+  --border-w-default:1px;
+  --border-w-highlight:2px;
+  --opacity-soft:20%;
+  --opacity-md:50%;
+  --opacity-strong:70%;
+
+  /* Motion, in ms so scripts can read them too. Pages turn animations off under prefers-reduced-motion. */
+  --duration-fast:150ms;
+  --duration-default:300ms;
+  --duration-slow:600ms;
+  --duration-idle:4000ms;
+  --ease-out:cubic-bezier(.22,1,.36,1);
+  --ease-spring:cubic-bezier(.34,1.56,.64,1);
+}
+
+/* Theme colors. Light is a soft gray, never pure white (prototype review, 2026-10-31). */
+[data-theme="light"]{
+  --bg-page:#cfd3d5;
+  --bg-surface:#e4e6e7;
+  --bg-surface-raised:#d9dcde;
+  --text-color-default:var(--dark-md);
+  --text-color-muted:#54585b;
+  --border-color-line:rgba(38,38,38,.12);
+  --shadow-sm:0 4px 12px rgba(57,61,63,.18);
+  --shadow-md:0 6px 16px rgba(57,61,63,.25);
+  --shadow-lg:0 18px 40px rgba(57,61,63,.18);
+  /* Illustrated map (Places) */
+  --map-land:#f3efe6;
+  --map-block:#ebe5d8;
+  --map-park:#cfe8c4;
+  --map-water:#a8dbff;
+  --map-road:#fdfdff;
+  --map-road-edge:#e2dccd;
+  --map-label:#6b6458;
+}
+[data-theme="dark"]{
+  --bg-page:#1f2223;
+  --bg-surface:#2b2f31;
+  --bg-surface-raised:#343839;
+  --text-color-default:#f1f1f2;
+  --text-color-muted:#b4b8ba;
+  --border-color-line:rgba(241,241,242,.12);
+  --shadow-sm:0 4px 12px rgba(0,0,0,.3);
+  --shadow-md:0 6px 16px rgba(0,0,0,.4);
+  --shadow-lg:0 18px 40px rgba(0,0,0,.45);
+  /* Illustrated map (Places) */
+  --map-land:#262a2c;
+  --map-block:#2d3234;
+  --map-park:#2f4a37;
+  --map-water:#24465e;
+  --map-road:#3b4144;
+  --map-road-edge:#1e2224;
+  --map-label:#9aa3a7;
+}

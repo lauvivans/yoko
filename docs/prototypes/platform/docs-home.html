@@ -1,0 +1,56 @@
+<!doctype html>
+<html lang="en" data-theme="light">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Yoko docs</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@300..700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="tokens.css">
+  <link rel="stylesheet" href="shell.css">
+  <link rel="stylesheet" href="docs.css">
+</head>
+<body class="d-page">
+  <a class="d-skip" href="#content">Skip to content</a>
+  <header class="d-nav">
+    <a class="d-nav__brand" href="docs-home.html"><img src="../../../client/public/mascot.svg" alt="">Yoko! <small>docs</small></a>
+    <nav class="d-nav__links" aria-label="Main">
+      <a href="docs-page.html?section=docs">Docs</a>
+      <a href="docs-page.html">Dev docs</a>
+    </nav>
+    <div class="d-nav__end">
+      <a href="landing.html">App</a>
+      <a href="https://github.com/lauvivans/yoko">GitHub</a>
+      <a href="#" hreflang="pt-BR" lang="pt-BR">PT</a>
+      <button type="button" id="theme-toggle">☾</button>
+    </div>
+  </header>
+  <main class="d-home" id="content">
+    <section class="d-hero" aria-labelledby="home-title">
+      <img src="../../../client/public/mascot.svg" alt="">
+      <h1 id="home-title">Yoko docs</h1>
+      <p>How Yoko works, the decisions behind it and how to build it with us.</p>
+      <div class="d-hero__actions">
+        <a class="c-button" href="docs-page.html?section=docs">What is Yoko</a>
+        <a class="c-button c-button--ghost" href="docs-page.html">Dev docs</a>
+      </div>
+    </section>
+    <ul class="d-cards" aria-label="Sections">
+      <li><a href="docs-page.html?section=docs"><h2>What is Yoko</h2><p>The product, its modules and who it’s for.</p></a></li>
+      <li><a href="docs-page.html"><h2>Getting started</h2><p>Run the app locally and send your first change.</p></a></li>
+      <li><a href="docs-page.html"><h2>Design reference</h2><p>The prototype, the design tokens and how a visual change happens.</p></a></li>
+      <li><a href="docs-page.html"><h2>Project patterns</h2><p>Branches, commits, pull requests and code style.</p></a></li>
+    </ul>
+  </main>
+  <footer class="d-footer">
+    <div class="d-footer__cols">
+      <div><h2>Docs</h2><ul><li><a href="docs-page.html?section=docs">What is Yoko</a></li><li><a href="docs-page.html">Dev docs</a></li></ul></div>
+      <div><h2>More</h2><ul><li><a href="landing.html">App</a></li><li><a href="https://github.com/lauvivans/yoko">GitHub</a></li></ul></div>
+      <div><h2>Language</h2><ul><li><a href="#" aria-current="page">English</a></li><li><a href="#" hreflang="pt-BR" lang="pt-BR">Português</a></li></ul></div>
+    </div>
+    <p>&copy; Yoko! 2024–2026. Built with Docusaurus.</p>
+  </footer>
+  <script src="docs.js"></script>
+</body>
+</html>

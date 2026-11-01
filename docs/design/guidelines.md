@@ -1,6 +1,6 @@
 # Design guidelines
 
-Product design rules that are not obvious from the code. Screens and design tokens live in [Figma](https://www.figma.com/design/s9HB9I0wyGOTvnlWuWkOu6/yoko-?node-id=0-1&t=QBeoAmwyvJ2a6apC-1) and in the design reference of the docs site.
+Product design rules that are not obvious from the code. Screens and design tokens live in the HTML prototype at [`docs/prototypes/platform/`](../prototypes/platform/), which is the living reference ([decision 005](../decisions/005-prototype-as-design-reference.md)). A visual change is made and validated there first, and then implemented.
 
 ## Header
 

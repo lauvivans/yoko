@@ -1,0 +1,514 @@
+<!doctype html>
+<html lang="en" data-theme="light">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Yoko — Lists</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@300..700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="tokens.css">
+  <link rel="stylesheet" href="shell.css">
+  <link rel="stylesheet" href="components.css">
+  <style>
+    .p-lists{display:flex;flex-direction:column}
+
+    /* Lists: a scrolling row on mobile, a column from tablets up (like Links collections) */
+    .p-lists__nav{display:flex;align-items:center;gap:4px;padding:10px;border-bottom:1px solid var(--border-color-line);overflow-x:auto}
+    .p-lists__nav h2{display:none;padding:0 10px 6px;font-size:var(--text-xs);font-weight:var(--font-bold);letter-spacing:.06em;text-transform:uppercase;color:var(--text-color-muted)}
+    .c-list-link{all:unset;flex-shrink:0;display:flex;align-items:center;gap:8px;padding:7px 10px;border-radius:var(--border-r-default);font-size:var(--text-sm);font-weight:var(--font-highlight);cursor:pointer}
+    .c-list-link:hover{background:var(--bg-surface-raised)}
+    .c-list-link:focus-visible{outline:2px solid var(--accent)}
+    .c-list-link[aria-current="true"]{background:var(--list-color);color:var(--dark);box-shadow:inset 0 0 0 1px var(--dark)}
+    .c-list-link::before{content:"";width:10px;height:10px;border-radius:var(--border-r-full);border:var(--border-w-default) solid var(--border-color-dark);background:var(--list-color)}
+    .c-list-link span{margin-left:auto;font-size:var(--text-xs);font-weight:var(--font-bold);opacity:.65}
+    .p-lists__new{flex-shrink:0}
+
+    /* The open list */
+    .p-lists__main{display:grid;align-content:start;gap:14px;padding:14px 12px 40px;min-width:0}
+    .p-lists__head{display:flex;flex-wrap:wrap;align-items:center;gap:8px 10px}
+    .p-lists__head h1{font-size:var(--text-lg);font-weight:var(--font-bold)}
+    .p-lists__meta{margin-right:auto;font-size:var(--text-xs);font-weight:var(--font-bold);color:var(--text-color-muted)}
+    .p-lists__head .c-icon-btn{color:var(--text-color-default)}
+    .p-lists__head .c-icon-btn:hover{background:var(--bg-surface-raised)}
+    .c-quick-add{display:flex;gap:8px}
+    .c-quick-add input{flex:1;min-width:0;padding:9px 12px;border-radius:var(--border-r-default);border:1px solid var(--border-color-line);background:var(--bg-surface);color:var(--text-color-default);font:inherit;font-size:var(--text-sm)}
+    .c-quick-add input:focus-visible{outline:2px solid var(--accent)}
+    .p-lists__items{display:grid;gap:6px;margin:0;padding:0;list-style:none}
+    .p-lists__cover{width:72px;height:72px;border-radius:var(--border-r-default);background-size:cover;background-position:center;box-shadow:var(--shadow-sm)}
+    .p-lists__groups{display:grid;gap:18px}
+    .p-lists__group{display:grid;gap:8px}
+    .p-lists__group h2{font-size:var(--text-base);font-weight:var(--font-bold)}
+    .p-lists__empty-group{padding:12px 14px;border-radius:var(--border-r-default);background:var(--bg-surface-raised);font-size:var(--text-sm);color:var(--text-color-muted)}
+    .c-quick-add select{max-width:40%;padding:9px 12px;border-radius:var(--border-r-default);border:1px solid var(--border-color-line);background:var(--bg-surface);color:var(--text-color-default);font:inherit;font-size:var(--text-sm)}
+    .c-quick-add select:focus-visible{outline:2px solid var(--accent)}
+    .c-list-cover-field{display:flex;flex-wrap:wrap;align-items:center;gap:10px}
+    .c-list-cover-field .p-lists__cover{width:56px;height:56px;background-color:var(--bg-surface-raised)}
+    .p-lists__done-head{display:flex;flex-wrap:wrap;align-items:center;gap:8px;margin-top:6px}
+    .p-lists__done-head h2{margin-right:auto;font-size:var(--text-xs);font-weight:var(--font-bold);letter-spacing:.04em;text-transform:uppercase;color:var(--text-color-muted)}
+    .p-lists__done-head .c-button{padding:5px 12px;font-size:var(--text-xs)}
+    .p-lists__message{display:flex;flex-direction:column;align-items:center;gap:10px;padding:28px 0;text-align:center;color:var(--text-color-muted);font-size:var(--text-sm);font-weight:var(--font-highlight)}
+    .p-lists__message img{width:110px;height:auto;transform:rotate(-8deg)}
+
+    /* Items: a checkbox row, or a card with a note and a link */
+    .c-list-item{display:flex;align-items:center;gap:10px;padding:9px 12px;border-radius:var(--border-r-default);border:var(--border-w-default) solid var(--border-color-line);background:var(--bg-surface)}
+    .c-list-item input[type="checkbox"]{flex:none;width:18px;height:18px;margin:0;accent-color:var(--text-color-default);cursor:pointer}
+    .c-list-item__open{all:unset;display:grid;flex:1;gap:2px;min-width:0;cursor:pointer}
+    .c-list-item__open:focus-visible{outline:2px solid var(--accent);outline-offset:2px;border-radius:var(--border-r-soft)}
+    .c-list-item__text{font-size:var(--text-sm);font-weight:var(--font-highlight);overflow-wrap:anywhere}
+    .c-list-item__note{font-size:var(--text-xs);color:var(--text-color-muted);overflow-wrap:anywhere}
+    .c-list-item.is-done .c-list-item__text{text-decoration:line-through;color:var(--text-color-muted)}
+    .c-list-item a{flex:none;display:grid;place-items:center;width:32px;height:32px;border-radius:var(--border-r-default);color:var(--text-color-default)}
+    .c-list-item a:hover{background:var(--bg-surface-raised)}
+    .c-list-item a:focus-visible{outline:2px solid var(--accent)}
+    .c-list-item a svg{width:18px;height:18px}
+
+    @media (min-width:769px){
+      .p-lists{display:grid;grid-template-columns:220px minmax(0,1fr);height:100%}
+      .p-lists__nav{flex-direction:column;align-items:stretch;padding:18px 12px;border-bottom:0;border-right:1px solid var(--border-color-line);overflow-x:visible;overflow-y:auto}
+      .p-lists__nav h2{display:block}
+      .p-lists__new{margin-top:8px;align-self:start}
+      .p-lists__main{padding:20px 24px 40px;overflow-y:auto}
+    }
+  </style>
+</head>
+<body data-page="lists" data-search="Search lists">
+  <div class="app">
+    <div class="app__main">
+      <main class="app__content">
+        <div class="p-lists">
+          <nav class="p-lists__nav" aria-label="Your lists">
+            <h2>Lists</h2>
+            <div id="list-links" style="display:contents"></div>
+            <button class="c-button c-button--ghost p-lists__new" type="button" id="new-list" data-new>
+              <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path stroke="currentColor" stroke-width="1.8" stroke-linecap="round" d="M12 5v14M5 12h14"/></svg>
+              New list
+            </button>
+          </nav>
+
+          <section class="p-lists__main" aria-labelledby="list-title">
+            <span class="p-lists__cover" id="list-cover" hidden></span>
+            <div class="p-lists__head">
+              <h1 id="list-title"></h1>
+              <span class="p-lists__meta" id="list-meta"></span>
+              <button class="c-icon-btn" type="button" id="edit-list" aria-label="Edit list">
+                <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><g stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="m13.26 3.6-8.21 8.69c-.31.33-.61.98-.67 1.43l-.37 3.24c-.13 1.17.71 1.97 1.87 1.77l3.22-.55c.45-.08 1.08-.41 1.39-.75l8.21-8.69c1.42-1.5 2.06-3.21-.15-5.3-2.2-2.07-3.87-1.34-5.29.16Z"/><path d="M11.89 5.05a6.126 6.126 0 0 0 5.45 5.15M3 22h18"/></g></svg>
+              </button>
+            </div>
+            <form class="c-quick-add" id="quick-add" novalidate>
+              <label class="u-visually-hidden" for="new-item">Add an item</label>
+              <input id="new-item" maxlength="120" autocomplete="off" placeholder="Add an item and press Enter">
+              <select id="new-item-section" aria-label="Section" hidden></select>
+              <button class="c-button c-button--module" type="submit">Add</button>
+            </form>
+            <div class="p-lists__groups" id="items"></div>
+            <div class="p-lists__done-head" id="done-head" hidden>
+              <h2 id="done-title"></h2>
+              <button class="c-button c-button--ghost" type="button" id="untick-all">Untick all</button>
+              <button class="c-button c-button--ghost" type="button" id="clear-done">Clear done</button>
+            </div>
+            <ul class="p-lists__items" id="done-items" aria-labelledby="done-title"></ul>
+            <div class="p-lists__message" id="message" hidden>
+              <img src="../../../client/public/mascot.svg" alt="">
+              <span id="message-text"></span>
+            </div>
+          </section>
+        </div>
+      </main>
+    </div>
+  </div>
+
+  <dialog class="c-dialog" id="list-dialog" aria-labelledby="list-form-title">
+    <form class="c-form" id="list-form" novalidate>
+      <div class="c-dialog__head">
+        <h2 id="list-form-title">New list</h2>
+        <button class="c-icon-btn" type="button" id="close-list-form" aria-label="Close">
+          <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path stroke="currentColor" stroke-width="1.8" stroke-linecap="round" d="M18 6 6 18M6 6l12 12"/></svg>
+        </button>
+      </div>
+      <label class="u-visually-hidden" for="list-name">Name</label>
+      <input class="c-dialog__title" id="list-name" name="name" placeholder="Name it, like Groceries" maxlength="40" autocomplete="off" required>
+      <div class="c-field" role="radiogroup" aria-labelledby="kind-label">
+        <span id="kind-label">Kind</span>
+        <div class="c-segmented">
+          <label><input class="u-visually-hidden" type="radio" name="kind" value="check" checked>Checklist</label>
+          <label><input class="u-visually-hidden" type="radio" name="kind" value="collection">Collection</label>
+        </div>
+        <p class="c-confirm__note" id="kind-hint"></p>
+      </div>
+      <label class="c-field"><span>Sections, one per line</span><textarea name="sections" rows="3" maxlength="400" placeholder="Optional, like Tops and Bottoms"></textarea></label>
+      <div class="c-field">
+        <span>Cover</span>
+        <div class="c-list-cover-field">
+          <span class="p-lists__cover" id="list-cover-preview"></span>
+          <label class="c-button c-button--ghost">Choose an image<input class="u-visually-hidden" type="file" id="list-cover-file" accept="image/*"></label>
+          <button class="c-button c-button--ghost" type="button" id="list-cover-remove">Remove</button>
+        </div>
+      </div>
+      <div class="c-field" role="radiogroup" aria-labelledby="list-color-label">
+        <span id="list-color-label">Color</span>
+        <div class="c-swatches" id="swatches"></div>
+      </div>
+      <div class="c-dialog__actions">
+        <button class="c-button c-button--danger c-dialog__delete" type="button" id="delete-list">Delete list</button>
+        <button class="c-button c-button--module" type="submit" id="submit-list">Create</button>
+      </div>
+    </form>
+  </dialog>
+
+  <dialog class="c-dialog" id="item-dialog" aria-labelledby="item-form-title">
+    <form class="c-form" id="item-form" novalidate>
+      <div class="c-dialog__head">
+        <h2 id="item-form-title">Edit item</h2>
+        <button class="c-icon-btn" type="button" id="close-item-form" aria-label="Close">
+          <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path stroke="currentColor" stroke-width="1.8" stroke-linecap="round" d="M18 6 6 18M6 6l12 12"/></svg>
+        </button>
+      </div>
+      <label class="c-field"><span>Item</span><input name="text" maxlength="120" autocomplete="off" required></label>
+      <label class="c-field" id="item-section-field"><span>Section</span><select name="section"></select></label>
+      <label class="c-field" data-collection><span>Note</span><textarea name="note" rows="3" maxlength="300" placeholder="Why it’s here, who it’s for…"></textarea></label>
+      <label class="c-field" data-collection><span>Link</span><input name="link" inputmode="url" placeholder="https://" autocomplete="off"></label>
+      <div class="c-dialog__actions">
+        <button class="c-button c-button--danger c-dialog__delete" type="button" id="delete-item">Delete</button>
+        <button class="c-button c-button--module" type="submit">Save</button>
+      </div>
+    </form>
+  </dialog>
+
+  <dialog class="c-dialog c-confirm" id="delete-dialog" aria-labelledby="delete-title">
+    <form method="dialog">
+      <div class="c-dialog__head">
+        <h2 id="delete-title">Are you sure you want to delete <b id="delete-name"></b>?</h2>
+        <button class="c-icon-btn" value="cancel" aria-label="Close">
+          <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path stroke="currentColor" stroke-width="1.8" stroke-linecap="round" d="M18 6 6 18M6 6l12 12"/></svg>
+        </button>
+      </div>
+      <p class="c-confirm__note">This can’t be undone.</p>
+      <div class="c-dialog__actions">
+        <button class="c-button c-button--ghost" value="cancel">Cancel</button>
+        <button class="c-button c-button--danger" value="delete">Delete</button>
+      </div>
+    </form>
+  </dialog>
+
+  <script src="shell.js"></script>
+  <script src="components.js"></script>
+  <script>
+    (() => {
+      const { closeOnBackdrop, swipeRows } = window.YokoUI;
+      const $ = (id) => document.getElementById(id);
+      const colors = ['home', 'travel', 'family', 'social', 'finance', 'study'];
+      const kindHints = {
+        check: 'Items you tick off. Ticked items move to the end, and the list can be reused.',
+        collection: 'Things to keep, each with a note and a link.',
+      };
+      const openIcon = '<svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" d="M13 11 21.2 2.8M22 6.8V2h-4.8M11 2H9C4 2 2 4 2 9v6c0 5 2 7 7 7h6c5 0 7-2 7-7v-2"/></svg>';
+
+      // Sample data
+      let nextId = 1;
+      const item = (text, extra = {}) => ({ id: nextId++, text, done: false, note: '', link: '', section: '', ...extra });
+      const lists = [
+        { id: nextId++, name: 'Groceries', kind: 'check', color: 'finance', sections: [], items: [item('Oat milk'), item('Rice'), item('Tofu', { done: true }), item('Spinach'), item('Lemons'), item('Coffee', { done: true })] },
+        { id: nextId++, name: 'Packing for Lisbon', kind: 'check', color: 'travel', sections: [], items: [item('Passport'), item('Charger'), item('Sunscreen'), item('Comfy shoes'), item('Rain jacket')] },
+        { id: nextId++, name: 'Gift ideas', kind: 'collection', color: 'family', sections: [], items: [item('Ceramic vase', { note: 'For Mom, from the Saturday market.' }), item('Orchestra tickets', { note: 'Mom and Dad, for their anniversary.' }), item('Sketchbook', { note: 'For Ana.' })] },
+        { id: nextId++, name: 'Capsule wardrobe', kind: 'collection', color: 'study', sections: ['Tops', 'Bottoms', 'Shoes'], cover: 'linear-gradient(135deg, #b4a7d6, #674ea7)',
+          items: [item('White t-shirt', { section: 'Tops' }), item('Striped shirt', { section: 'Tops' }), item('Leggings', { section: 'Bottoms' }), item('Jeans', { section: 'Bottoms' }), item('Shorts', { section: 'Bottoms' })] },
+        { id: nextId++, name: 'Restaurants to try', kind: 'collection', color: 'social', sections: [], items: [item('Taberna da Rua das Flores', { note: 'Lisbon. No bookings, go early.' }), item('Ramen place near the office', { note: 'Ask Leo for the name.' })] },
+      ];
+      let current = lists[0];
+      let query = '';
+
+      const el = (tag, className, text) => {
+        const node = document.createElement(tag);
+        if (className) node.className = className;
+        if (text !== undefined) node.textContent = text;
+        return node;
+      };
+      const safeUrl = (text) => {
+        try {
+          const url = new URL(/^[a-z]+:\/\//i.test(text) ? text : `https://${text}`);
+          return ['http:', 'https:'].includes(url.protocol) ? url.href : null;
+        } catch {
+          return null;
+        }
+      };
+      // A cover is an uploaded image, or a gradient in the sample data.
+      const coverImage = (cover) => (!cover ? 'none' : cover.startsWith('linear-gradient') ? cover : `url("${cover}")`);
+      const matches = (i) => !query || `${i.text} ${i.note}`.toLowerCase().includes(query);
+
+      const itemRow = (i) => {
+        const row = el('li', 'c-swipe');
+        const action = el('button', 'c-swipe__action', 'Delete');
+        action.type = 'button';
+        action.dataset.delete = i.id;
+        action.inert = true;
+        const card = el('div', `c-swipe__card c-list-item${i.done ? ' is-done' : ''}`);
+        if (current.kind === 'check') {
+          const box = document.createElement('input');
+          box.type = 'checkbox';
+          box.checked = i.done;
+          box.setAttribute('aria-label', `Done: ${i.text}`);
+          box.addEventListener('change', () => {
+            i.done = box.checked;
+            render();
+          });
+          card.append(box);
+        }
+        const open = el('button', 'c-list-item__open');
+        open.type = 'button';
+        open.append(el('span', 'c-list-item__text', i.text));
+        if (i.note) open.append(el('span', 'c-list-item__note', i.note));
+        open.addEventListener('click', () => openItem(i));
+        card.append(open);
+        if (i.link) {
+          const link = el('a');
+          link.href = i.link;
+          link.target = '_blank';
+          link.rel = 'noopener noreferrer';
+          link.setAttribute('aria-label', `Open link: ${i.text}`);
+          link.insertAdjacentHTML('afterbegin', openIcon);
+          card.append(link);
+        }
+        row.append(action, card);
+        return row;
+      };
+
+      function render() {
+        $('list-links').replaceChildren(
+          ...lists
+            .filter((l) => !query || l === current || l.name.toLowerCase().includes(query) || l.items.some(matches))
+            .map((l) => {
+              const link = el('button', 'c-list-link', l.name);
+              link.type = 'button';
+              link.style.setProperty('--list-color', `var(--bg-cat-${l.color})`);
+              link.setAttribute('aria-current', String(l === current));
+              const open = l.kind === 'check' ? l.items.filter((i) => !i.done).length : l.items.length;
+              link.append(el('span', '', open));
+              link.addEventListener('click', () => {
+                current = l;
+                render();
+              });
+              return link;
+            }),
+        );
+
+        const message = (text) => {
+          $('message').hidden = !text;
+          $('message-text').textContent = text ?? '';
+        };
+        if (!current) {
+          $('list-title').textContent = 'Lists';
+          $('list-meta').textContent = '';
+          $('edit-list').hidden = $('quick-add').hidden = $('done-head').hidden = true;
+          $('items').replaceChildren();
+          $('done-items').replaceChildren();
+          message('No lists yet. Make one for groceries, a trip or gift ideas.');
+          return;
+        }
+        $('edit-list').hidden = $('quick-add').hidden = false;
+        $('list-title').textContent = current.name;
+        const isCheck = current.kind === 'check';
+        const open = current.items.filter((i) => !isCheck || !i.done);
+        const done = isCheck ? current.items.filter((i) => i.done) : [];
+        $('list-meta').textContent = isCheck ? `${done.length} of ${current.items.length} done` : `${current.items.length} ${current.items.length === 1 ? 'item' : 'items'}`;
+        $('list-cover').hidden = !current.cover;
+        $('list-cover').style.backgroundImage = coverImage(current.cover);
+        const group = (name, items, empty) => {
+          const section = el('section', 'p-lists__group');
+          if (name) section.append(el('h2', '', name));
+          if (items.length) {
+            const list = el('ul', 'p-lists__items');
+            list.append(...items.map(itemRow));
+            section.append(list);
+          } else if (empty) section.append(el('p', 'p-lists__empty-group', empty));
+          return section;
+        };
+        const shownOpen = open.filter(matches);
+        if (current.sections.length) {
+          const groups = current.sections.map((s) => group(s, shownOpen.filter((i) => i.section === s), query ? null : 'Nothing here yet.'));
+          const loose = shownOpen.filter((i) => !current.sections.includes(i.section));
+          if (loose.length) groups.push(group('Other', loose));
+          $('items').replaceChildren(...groups.filter((g) => !query || g.querySelector('ul')));
+        } else {
+          $('items').replaceChildren(group('', shownOpen));
+        }
+        const sectionSelect = $('new-item-section');
+        sectionSelect.hidden = !current.sections.length;
+        const kept = sectionSelect.value;
+        sectionSelect.replaceChildren(...current.sections.map((s) => new Option(s, s)));
+        if (current.sections.includes(kept)) sectionSelect.value = kept;
+        $('done-items').replaceChildren(...done.filter(matches).map(itemRow));
+        $('done-head').hidden = done.length === 0;
+        $('done-title').textContent = `Done (${done.length})`;
+        if (!current.items.length && !current.sections.length) message(isCheck ? 'An empty list. Add the first item above.' : 'Nothing kept here yet. Add the first one above.');
+        else if (!current.items.some(matches)) message(`Nothing in ${current.name} matches “${query}”.`);
+        else message(null);
+      }
+
+      // Quick add: type and press Enter
+      $('quick-add').addEventListener('submit', (e) => {
+        e.preventDefault();
+        const text = $('new-item').value.trim();
+        if (!text) return;
+        current.items.unshift(item(text, { section: current.sections.length ? $('new-item-section').value : '' }));
+        $('new-item').value = '';
+        render();
+      });
+      $('untick-all').addEventListener('click', () => {
+        current.items.forEach((i) => (i.done = false));
+        render();
+      });
+      $('clear-done').addEventListener('click', () => {
+        current.items = current.items.filter((i) => !i.done);
+        render();
+      });
+
+      // Delete with confirmation: an item (swiped or from its dialog) or the list
+      const deleteDialog = $('delete-dialog');
+      closeOnBackdrop(deleteDialog);
+      let toDelete = null;
+      const confirmDelete = (target, name) => {
+        toDelete = target;
+        $('delete-name').textContent = name;
+        deleteDialog.returnValue = '';
+        deleteDialog.showModal();
+      };
+      deleteDialog.addEventListener('close', () => {
+        const target = toDelete;
+        toDelete = null;
+        if (deleteDialog.returnValue !== 'delete' || !target) return;
+        if (target.list) {
+          lists.splice(lists.indexOf(target.list), 1);
+          current = lists[0] ?? null;
+        } else {
+          current.items = current.items.filter((i) => i !== target.item);
+        }
+        render();
+      });
+      swipeRows({
+        list: $('items').parentElement,
+        ignore: 'input',
+        onAction: (button) => {
+          const target = current.items.find((i) => i.id === Number(button.dataset.delete));
+          confirmDelete({ item: target }, target.text);
+        },
+      });
+
+      // Item dialog
+      const itemDialog = $('item-dialog');
+      const itemForm = $('item-form');
+      closeOnBackdrop(itemDialog);
+      let editingItem = null;
+      const openItem = (i) => {
+        editingItem = i;
+        itemForm.elements.text.value = i.text;
+        itemForm.elements.note.value = i.note;
+        itemForm.elements.link.value = i.link;
+        $('item-section-field').hidden = !current.sections.length;
+        itemForm.elements.section.replaceChildren(new Option('No section', ''), ...current.sections.map((s) => new Option(s, s)));
+        itemForm.elements.section.value = current.sections.includes(i.section) ? i.section : '';
+        itemForm.querySelectorAll('[data-collection]').forEach((part) => (part.hidden = current.kind !== 'collection'));
+        [...itemForm.elements].forEach((input) => input.setCustomValidity?.(''));
+        itemDialog.showModal();
+      };
+      itemForm.addEventListener('input', (e) => e.target.setCustomValidity?.(''));
+      itemForm.addEventListener('submit', (e) => {
+        e.preventDefault();
+        const text = itemForm.elements.text.value.trim();
+        const linkText = itemForm.elements.link.value.trim();
+        const link = linkText ? safeUrl(linkText) : '';
+        itemForm.elements.text.setCustomValidity(text ? '' : 'Write the item.');
+        itemForm.elements.link.setCustomValidity(link === null ? 'Use a web address, like example.com.' : '');
+        if (!itemForm.reportValidity()) return;
+        Object.assign(editingItem, { text, note: itemForm.elements.note.value.trim(), link, section: itemForm.elements.section.value });
+        itemDialog.close();
+        render();
+      });
+      $('close-item-form').addEventListener('click', () => itemDialog.close());
+      $('delete-item').addEventListener('click', () => {
+        itemDialog.close();
+        confirmDelete({ item: editingItem }, editingItem.text);
+      });
+
+      // List dialog: create and edit
+      const listDialog = $('list-dialog');
+      const listForm = $('list-form');
+      closeOnBackdrop(listDialog);
+      let editingList = null;
+      $('swatches').innerHTML = colors.map((c) => `<label class="c-swatch" style="--swatch:var(--bg-cat-${c})"><input class="u-visually-hidden" type="radio" name="color" value="${c}" aria-label="${c}"><span></span></label>`).join('');
+      let draftCover = null;
+      const showDraftCover = () => {
+        $('list-cover-preview').style.backgroundImage = coverImage(draftCover);
+        $('list-cover-remove').hidden = !draftCover;
+      };
+      $('list-cover-file').addEventListener('change', (e) => {
+        const file = e.target.files[0];
+        if (file?.type.startsWith('image/')) draftCover = URL.createObjectURL(file);
+        e.target.value = '';
+        showDraftCover();
+      });
+      $('list-cover-remove').addEventListener('click', () => {
+        draftCover = null;
+        showDraftCover();
+      });
+      const syncKind = () => ($('kind-hint').textContent = kindHints[listForm.elements.kind.value]);
+      listForm.addEventListener('change', (e) => e.target.name === 'kind' && syncKind());
+      const openList = (l) => {
+        editingList = l;
+        const heading = $('list-form-title');
+        heading.textContent = l ? 'Edit ' : 'New list';
+        if (l) heading.append(el('b', '', l.name));
+        listForm.elements.name.value = l?.name ?? '';
+        listForm.elements.kind.value = l?.kind ?? 'check';
+        listForm.elements.color.value = l?.color ?? colors[lists.length % colors.length];
+        listForm.elements.sections.value = (l?.sections ?? []).join('\n');
+        draftCover = l?.cover ?? null;
+        showDraftCover();
+        listForm.elements.name.setCustomValidity('');
+        $('delete-list').hidden = !l;
+        $('submit-list').textContent = l ? 'Save' : 'Create';
+        syncKind();
+        listDialog.showModal();
+      };
+      listForm.addEventListener('submit', (e) => {
+        e.preventDefault();
+        const name = listForm.elements.name.value.trim();
+        listForm.elements.name.setCustomValidity(name ? '' : 'Give the list a name.');
+        if (!listForm.reportValidity()) return;
+        const sections = [...new Set(listForm.elements.sections.value.split('\n').map((s) => s.trim()).filter(Boolean))];
+        const data = {
+          sections,
+          cover: draftCover,
+          name,
+          kind: listForm.elements.kind.value === 'collection' ? 'collection' : 'check',
+          color: colors.includes(listForm.elements.color.value) ? listForm.elements.color.value : colors[0],
+        };
+        if (editingList) Object.assign(editingList, data);
+        else {
+          current = { id: nextId++, items: [], ...data };
+          lists.push(current);
+        }
+        listDialog.close();
+        render();
+        if (!editingList) $('new-item').focus();
+      });
+      listForm.addEventListener('input', (e) => e.target.setCustomValidity?.(''));
+      $('close-list-form').addEventListener('click', () => listDialog.close());
+      $('new-list').addEventListener('click', () => openList(null));
+      $('edit-list').addEventListener('click', () => openList(current));
+      $('delete-list').addEventListener('click', () => {
+        const list = editingList;
+        listDialog.close();
+        confirmDelete({ list }, list.name);
+      });
+
+      $('search').addEventListener('input', (e) => {
+        query = e.target.value.trim().toLowerCase();
+        render();
+      });
+
+      render();
+    })();
+  </script>
+</body>
+</html>

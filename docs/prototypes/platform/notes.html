@@ -1,0 +1,287 @@
+<!doctype html>
+<html lang="en" data-theme="light">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Yoko — Notes</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@300..700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="tokens.css">
+  <link rel="stylesheet" href="shell.css">
+  <link rel="stylesheet" href="components.css">
+  <style>
+    .p-notes{padding:16px 12px 40px}
+    .p-notes__head{display:flex;flex-wrap:wrap;align-items:center;gap:12px}
+    .p-notes__head h1{font-size:var(--text-lg);font-weight:var(--font-bold)}
+
+    /* Notes flow in columns, like sticky notes of different heights */
+    .p-notes__grid{columns:1;column-gap:14px;list-style:none;padding:0;margin:0}
+    .c-note{position:relative;break-inside:avoid;display:grid;gap:8px;margin-bottom:14px;padding:14px 16px;border-radius:var(--border-r-default);border:var(--border-w-default) solid var(--border-color-line);background:var(--bg-surface-raised);transition:box-shadow .15s}
+    .c-note:hover{box-shadow:var(--shadow-sm)}
+    .c-note.is-editing{box-shadow:0 0 0 2px var(--text-color-default)}
+    .c-note__title{padding-right:28px;font-size:var(--text-base);font-weight:var(--font-bold);line-height:1.3}
+    .c-note__open{all:unset;cursor:pointer}
+    .c-note__open::after{content:'';position:absolute;inset:0;border-radius:var(--border-r-default)}
+    .c-note__open:focus-visible::after{outline:2px solid var(--accent);outline-offset:2px}
+    .c-note__untitled{color:var(--text-color-muted);font-style:italic}
+    .c-note__text{display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:8;overflow:hidden;font-size:var(--text-sm);white-space:pre-line}
+    .c-note__date{font-size:var(--text-xs);color:var(--text-color-muted)}
+    .c-note__checkbox{position:absolute;top:12px;right:12px;z-index:1;opacity:0;transition:opacity .15s}
+    .c-note:hover .c-note__checkbox,.c-note__checkbox:has(input:checked),.c-note__checkbox:focus-within{opacity:1}
+    .c-note__checkbox input{width:18px;height:18px;margin:0;accent-color:var(--text-color-default);cursor:pointer}
+    .c-note:has(input:checked){box-shadow:0 0 0 2px var(--text-color-default)}
+    /* Touch screens have no hover, so the checkbox is always visible there */
+    @media (hover:none){
+      .c-note__checkbox{opacity:1}
+    }
+
+    .p-notes__message{display:flex;flex-direction:column;align-items:center;gap:10px;padding:32px 0;text-align:center;color:var(--text-color-muted);font-size:var(--text-sm);font-weight:var(--font-highlight)}
+    .p-notes__message img{width:140px;height:auto;transform:rotate(-8deg)}
+    .c-form textarea[name="description"]{min-height:180px}
+
+    @media (min-width:481px){
+      .p-notes__grid{columns:2}
+    }
+    @media (min-width:769px){
+      .p-notes{padding:22px 24px 40px}
+      .p-notes__head .c-button{margin-left:auto}
+      .p-notes__grid{columns:3}
+    }
+    @media (min-width:1280px){
+      .p-notes.is-editing .p-notes__grid{columns:2}
+    }
+  </style>
+</head>
+<body data-page="notes" data-search="Search notes">
+  <div class="app">
+    <div class="app__main">
+      <main class="app__content">
+        <div class="p-notes c-workspace" id="workspace">
+          <div class="c-workspace__list">
+            <div class="p-notes__head">
+              <h1>Notes</h1>
+              <button class="c-button c-button--module" type="button" id="add-note" data-new>
+                <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path stroke="currentColor" stroke-width="1.8" stroke-linecap="round" d="M12 5v14M5 12h14"/></svg>
+                Add note
+              </button>
+            </div>
+
+            <div class="c-list-toolbar">
+              <div class="c-dropdown">
+                <button class="c-list-toolbar__btn" type="button" id="sort-toggle" aria-expanded="false" aria-controls="sort-popover">
+                  <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" d="M10.45 6.72 6.73 3 3.01 6.72M6.73 21V3M13.55 17.28 17.27 21l3.72-3.72M17.27 3v18"/></svg>
+                  <span id="sort-label">Sort: creation</span>
+                </button>
+                <div class="c-popover c-popover--narrow" id="sort-popover" hidden>
+                  <h2 id="sort-title">Sort by</h2>
+                  <div class="c-popover__chips" role="group" aria-labelledby="sort-title" id="sort-options"></div>
+                </div>
+              </div>
+              <button class="c-list-toolbar__btn c-list-toolbar__btn--danger" type="button" id="delete" aria-disabled="true">
+                <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" d="M21 5.98c-3.33-.33-6.68-.5-10.02-.5-1.98 0-3.96.1-5.94.3L3 5.98M8.5 4.97l.22-1.31C8.88 2.71 9 2 10.69 2h2.62c1.69 0 1.82.75 1.97 1.67l.22 1.3M18.85 9.14l-.65 10.07C18.09 20.78 18 22 15.21 22H8.79C6 22 5.91 20.78 5.8 19.21L5.15 9.14M10.33 16.5h3.33M9.5 12.5h5"/></svg>
+                <span>Delete (<span id="selected-count">0</span> selected)</span>
+              </button>
+            </div>
+
+            <ul class="p-notes__grid" id="notes"></ul>
+            <div class="p-notes__message" id="message" hidden>
+              <img src="../../../client/public/mascot.svg" alt="">
+              <p id="message-text"></p>
+            </div>
+          </div>
+
+          <section class="c-workspace__panel" id="edit-panel" aria-label="Edit note" hidden>
+          </section>
+        </div>
+      </main>
+    </div>
+  </div>
+
+  <dialog class="c-dialog" id="note-dialog" aria-labelledby="note-form-title">
+    <form class="c-form" id="note-form" novalidate>
+      <div class="c-dialog__head">
+        <h2 id="note-form-title">New note</h2>
+        <button class="c-icon-btn c-workspace__close" type="button" id="close-form" aria-label="Close">
+          <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path stroke="currentColor" stroke-width="1.8" stroke-linecap="round" d="M18 6 6 18M6 6l12 12"/></svg>
+        </button>
+      </div>
+      <label class="u-visually-hidden" for="note-title">Title</label>
+      <input class="c-dialog__title" id="note-title" name="title" placeholder="Untitled" maxlength="50" autocomplete="off">
+      <label class="c-field"><span>Note</span><textarea name="description" rows="8" maxlength="2000" placeholder="Write something…"></textarea></label>
+      <div class="c-dialog__actions">
+        <button class="c-button c-button--module" type="submit" id="submit-form">Create</button>
+      </div>
+    </form>
+  </dialog>
+
+  <dialog class="c-dialog c-confirm" id="delete-dialog" aria-labelledby="delete-title">
+    <form method="dialog">
+      <div class="c-dialog__head">
+        <h2 id="delete-title">Are you sure you want to delete <b id="delete-count">1 note</b>?</h2>
+        <button class="c-icon-btn" value="cancel" aria-label="Close">
+          <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path stroke="currentColor" stroke-width="1.8" stroke-linecap="round" d="M18 6 6 18M6 6l12 12"/></svg>
+        </button>
+      </div>
+      <p class="c-confirm__note">This can’t be undone.</p>
+      <div class="c-dialog__actions">
+        <button class="c-button c-button--ghost" value="cancel">Cancel</button>
+        <button class="c-button c-button--danger" value="delete">Delete</button>
+      </div>
+    </form>
+  </dialog>
+
+  <script src="shell.js"></script>
+  <script src="components.js"></script>
+  <script>
+    (() => {
+      const { escapeHtml, closeOnBackdrop, dropdowns, renderChips, workspace } = window.YokoUI;
+      const $ = (id) => document.getElementById(id);
+      const daysAgo = (n) => new Date(Date.now() - n * 86400000);
+
+      let nextId = 1;
+      const note = (title, description, created, edited = created) => ({ id: nextId++, title, description, created: daysAgo(created), edited: daysAgo(edited) });
+      const notes = [
+        note('Gift ideas for Mom', 'A ceramic vase from the market\nThe book she mentioned at dinner\nTickets for the orchestra', 20, 2),
+        note('', 'Call the bank about the card fee before Friday.', 9, 9),
+        note('Lisbon trip', 'Pastéis de Belém early, before the line.\nLX Factory on Sunday.\nTram 28 from Martim Moniz.\nAsk Ana about the fado bar near Alfama.', 15, 1),
+        note('Book quotes', '“It is not the mountain we conquer, but ourselves.”', 40, 30),
+        note('Groceries', 'Oat milk, rice, tofu, spinach, lemons, coffee', 1, 0),
+        note('Side project ideas', 'A tiny app to track plants and when to water them. Could reuse the actions module from Yoko.', 60, 12),
+        note('Spanish words', 'aprovechar: to make the most of\nsobremesa: chatting at the table after a meal\nmadrugada: the hours after midnight', 25, 4),
+      ];
+
+      const sortOptions = [
+        { id: 'creation', label: 'Creation (default)' },
+        { id: 'edited', label: 'Last edited' },
+        { id: 'alphabet', label: 'Alphabet' },
+      ];
+      const sorters = {
+        creation: (a, b) => b.created - a.created,
+        edited: (a, b) => b.edited - a.edited,
+        alphabet: (a, b) => (a.title || a.description).localeCompare(b.title || b.description),
+      };
+      let sortBy = 'creation';
+      let query = '';
+      let editing = null;
+
+      const editedText = (date) => {
+        const days = Math.round((Date.now() - date) / 86400000);
+        if (days === 0) return 'Edited today';
+        if (days === 1) return 'Edited yesterday';
+        return `Edited ${days} days ago`;
+      };
+
+      const list = $('notes');
+      const render = () => {
+        const checked = new Set([...list.querySelectorAll('input:checked')].map((input) => input.value));
+        const visible = notes
+          .filter((n) => !query || `${n.title} ${n.description}`.toLowerCase().includes(query))
+          .sort(sorters[sortBy]);
+        list.innerHTML = visible
+          .map(
+            (n) => `<li class="c-note${editor.isEditing() && editing?.id === n.id ? ' is-editing' : ''}">
+              <h2 class="c-note__title"><button class="c-note__open" type="button" data-id="${n.id}">${n.title ? escapeHtml(n.title) : '<span class="c-note__untitled">Untitled</span>'}</button></h2>
+              ${n.description ? `<p class="c-note__text">${escapeHtml(n.description)}</p>` : ''}
+              <span class="c-note__date">${editedText(n.edited)}</span>
+              <label class="c-note__checkbox"><input type="checkbox" value="${n.id}" aria-label="Select ${escapeHtml(n.title || 'untitled note')}"${checked.has(String(n.id)) ? ' checked' : ''}></label>
+            </li>`,
+          )
+          .join('');
+        updateSelection();
+        $('message').hidden = visible.length > 0;
+        $('message-text').textContent = notes.length === 0 ? 'No notes yet. Write down whatever is on your mind.' : `No notes match “${query}”.`;
+        $('sort-label').textContent = `Sort: ${sortOptions.find((o) => o.id === sortBy).label.replace(' (default)', '').toLowerCase()}`;
+        renderChips($('sort-options'), sortOptions, sortBy, (id) => {
+          sortBy = id;
+          popovers.close();
+          render();
+        });
+      };
+
+      const updateSelection = () => {
+        const selected = list.querySelectorAll('input:checked').length;
+        $('selected-count').textContent = selected;
+        $('delete').setAttribute('aria-disabled', String(selected === 0));
+      };
+
+      // Create in a dialog, edit in the panel
+      const form = $('note-form');
+      const field = (name) => form.elements.namedItem(name);
+      const editor = workspace({ root: $('workspace'), panel: $('edit-panel'), dialog: $('note-dialog'), form, onChange: () => render() });
+
+      const openForm = (n = null) => {
+        editing = n;
+        const heading = $('note-form-title');
+        heading.textContent = n ? 'Edit ' : 'New note';
+        if (n) {
+          const name = document.createElement('b');
+          name.textContent = n.title || 'untitled note';
+          heading.append(name);
+        }
+        field('title').value = n?.title ?? '';
+        field('description').value = n?.description ?? '';
+        field('title').setCustomValidity('');
+        $('submit-form').textContent = n ? 'Save' : 'Create';
+        editor.open(Boolean(n));
+      };
+
+      const closeForm = () => {
+        const id = editing?.id;
+        editor.close();
+        if (id) document.querySelector(`.c-note__open[data-id="${id}"]`)?.focus();
+      };
+
+      form.addEventListener('input', () => field('title').setCustomValidity(''));
+      form.addEventListener('submit', (e) => {
+        e.preventDefault();
+        const title = field('title').value.trim();
+        const description = field('description').value.trim();
+        // A note can have only a title or only a description, but not neither.
+        field('title').setCustomValidity(title || description ? '' : 'Write a title or a note.');
+        if (!form.reportValidity()) return;
+        if (editing) Object.assign(editing, { title, description, edited: new Date() });
+        else notes.push({ id: nextId++, title, description, created: new Date(), edited: new Date() });
+        closeForm();
+        render();
+      });
+
+      $('add-note').addEventListener('click', () => openForm());
+      $('close-form').addEventListener('click', closeForm);
+      list.addEventListener('change', updateSelection);
+      list.addEventListener('click', (e) => {
+        const open = e.target.closest('.c-note__open');
+        if (open) openForm(notes.find((n) => n.id === Number(open.dataset.id)));
+      });
+
+      // Delete with confirmation
+      const deleteDialog = $('delete-dialog');
+      closeOnBackdrop(deleteDialog);
+      $('delete').addEventListener('click', () => {
+        const selected = list.querySelectorAll('input:checked').length;
+        if (selected === 0) return;
+        $('delete-count').textContent = `${selected} ${selected === 1 ? 'note' : 'notes'}`;
+        deleteDialog.returnValue = '';
+        deleteDialog.showModal();
+      });
+      deleteDialog.addEventListener('close', () => {
+        if (deleteDialog.returnValue !== 'delete') return;
+        [...list.querySelectorAll('input:checked')].forEach((input) => notes.splice(notes.findIndex((n) => n.id === Number(input.value)), 1));
+        list.querySelectorAll('input:checked').forEach((input) => (input.checked = false));
+        render();
+      });
+
+      const popovers = dropdowns(['sort']);
+      document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape' && !popovers.closeOpen() && editor.isEditing()) closeForm();
+      });
+      $('search').addEventListener('input', (e) => {
+        query = e.target.value.trim().toLowerCase();
+        render();
+      });
+
+      render();
+    })();
+  </script>
+</body>
+</html>

@@ -37,7 +37,7 @@ Each feature's rules are in the [product requirements](docs/product/requirements
 
 The app is live at [yoko.arualvivan.com](https://yoko.arualvivan.com).
 
-The screens are designed in [Figma](https://www.figma.com/design/s9HB9I0wyGOTvnlWuWkOu6/yoko-?node-id=0-1&t=QBeoAmwyvJ2a6apC-1). HTML prototypes are in [`docs/prototypes/`](docs/prototypes/).
+The screens and the design system live in the HTML prototype at [`docs/prototypes/platform/`](docs/prototypes/platform/). Open `home.html` to navigate the app and `design-system.html` to see the tokens. See [decision 005](docs/decisions/005-prototype-as-design-reference.md).
 
 ## Tech stack
 

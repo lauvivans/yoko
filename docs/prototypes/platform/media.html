@@ -1,0 +1,483 @@
+<!doctype html>
+<html lang="en" data-theme="light">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Yoko — Media</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@300..700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="tokens.css">
+  <link rel="stylesheet" href="shell.css">
+  <link rel="stylesheet" href="components.css">
+  <style>
+    .p-media{padding:16px 12px 40px}
+    .p-media .c-workspace__list{gap:16px}
+    .p-media__head{display:flex;flex-wrap:wrap;align-items:center;gap:12px}
+    .p-media__head h1{margin-right:auto;font-size:var(--text-lg);font-weight:var(--font-bold)}
+    .p-media__message{display:flex;flex-direction:column;align-items:center;gap:10px;padding:32px 0;text-align:center;color:var(--text-color-muted);font-size:var(--text-sm);font-weight:var(--font-highlight)}
+    .p-media__message img{width:110px;height:auto;transform:rotate(-8deg)}
+
+    /* Cover gallery */
+    .c-covers{display:grid;grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:18px 14px;margin:0;padding:0;list-style:none}
+    .c-cover{all:unset;box-sizing:border-box;display:grid;gap:6px;width:100%;cursor:pointer}
+    .c-cover:focus-visible .c-cover__art{outline:3px solid var(--accent);outline-offset:2px}
+    .c-cover__art{position:relative;display:flex;align-items:flex-end;aspect-ratio:2 / 3;padding:10px;border-radius:var(--border-r-default);background-size:cover;background-position:center;box-shadow:var(--shadow-sm);transition:transform var(--duration-default) var(--ease-out),box-shadow var(--duration-default)}
+    .c-cover:hover .c-cover__art{transform:translateY(-3px);box-shadow:var(--shadow-md)}
+    .c-cover.is-editing .c-cover__art{box-shadow:0 0 0 3px var(--bg-surface),0 0 0 5px var(--dark)}
+    .c-cover__art .c-tag{position:absolute;top:8px;left:8px}
+    .c-cover__art.is-placeholder::after{content:attr(data-title);color:var(--white);font-weight:var(--font-bold);font-size:var(--text-sm);line-height:1.2}
+    .c-cover__title{display:-webkit-box;overflow:hidden;font-size:var(--text-sm);font-weight:var(--font-bold);line-height:1.3;-webkit-line-clamp:2;-webkit-box-orient:vertical}
+    .c-cover__progress{font-size:var(--text-xs);color:var(--text-color-muted)}
+    .c-cover .c-progress{height:4px}
+
+    /* Form: cover, progress by type, links */
+    .c-media-form__cover{display:flex;align-items:center;gap:12px}
+    .c-media-form__preview{flex:none;width:64px;aspect-ratio:2 / 3;border-radius:var(--border-r-soft);background-size:cover;background-position:center}
+    .c-media-form__hint{font-size:var(--text-xs);color:var(--text-color-muted)}
+    .c-media-form__parts{display:grid;gap:12px}
+    .c-volumes{display:grid;grid-template-columns:repeat(auto-fill,minmax(38px,1fr));gap:6px}
+    .c-volume{position:relative}
+    .c-volume span{display:grid;place-items:center;height:34px;border-radius:var(--border-r-soft);border:var(--border-w-default) dashed var(--text-color-muted);font-size:var(--text-xs);font-weight:var(--font-bold);color:var(--text-color-muted);cursor:pointer}
+    .c-volume input:checked + span{border:var(--border-w-default) solid var(--border-color-dark);background:var(--module);color:var(--dark)}
+    .c-volume input:focus-visible + span{outline:2px solid var(--accent)}
+    .c-media-links{display:grid;gap:8px;margin:0;padding:0;list-style:none}
+    .c-media-link{display:grid;grid-template-columns:minmax(0,1fr) auto auto;align-items:center;gap:6px}
+    .c-media-link input{min-width:0;padding:7px 10px;border-radius:var(--border-r-default);border:1px solid var(--border-color-line);background:var(--bg-surface-raised);color:var(--text-color-default);font:inherit;font-size:var(--text-sm)}
+    .c-media-link input:focus-visible{outline:2px solid var(--accent)}
+    .c-media-link .c-icon-btn{width:34px;height:34px;color:var(--text-color-default)}
+    .c-media-link .c-icon-btn:hover{background:var(--bg-surface-raised)}
+    .c-media-link a.c-icon-btn[aria-disabled="true"]{opacity:var(--opacity-md);pointer-events:none}
+    .c-media-link svg{width:18px;height:18px}
+    .c-media-form .c-button--ghost{justify-self:start}
+
+    @media (min-width:481px){
+      .c-covers{grid-template-columns:repeat(auto-fill,minmax(150px,1fr))}
+    }
+    @media (min-width:769px){
+      .p-media{padding:22px 24px 40px}
+    }
+  </style>
+</head>
+<body data-page="media" data-search="Search media">
+  <div class="app">
+    <div class="app__main">
+      <main class="app__content">
+        <div class="p-media c-workspace" id="workspace">
+          <div class="c-workspace__list">
+            <div class="p-media__head">
+              <h1>Media</h1>
+              <div class="c-segmented" role="radiogroup" aria-label="Show" id="type-filter"></div>
+              <button class="c-button c-button--module" type="button" id="add-media" data-new>
+                <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path stroke="currentColor" stroke-width="1.8" stroke-linecap="round" d="M12 5v14M5 12h14"/></svg>
+                Add
+              </button>
+            </div>
+            <ul class="c-covers" id="covers" aria-label="Your media"></ul>
+            <div class="p-media__message" id="message" hidden>
+              <img src="../../../client/public/mascot.svg" alt="">
+              <span id="message-text"></span>
+            </div>
+          </div>
+          <section class="c-workspace__panel" id="edit-panel" aria-label="Edit media" hidden></section>
+        </div>
+      </main>
+    </div>
+  </div>
+
+  <dialog class="c-dialog" id="media-dialog" aria-labelledby="media-form-title">
+    <form class="c-form c-media-form" id="media-form" novalidate>
+      <div class="c-dialog__head">
+        <h2 id="media-form-title">Add to media</h2>
+        <button class="c-icon-btn c-workspace__close" type="button" id="close-form" aria-label="Close">
+          <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path stroke="currentColor" stroke-width="1.8" stroke-linecap="round" d="M18 6 6 18M6 6l12 12"/></svg>
+        </button>
+      </div>
+      <label class="u-visually-hidden" for="media-title">Title</label>
+      <input class="c-dialog__title" id="media-title" name="title" placeholder="Title" maxlength="80" autocomplete="off" required>
+      <div class="c-field" role="radiogroup" aria-labelledby="type-label">
+        <span id="type-label">Type</span>
+        <div class="c-segmented">
+          <label><input class="u-visually-hidden" type="radio" name="type" value="Anime" checked>Anime &amp; manga</label>
+          <label><input class="u-visually-hidden" type="radio" name="type" value="Game">Game</label>
+          <label><input class="u-visually-hidden" type="radio" name="type" value="Movie">Movie</label>
+        </div>
+      </div>
+      <div class="c-field">
+        <span>Cover</span>
+        <div class="c-media-form__cover">
+          <span class="c-media-form__preview" id="cover-preview"></span>
+          <label class="c-button c-button--ghost">Choose an image<input class="u-visually-hidden" type="file" id="cover-file" accept="image/*"></label>
+        </div>
+      </div>
+
+      <div class="c-media-form__parts" data-for="Anime">
+        <label class="c-dialog__check"><input type="checkbox" name="hasManga"> It has a manga</label>
+        <div class="c-field" data-part="hasManga">
+          <label class="c-field"><span>Volumes</span><input type="number" name="volumes" min="1" max="200" step="1"></label>
+          <span id="owned-label">Volumes you have</span>
+          <div class="c-volumes" id="volumes" role="group" aria-labelledby="owned-label"></div>
+          <p class="c-media-form__hint" id="owned-hint"></p>
+        </div>
+        <label class="c-dialog__check"><input type="checkbox" name="hasAnime"> It has an anime</label>
+        <div class="c-dialog__row" data-part="hasAnime">
+          <label class="c-field"><span>Episodes watched</span><input type="number" name="watched" min="0" step="1"></label>
+          <label class="c-field"><span>Episodes</span><input type="number" name="episodes" min="1" step="1"></label>
+        </div>
+      </div>
+      <label class="c-dialog__check" data-for="Movie"><input type="checkbox" name="seen"> I’ve watched it</label>
+      <label class="c-field" data-for="Game"><span>How far you are, in %</span><input type="number" name="percent" min="0" max="100" step="5"></label>
+
+      <div class="c-field">
+        <span id="links-label">Where to read, watch or play</span>
+        <ul class="c-media-links" id="links" aria-labelledby="links-label"></ul>
+        <button class="c-button c-button--ghost" type="button" id="add-link">
+          <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path stroke="currentColor" stroke-width="1.8" stroke-linecap="round" d="M12 5v14M5 12h14"/></svg>
+          Add a link
+        </button>
+      </div>
+      <div class="c-dialog__actions">
+        <button class="c-button c-button--danger c-dialog__delete" type="button" id="delete-media">Delete</button>
+        <button class="c-button c-button--module" type="submit" id="submit-form">Add</button>
+      </div>
+    </form>
+  </dialog>
+
+  <dialog class="c-dialog c-confirm" id="delete-dialog" aria-labelledby="delete-title">
+    <form method="dialog">
+      <div class="c-dialog__head">
+        <h2 id="delete-title">Are you sure you want to delete <b id="delete-name"></b>?</h2>
+        <button class="c-icon-btn" value="cancel" aria-label="Close">
+          <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path stroke="currentColor" stroke-width="1.8" stroke-linecap="round" d="M18 6 6 18M6 6l12 12"/></svg>
+        </button>
+      </div>
+      <p class="c-confirm__note">This can’t be undone.</p>
+      <div class="c-dialog__actions">
+        <button class="c-button c-button--ghost" value="cancel">Cancel</button>
+        <button class="c-button c-button--danger" value="delete">Delete</button>
+      </div>
+    </form>
+  </dialog>
+
+  <script src="shell.js"></script>
+  <script src="components.js"></script>
+  <script>
+    (() => {
+      const { closeOnBackdrop, workspace } = window.YokoUI;
+      const $ = (id) => document.getElementById(id);
+      const types = ['Anime', 'Game', 'Movie'];
+      const typeLabels = { Anime: 'Anime & manga', Game: 'Games', Movie: 'Movies' };
+      const typeTags = { Anime: 'Anime & manga', Game: 'Game', Movie: 'Movie' };
+      const typeColors = { Anime: 'var(--bg-cat-family)', Game: 'var(--bg-cat-finance)', Movie: 'var(--bg-cat-social)' };
+      const icons = {
+        open: '<svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" d="M13 11 21.2 2.8M22 6.8V2h-4.8M11 2H9C4 2 2 4 2 9v6c0 5 2 7 7 7h6c5 0 7-2 7-7v-2"/></svg>',
+        remove: '<svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path stroke="currentColor" stroke-width="1.8" stroke-linecap="round" d="M18 6 6 18M6 6l12 12"/></svg>',
+      };
+
+      // Sample data. Covers are gradients: the prototype is public and keeps no artwork.
+      let nextId = 1;
+      const range = (from, to) => Array.from({ length: to - from + 1 }, (_, i) => from + i);
+      const media = [
+        { id: nextId++, title: 'Sasaki and Miyano', type: 'Anime', colors: ['#f6b26b', '#e06666'], hasManga: true, volumes: 10, owned: [1, 2], hasAnime: true, episodes: 12, watched: 12, links: [] },
+        { id: nextId++, title: 'Kimi ni Todoke', type: 'Anime', colors: ['#9fc5e8', '#e06666'], hasManga: true, volumes: 30, owned: range(1, 30), hasAnime: true, episodes: 38, watched: 25, links: [{ label: 'Chapter 0: Prologue', url: 'https://chapmanganelo.com/manga-oe89998/chapter-0' }] },
+        { id: nextId++, title: 'Hyouka', type: 'Anime', colors: ['#ffe599', '#6aa84f'], hasManga: true, volumes: 6, owned: range(1, 6), hasAnime: true, episodes: 22, watched: 22, links: [{ label: 'Chapter 1', url: 'https://chapmanganelo.com/manga-ds91538/chapter-1' }] },
+        { id: nextId++, title: 'Kamisama Hajimemashita', type: 'Anime', colors: ['#f4cccc', '#a64d79'], hasManga: true, volumes: 25, owned: range(1, 25), hasAnime: false, links: [] },
+        { id: nextId++, title: 'Akuyaku Reijō Nanode Rasubosu o Katte Mimashita', type: 'Anime', colors: ['#b4a7d6', '#1c4587'], hasManga: true, volumes: 10, owned: range(1, 10), hasAnime: false, links: [] },
+        { id: nextId++, title: 'Frieren: Beyond Journey’s End', type: 'Anime', colors: ['#a2c4c9', '#45818e'], hasManga: false, hasAnime: true, episodes: 28, watched: 20, links: [] },
+        { id: nextId++, title: 'Spy x Family', type: 'Anime', colors: ['#ea9999', '#38761d'], hasManga: true, volumes: 13, owned: [1, 2, 3, 4], hasAnime: true, episodes: 37, watched: 37, links: [] },
+        { id: nextId++, title: 'Stardew Valley', type: 'Game', colors: ['#b6d7a8', '#e69138'], percent: 70, links: [] },
+        { id: nextId++, title: 'Hollow Knight', type: 'Game', colors: ['#6fa8dc', '#20124d'], percent: 40, links: [] },
+        { id: nextId++, title: 'Celeste', type: 'Game', colors: ['#d5a6bd', '#674ea7'], percent: 100, links: [] },
+        { id: nextId++, title: 'Spirited Away', type: 'Movie', colors: ['#9fc5e8', '#cc0000'], seen: true, links: [] },
+        { id: nextId++, title: 'Your Name', type: 'Movie', colors: ['#cfe2f3', '#3d85c6'], seen: true, links: [] },
+        { id: nextId++, title: 'Perfect Days', type: 'Movie', colors: ['#d9ead3', '#45818e'], seen: false, links: [] },
+      ];
+
+      const plural = (n, word) => `${n} ${word}${n === 1 ? '' : 's'}`;
+      // Missing volumes read as ranges: 3–10 instead of 3, 4, 5…
+      const ranges = (numbers) => {
+        const parts = [];
+        numbers.forEach((n, i) => {
+          if (i > 0 && n === numbers[i - 1] + 1) parts[parts.length - 1][1] = n;
+          else parts.push([n, n]);
+        });
+        return parts.map(([a, b]) => (a === b ? `${a}` : `${a}–${b}`)).join(', ');
+      };
+      const missingOf = (m) => range(1, m.volumes).filter((v) => !m.owned.includes(v));
+      const progress = (m) => {
+        if (m.type === 'Anime') {
+          const parts = [];
+          if (m.hasManga) {
+            const missing = missingOf(m);
+            parts.push({ ratio: m.owned.length / m.volumes, text: missing.length ? `Manga: ${m.owned.length} of ${plural(m.volumes, 'volume')}, missing ${ranges(missing)}` : `Manga: all ${plural(m.volumes, 'volume')}` });
+          }
+          if (m.hasAnime) parts.push({ ratio: m.watched / m.episodes, text: m.watched >= m.episodes ? `Anime: watched all ${plural(m.episodes, 'episode')}` : `Anime: ${m.watched} of ${plural(m.episodes, 'episode')}` });
+          return { ratio: parts.reduce((sum, p) => sum + p.ratio, 0) / (parts.length || 1), text: parts.map((p) => p.text).join(' · ') };
+        }
+        if (m.type === 'Movie') return { ratio: m.seen ? 1 : 0, text: m.seen ? 'Watched' : 'Not watched yet' };
+        return { ratio: m.percent / 100, text: m.percent >= 100 ? 'Finished' : `${m.percent}% done` };
+      };
+      const coverBackground = (m) => (m.cover ? `url("${m.cover}")` : `linear-gradient(160deg, ${m.colors[0]}, ${m.colors[1]})`);
+      const safeUrl = (text) => {
+        try {
+          const url = new URL(text);
+          return ['http:', 'https:'].includes(url.protocol) ? url.href : null;
+        } catch {
+          return null;
+        }
+      };
+      const el = (tag, className, text) => {
+        const node = document.createElement(tag);
+        if (className) node.className = className;
+        if (text !== undefined) node.textContent = text;
+        return node;
+      };
+
+      let typeFilter = 'All';
+      let query = '';
+      let editing = null;
+
+      const filterOptions = ['All', ...types].map((type) => {
+        const label = el('label');
+        const input = document.createElement('input');
+        input.className = 'u-visually-hidden';
+        input.type = 'radio';
+        input.name = 'type-filter';
+        input.value = type;
+        input.checked = type === 'All';
+        label.append(input, el('span'));
+        return label;
+      });
+      $('type-filter').replaceChildren(...filterOptions);
+      $('type-filter').addEventListener('change', (e) => {
+        typeFilter = e.target.value;
+        render();
+      });
+
+      // Create in a dialog, edit in the panel
+      const form = $('media-form');
+      const field = (name) => form.elements.namedItem(name);
+      const editor = workspace({ root: $('workspace'), panel: $('edit-panel'), dialog: $('media-dialog'), form, onChange: () => render() });
+      let draft = null;
+
+      const renderVolumes = () => {
+        const total = Math.min(200, Math.max(1, Math.trunc(Number(field('volumes').value)) || 1));
+        draft.owned = draft.owned.filter((v) => v <= total);
+        const boxes = range(1, total).map((v) => {
+          const label = el('label', 'c-volume');
+          const box = document.createElement('input');
+          box.className = 'u-visually-hidden';
+          box.type = 'checkbox';
+          box.checked = draft.owned.includes(v);
+          box.setAttribute('aria-label', `Volume ${v}`);
+          box.addEventListener('change', () => {
+            draft.owned = box.checked ? [...draft.owned, v].sort((a, b) => a - b) : draft.owned.filter((o) => o !== v);
+            syncOwnedHint(total);
+          });
+          label.append(box, el('span', '', v));
+          return label;
+        });
+        $('volumes').replaceChildren(...boxes);
+        syncOwnedHint(total);
+      };
+      const syncOwnedHint = (total) => {
+        const missing = range(1, total).filter((v) => !draft.owned.includes(v));
+        $('owned-hint').textContent = missing.length ? `Missing ${ranges(missing)}. Tap a volume when you get it.` : 'You have them all.';
+      };
+
+      const renderLinks = () => {
+        const rows = draft.links.map((link, i) => {
+          const row = el('li', 'c-media-link');
+          const input = document.createElement('input');
+          input.type = 'url';
+          input.value = link.url;
+          input.placeholder = 'https://';
+          input.setAttribute('aria-label', `Link ${i + 1}`);
+          const open = el('a', 'c-icon-btn');
+          open.target = '_blank';
+          open.rel = 'noopener noreferrer';
+          open.setAttribute('aria-label', `Open link ${i + 1}`);
+          open.insertAdjacentHTML('afterbegin', icons.open);
+          const syncOpen = () => {
+            const url = safeUrl(input.value.trim());
+            if (url) open.href = url;
+            else open.removeAttribute('href');
+            open.setAttribute('aria-disabled', String(!url));
+          };
+          input.addEventListener('input', () => {
+            link.url = input.value.trim();
+            syncOpen();
+          });
+          syncOpen();
+          const remove = el('button', 'c-icon-btn');
+          remove.type = 'button';
+          remove.setAttribute('aria-label', `Remove link ${i + 1}`);
+          remove.insertAdjacentHTML('afterbegin', icons.remove);
+          remove.addEventListener('click', () => {
+            draft.links.splice(i, 1);
+            renderLinks();
+          });
+          row.append(input, open, remove);
+          return row;
+        });
+        $('links').replaceChildren(...rows);
+      };
+
+      const syncType = () => {
+        form.querySelectorAll('[data-for]').forEach((part) => (part.hidden = part.dataset.for !== field('type').value));
+        form.querySelectorAll('[data-part]').forEach((part) => (part.hidden = !field(part.dataset.part).checked));
+      };
+
+      const openForm = (m = null) => {
+        editing = m;
+        draft = {
+          owned: [...(m?.owned ?? [])],
+          links: (m?.links ?? []).map((l) => ({ ...l })),
+          cover: m?.cover ?? null,
+          colors: m?.colors ?? ['#cfe2f3', '#674ea7'],
+        };
+        const heading = $('media-form-title');
+        heading.textContent = m ? 'Edit ' : 'Add to media';
+        if (m) heading.append(el('b', '', m.title));
+        field('title').value = m?.title ?? '';
+        field('type').value = m?.type ?? (typeFilter === 'All' ? 'Anime' : typeFilter);
+        field('hasManga').checked = m ? Boolean(m.hasManga) : true;
+        field('hasAnime').checked = m ? Boolean(m.hasAnime) : false;
+        field('volumes').value = m?.volumes ?? 10;
+        field('watched').value = m?.watched ?? 0;
+        field('episodes').value = m?.episodes ?? 12;
+        field('percent').value = m?.percent ?? 0;
+        field('seen').checked = m?.seen ?? false;
+        $('cover-preview').style.backgroundImage = coverBackground(draft);
+        [...form.elements].forEach((input) => input.setCustomValidity?.(''));
+        $('delete-media').hidden = !m;
+        $('submit-form').textContent = m ? 'Save' : 'Add';
+        syncType();
+        renderVolumes();
+        renderLinks();
+        editor.open(Boolean(m));
+      };
+      const closeForm = () => {
+        const id = editing?.id;
+        editor.close();
+        editing = null;
+        if (id) $('covers').querySelector(`[data-id="${id}"]`)?.focus();
+      };
+
+      form.addEventListener('change', (e) => ['type', 'hasManga', 'hasAnime'].includes(e.target.name) && syncType());
+      field('volumes').addEventListener('input', renderVolumes);
+      $('add-link').addEventListener('click', () => {
+        draft.links.push({ label: '', url: '' });
+        renderLinks();
+        $('links').lastElementChild?.querySelector('input').focus();
+      });
+      $('cover-file').addEventListener('change', (e) => {
+        const file = e.target.files[0];
+        if (file?.type.startsWith('image/')) {
+          draft.cover = URL.createObjectURL(file);
+          $('cover-preview').style.backgroundImage = coverBackground(draft);
+        }
+        e.target.value = '';
+      });
+
+      form.addEventListener('submit', (e) => {
+        e.preventDefault();
+        const title = field('title').value.trim();
+        const type = types.includes(field('type').value) ? field('type').value : 'Anime';
+        const number = (name, min, max) => Math.min(max, Math.max(min, Math.trunc(Number(field(name).value)) || min));
+        const badLink = [...$('links').querySelectorAll('input')].find((input) => input.value.trim() && !safeUrl(input.value.trim()));
+        field('title').setCustomValidity(title ? '' : 'Add a title.');
+        field('hasManga').setCustomValidity(type !== 'Anime' || field('hasManga').checked || field('hasAnime').checked ? '' : 'Pick a manga, an anime or both.');
+        $('links').querySelectorAll('input').forEach((input) => input.setCustomValidity(input === badLink ? 'Use a web address that starts with https://.' : ''));
+        if (!form.reportValidity()) return;
+        const episodes = number('episodes', 1, 5000);
+        const data = {
+          title,
+          type,
+          hasManga: field('hasManga').checked,
+          hasAnime: field('hasAnime').checked,
+          volumes: number('volumes', 1, 200),
+          owned: draft.owned,
+          episodes,
+          watched: Math.min(episodes, number('watched', 0, 5000)),
+          percent: number('percent', 0, 100),
+          seen: field('seen').checked,
+          links: draft.links.map((l) => ({ label: l.label, url: safeUrl(l.url) })).filter((l) => l.url),
+          cover: draft.cover,
+          colors: draft.colors,
+        };
+        if (editing) Object.assign(editing, data);
+        else media.unshift({ id: nextId++, ...data });
+        closeForm();
+        render();
+      });
+      form.addEventListener('input', (e) => e.target.setCustomValidity?.(''));
+      $('close-form').addEventListener('click', closeForm);
+      $('add-media').addEventListener('click', () => openForm());
+      document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape' && editor.isEditing() && !document.querySelector('dialog[open]')) closeForm();
+      });
+
+      const deleteDialog = $('delete-dialog');
+      closeOnBackdrop(deleteDialog);
+      $('delete-media').addEventListener('click', () => {
+        $('delete-name').textContent = editing.title;
+        deleteDialog.returnValue = '';
+        deleteDialog.showModal();
+      });
+      deleteDialog.addEventListener('close', () => {
+        if (deleteDialog.returnValue !== 'delete' || !editing) return;
+        media.splice(media.indexOf(editing), 1);
+        closeForm();
+        render();
+      });
+
+      $('search').addEventListener('input', (e) => {
+        query = e.target.value.trim().toLowerCase();
+        render();
+      });
+
+      function render() {
+        filterOptions.forEach((label) => {
+          const type = label.querySelector('input').value;
+          const count = type === 'All' ? media.length : media.filter((m) => m.type === type).length;
+          label.querySelector('span').textContent = `${type === 'All' ? 'All' : typeLabels[type]} ${count}`;
+        });
+        const visible = media.filter((m) => (typeFilter === 'All' || m.type === typeFilter) && (!query || m.title.toLowerCase().includes(query)));
+        $('covers').replaceChildren(
+          ...visible.map((m) => {
+            const item = el('li');
+            const button = el('button', `c-cover${editing === m && editor.isEditing() ? ' is-editing' : ''}`);
+            button.type = 'button';
+            button.dataset.id = m.id;
+            const art = el('span', `c-cover__art${m.cover ? '' : ' is-placeholder'}`);
+            art.style.backgroundImage = coverBackground(m);
+            art.dataset.title = m.title;
+            const tag = el('span', 'c-tag', typeTags[m.type]);
+            tag.style.setProperty('--tag-color', typeColors[m.type]);
+            art.append(tag);
+            const { ratio, text } = progress(m);
+            const bar = el('span', 'c-progress');
+            bar.setAttribute('role', 'progressbar');
+            bar.setAttribute('aria-label', `${m.title} progress`);
+            bar.setAttribute('aria-valuemin', '0');
+            bar.setAttribute('aria-valuemax', '100');
+            bar.setAttribute('aria-valuenow', String(Math.round(ratio * 100)));
+            const fill = el('span');
+            fill.style.width = `${Math.min(100, ratio * 100)}%`;
+            bar.append(fill);
+            button.append(art, el('span', 'c-cover__title', m.title), el('span', 'c-cover__progress', text), bar);
+            button.addEventListener('click', () => openForm(m));
+            item.append(button);
+            return item;
+          }),
+        );
+        $('message').hidden = visible.length > 0;
+        $('message-text').textContent = query ? `Nothing matches “${query}”.` : 'Nothing here yet. Add the anime, manga, games and movies you love.';
+      }
+
+      render();
+    })();
+  </script>
+</body>
+</html>

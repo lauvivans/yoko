@@ -1,0 +1,126 @@
+/*
+  Components shared by the module pages: list toolbar, popovers, dialogs and form fields.
+  Mobile first. Values come from tokens.css.
+*/
+
+/* List toolbar */
+.c-list-toolbar{display:flex;flex-wrap:wrap;gap:8px}
+.c-list-toolbar__btn{all:unset;display:inline-flex;align-items:center;gap:6px;padding:7px 12px;border-radius:var(--border-r-default);font-size:var(--text-sm);font-weight:var(--font-highlight);cursor:pointer;background:var(--bg-surface-raised);border:1px solid var(--border-color-line)}
+.c-list-toolbar__btn:hover{border-color:var(--text-color-muted)}
+.c-list-toolbar__btn:focus-visible{outline:2px solid var(--accent)}
+.c-list-toolbar__btn svg{width:18px;height:18px}
+.c-list-toolbar__btn--danger[aria-disabled="false"]{background:var(--red);color:var(--dark);border-color:var(--dark)}
+.c-list-toolbar__btn--danger[aria-disabled="true"]{cursor:default;opacity:.6}
+.c-list-toolbar__btn[aria-pressed="true"]{background:var(--module);color:var(--dark);border-color:var(--dark)}
+.c-list-toolbar{position:relative}
+.c-list-toolbar__btn.is-active{border-color:var(--text-color-default)}
+
+/* Popovers: full width under the toolbar on mobile, under their button from tablet up */
+.c-popover{position:absolute;top:calc(100% + 8px);left:0;right:0;z-index:50;display:grid;gap:10px;padding:16px;border-radius:var(--border-r-default);background:var(--bg-surface);border:1px solid var(--border-color-line);box-shadow:var(--shadow-lg)}
+.c-popover h2{font-size:var(--text-base);font-weight:var(--font-bold)}
+.c-popover h3{font-size:var(--text-xs);font-weight:var(--font-bold);letter-spacing:.04em;text-transform:uppercase;color:var(--text-color-muted)}
+.c-popover__group-head{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:8px}
+.c-popover__check{display:flex;align-items:center;gap:6px;font-size:var(--text-xs);font-weight:var(--font-highlight);cursor:pointer}
+.c-popover__check input{width:16px;height:16px;margin:0;accent-color:var(--text-color-default)}
+.c-popover__chips{display:flex;flex-wrap:wrap;gap:6px}
+.c-popover .c-chip:hover{background:var(--bg-surface-raised);color:var(--text-color-default);border-color:var(--text-color-muted)}
+.c-popover .c-chip[aria-pressed="true"]{background:var(--module);color:var(--dark);border-color:var(--dark)}
+.c-popover .c-button{justify-self:start}
+
+/* Dialogs: a bottom sheet on mobile, centered from tablet up */
+.c-dialog{width:100%;max-width:100%;margin:auto 0 0;padding:18px 16px 20px;border:0;border-radius:var(--border-r-default) var(--border-r-default) 0 0;background:var(--bg-surface);color:var(--text-color-default);box-shadow:var(--shadow-lg)}
+.c-dialog::backdrop{background:rgba(26,26,26,.45)}
+.c-dialog form,.c-form{display:grid;gap:12px}
+.c-dialog__head{display:flex;align-items:center;justify-content:space-between;gap:12px}
+.c-dialog__head h2{font-size:var(--text-base);font-weight:var(--font-highlight)}
+.c-dialog__head h2 b{font-weight:var(--font-bold)}
+.c-dialog__head .c-icon-btn:hover{background:var(--bg-surface-raised)}
+.c-dialog__title{all:unset;font-size:var(--text-lg);font-weight:var(--font-bold);padding:4px 0;border-bottom:1px solid var(--border-color-line)}
+.c-dialog__title:focus{border-color:var(--text-color-default)}
+.c-dialog__title::placeholder{color:var(--text-color-muted)}
+.c-dialog__row{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.c-dialog__check{display:flex;align-items:center;gap:8px;font-size:var(--text-sm);font-weight:var(--font-highlight);cursor:pointer}
+.c-dialog__check input{width:18px;height:18px;margin:0;accent-color:var(--text-color-default)}
+.c-dialog__actions{display:flex;justify-content:flex-end;gap:8px}
+.c-confirm__note{font-size:var(--text-sm);font-weight:var(--font-regular);color:var(--text-color-default)}
+.c-button--danger{background:var(--red);color:var(--dark);border:1px solid var(--dark)}
+
+/* Form fields */
+.c-field{display:grid;gap:4px}
+.c-field span{font-size:var(--text-xs);font-weight:var(--font-bold);letter-spacing:.04em;text-transform:uppercase;color:var(--text-color-muted)}
+.c-field input,.c-field select,.c-field textarea{width:100%;padding:9px 12px;border-radius:var(--border-r-default);border:1px solid var(--border-color-line);background:var(--bg-surface-raised);color:var(--text-color-default);font:inherit;font-size:var(--text-sm)}
+.c-field textarea{resize:vertical}
+.c-field :focus-visible{outline:2px solid var(--accent)}
+[data-theme="dark"] .c-field input{color-scheme:dark}
+
+@media (min-width:481px){
+  .c-dialog{width:min(480px,92vw);margin:auto;padding:20px 22px;border-radius:var(--border-r-default)}
+  .c-confirm{width:min(400px,92vw)}
+  .c-dropdown{position:relative}
+  .c-popover{right:auto;width:440px}
+  .c-popover--narrow{width:max-content}
+  .c-popover--right{left:auto;right:0}
+}
+
+/* Workspace: a list with an edit panel. The panel takes the screen on mobile, slides over the list on tablets and laptops, and sits next to it on large screens */
+.c-workspace__list{display:flex;flex-direction:column;gap:18px}
+.c-workspace__panel{position:fixed;inset:0;z-index:700;display:grid;align-content:start;gap:14px;padding:16px;overflow-y:auto;background:var(--bg-surface-raised)}
+.c-workspace__panel[hidden]{display:none}
+@media (prefers-reduced-motion:no-preference){.c-workspace__panel{animation:panel-in var(--duration-default) var(--ease-out)}}
+@keyframes panel-in{from{opacity:0;transform:translateX(24px)}}
+@media (min-width:769px){
+  .c-workspace__panel{inset:var(--topbar) 0 0 auto;width:min(420px,100%);padding:20px;border-left:1px solid var(--border-color-line);box-shadow:var(--shadow-lg)}
+}
+@media (min-width:1280px){
+  .c-workspace.is-editing{display:grid;grid-template-columns:minmax(0,1fr) 360px;align-items:start;gap:20px}
+  .c-workspace__panel{position:sticky;top:22px;inset:auto;width:auto;z-index:auto;padding:0;overflow:visible;background:none;border:0;box-shadow:none;animation:none}
+  .c-workspace__panel .c-form{max-height:calc(min(860px,92vh) - var(--topbar) - 48px);overflow-y:auto;padding:18px 16px 22px;border-radius:var(--border-r-default);border:1px solid var(--border-color-line);background:var(--bg-surface)}
+}
+
+/* Swipe a row to the left to reveal its action (delete). The card slides over the action. */
+.c-swipe{position:relative}
+.c-swipe__action{all:unset;position:absolute;inset:0;display:flex;align-items:center;justify-content:flex-end;padding-right:22px;border-radius:var(--border-r-default);background:var(--red);color:var(--dark);font-size:var(--text-sm);font-weight:var(--font-bold);cursor:pointer}
+.c-swipe__action:focus-visible{outline:2px solid var(--accent)}
+/* Two classes so a card's own reset (all:unset) can't drop the positioning that keeps it above the action */
+.c-swipe .c-swipe__card{position:relative;touch-action:pan-y;transition:transform var(--duration-default) var(--ease-out)}
+.c-swipe.is-swiping .c-swipe__card{transition:none}
+
+/* Weekday chips: checkboxes that look like pills */
+.c-weekdays{display:flex;flex-wrap:wrap;gap:6px}
+.c-weekday{position:relative}
+.c-weekday input{position:absolute;opacity:0;width:1px;height:1px}
+.c-weekday span{display:inline-grid;place-items:center;min-width:44px;height:34px;padding:0 8px;border-radius:var(--border-r-pill);border:1px solid var(--border-color-line);background:var(--bg-surface-raised);font-size:var(--text-xs);font-weight:var(--font-bold);cursor:pointer}
+.c-weekday input:checked + span{background:var(--module);color:var(--dark);border-color:var(--dark)}
+.c-weekday input:focus-visible + span{outline:2px solid var(--accent)}
+
+/* Segmented choice: radios that look like a pill switcher */
+.c-segmented{display:inline-flex;gap:3px;padding:3px;border-radius:var(--border-r-pill);border:1px solid var(--border-color-line);background:var(--bg-surface-raised)}
+.c-segmented label{padding:4px 12px;border-radius:var(--border-r-pill);font-size:var(--text-xs);font-weight:var(--font-bold);color:var(--text-color-muted);cursor:pointer}
+.c-segmented label:has(input:checked){background:var(--bg-surface);color:var(--text-color-default);box-shadow:var(--shadow-sm)}
+.c-segmented label:has(input:focus-visible){outline:2px solid var(--accent)}
+
+/* Color swatches: radios that show a category color */
+.c-swatches{display:flex;flex-wrap:wrap;gap:8px}
+.c-swatch{position:relative;cursor:pointer}
+.c-swatch span{display:block;width:30px;height:30px;border-radius:var(--border-r-full);border:var(--border-w-default) solid var(--border-color-line);background:var(--swatch)}
+.c-swatch input:checked + span{border:var(--border-w-highlight) solid var(--border-color-dark);box-shadow:inset 0 0 0 3px var(--bg-surface)}
+.c-swatch input:focus-visible + span{outline:2px solid var(--accent);outline-offset:2px}
+
+/* Progress bar */
+.c-progress{display:block;height:6px;border-radius:var(--border-r-pill);background:var(--bg-surface-raised);overflow:hidden}
+.c-progress span{display:block;height:100%;border-radius:inherit;background:var(--text-color-default);transition:width .1s}
+
+/* Export and import data */
+.c-data[open]{display:grid;gap:14px}
+.c-data__step{display:grid;gap:12px;font-size:var(--text-sm)}
+.c-data__choices{display:flex;flex-wrap:wrap;gap:10px}
+.c-data__steps{display:grid;gap:14px;margin:0;padding-left:20px}
+.c-data__steps li{display:grid;gap:6px}
+.c-data .c-button{justify-self:start}
+.c-data__hint{font-size:var(--text-xs);color:var(--text-color-muted)}
+.c-data__percent{display:flex;justify-content:space-between;font-size:var(--text-xs);font-weight:var(--font-highlight)}
+.c-data__result{font-size:var(--text-base);font-weight:var(--font-bold)}
+.c-data[data-state="done"]{box-shadow:var(--shadow-lg),inset 0 0 0 var(--border-w-highlight) var(--border-color-success)}
+.c-data[data-state="error"]{box-shadow:var(--shadow-lg),inset 0 0 0 var(--border-w-highlight) var(--border-color-error)}
+.c-data[data-state="error"] .c-data__result::before{content:'✕ ';color:var(--text-color-error)}
+.c-data__mascot{justify-self:end;width:80px;height:auto;margin-top:-40px;transform:rotate(-8deg);pointer-events:none}
