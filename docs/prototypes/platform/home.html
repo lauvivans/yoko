@@ -20,7 +20,7 @@
     .c-module-card:hover{transform:translateY(-3px);box-shadow:0 10px 0 -1px var(--dark)}
     .c-module-card:focus-visible{outline:3px solid var(--accent);outline-offset:3px}
     .c-module-card__icon{display:grid;place-items:center;width:44px;height:44px;border-radius:var(--border-r-default);background:rgba(255,255,255,.7)}
-    .c-module-card__icon svg,.c-module-card__icon img{width:28px;height:28px}
+    .c-module-card__icon svg,.c-module-card__icon img{width:34px;height:34px}
     .c-module-card h3{font-size:var(--text-lg);font-weight:var(--font-bold);display:flex;align-items:baseline;gap:6px}
     .c-module-card h3 small{font-size:var(--text-xs);font-weight:var(--font-highlight);opacity:.7}
     .c-module-card p{font-size:var(--text-sm);line-height:1.5}
@@ -60,7 +60,7 @@
                 <span class="c-module-card__stat">5 events</span>
               </a>
               <a class="c-module-card" href="places.html" style="--card-color:var(--yellow)">
-                <span class="c-module-card__icon" data-icon="otter"></span>
+                <span class="c-module-card__icon" data-icon="places"></span>
                 <h3>Places</h3>
                 <p>Mark the places you have been to on the map and keep their photos.</p>
                 <span class="c-module-card__stat">6 places · 15 photos</span>
@@ -123,9 +123,6 @@
   <script src="shell.js"></script>
   <script src="components.js"></script>
   <script>
-    // Reuse the sidebar icons in the module cards.
-    const sidebarIcon = (id) => document.querySelector(`.c-sidebar [href][aria-label^="${id}"] svg`)?.outerHTML ?? '';
-    const names = { occurrences: 'Occurrences', links: 'Links', notes: 'Notes', tasks: 'Tasks', mood: 'Mood', routines: 'Routines', media: 'Media', lists: 'Lists' };
     // Cards of hidden modules (Settings > Modules) stay out of the home page.
     const showModuleCards = () =>
       document.querySelectorAll('.c-module-card').forEach((card) => {
@@ -135,7 +132,7 @@
     showModuleCards();
     document.addEventListener('yoko:modules', showModuleCards);
     document.querySelectorAll('[data-icon]').forEach((el) => {
-      el.innerHTML = el.dataset.icon === 'otter' ? window.otter : sidebarIcon(names[el.dataset.icon]);
+      el.innerHTML = window.mascots[el.dataset.icon] ?? '';
     });
   </script>
 </body>

@@ -51,8 +51,8 @@
     .c-modules{display:grid;gap:4px}
     .c-module-switch{display:flex;align-items:center;gap:12px;padding:8px 0;border-top:1px solid var(--border-color-line);font-size:var(--text-sm);font-weight:var(--font-highlight)}
     .c-module-switch:first-child{border-top:0}
-    .c-module-switch__icon{display:grid;place-items:center;flex:none;width:34px;height:34px;border-radius:var(--border-r-default);border:var(--border-w-default) solid var(--border-color-dark);background:var(--module-color);color:var(--dark)}
-    .c-module-switch__icon svg{width:20px;height:20px}
+    .c-module-switch__icon{display:grid;place-items:center;flex:none;width:40px;height:40px;border-radius:var(--border-r-default);border:var(--border-w-default) solid var(--border-color-dark);background:var(--module-color);color:var(--dark)}
+    .c-module-switch__icon svg{width:32px;height:32px}
     .c-module-switch span:nth-child(2){margin-right:auto}
     .c-module-switch .c-switch[aria-disabled="true"]{cursor:not-allowed;opacity:var(--opacity-strong)}
 
@@ -297,6 +297,7 @@
     </form>
   </dialog>
 
+  <script src="mascots.js"></script>
   <script src="shell.js"></script>
   <script src="components.js"></script>
   <script src="data.js"></script>
@@ -417,8 +418,7 @@
           const icon = document.createElement('span');
           icon.className = 'c-module-switch__icon';
           icon.style.setProperty('--module-color', moduleColors[m.id]);
-          const svg = document.querySelector(`.c-sidebar [data-module="${m.id}"] svg`);
-          if (svg) icon.append(svg.cloneNode(true));
+          icon.insertAdjacentHTML('afterbegin', window.mascots[m.id] ?? '');
           const name = document.createElement('span');
           name.id = `module-${m.id}`;
           name.textContent = m.label;

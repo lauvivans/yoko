@@ -106,6 +106,8 @@
   --shadow-sm:0 4px 12px rgba(57,61,63,.18);
   --shadow-md:0 6px 16px rgba(57,61,63,.25);
   --shadow-lg:0 18px 40px rgba(57,61,63,.18);
+  /* Mascot outline: the same as the body in light, a light edge in dark so the silhouette stays visible */
+  --mascot-outline:var(--dark);
   /* Illustrated map (Places) */
   --map-land:#f3efe6;
   --map-block:#ebe5d8;
@@ -125,6 +127,7 @@
   --shadow-sm:0 4px 12px rgba(0,0,0,.3);
   --shadow-md:0 6px 16px rgba(0,0,0,.4);
   --shadow-lg:0 18px 40px rgba(0,0,0,.45);
+  --mascot-outline:var(--text-color-muted);
   /* Illustrated map (Places) */
   --map-land:#262a2c;
   --map-block:#2d3234;
