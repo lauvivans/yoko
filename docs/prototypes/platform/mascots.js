@@ -572,7 +572,7 @@
     },
   };
 
-  // Mascots drawn looking to one side, so the one on screen turns to look where it walks.
+  // Mascots drawn looking to one side, so a visiting one turns to look where it moves.
   const facing = {
     sea: { occurrences: 'left', routines: 'left' },
     halloween: {},
