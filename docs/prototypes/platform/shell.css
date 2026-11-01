@@ -124,7 +124,7 @@ body{min-height:100vh;background:var(--bg-page);color:var(--text-color-default);
 /* Mascot visits (buddy.js): the module mascot passes by now and then, clipped to the content */
 .c-buddy{position:absolute;inset:0;z-index:650;overflow:hidden;pointer-events:none}
 .c-buddy:not(.is-out) .c-buddy__mover{visibility:hidden}
-.c-buddy__mover{position:absolute;top:0;left:0;width:72px;height:72px}
+.c-buddy__mover{position:absolute;top:0;left:0;width:96px;height:96px}
 .c-buddy__body{all:unset;display:block;width:100%;height:100%;cursor:pointer;pointer-events:auto}
 .c-buddy__body svg{width:100%;height:100%}
 .c-buddy__body.is-flipped svg{transform:scaleX(-1)}
