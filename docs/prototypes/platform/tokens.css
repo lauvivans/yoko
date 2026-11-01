@@ -21,6 +21,17 @@
   --dark-md:#262626;
   --dark:#1a1a1a;
   --white:#fff;
+  /* Night tones for the dusk mascot themes (Halloween, Gothic) */
+  --dusk:#5b5370;
+  --night:#3f3a52;
+  --plum:#7a4f6d;
+  --moss:#5d7553;
+  --pumpkin:#e8935a;
+  --bone:#ece5d3;
+  /* Muted tones for the outlined Sea cast, next to the night tones above */
+  --tide:#4a6f85;
+  --kelp:#4f7a68;
+  --slate:#636b78;
 
   /* Category colors */
   --bg-cat-personal:#ccf0ec;
