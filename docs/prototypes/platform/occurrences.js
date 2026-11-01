@@ -401,6 +401,7 @@
     if (done) {
       const o = occurrences.find((item) => item.id === Number(done.dataset.done));
       o.doneToday = !o.doneToday;
+      if (o.doneToday) document.dispatchEvent(new CustomEvent('yoko:cheer'));
       const step = o.doneToday ? 1 : -1;
       o.doneDays += step;
       if (o.goal) o.goal.done = Math.max(0, o.goal.done + step);

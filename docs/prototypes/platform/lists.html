@@ -250,6 +250,7 @@
           box.setAttribute('aria-label', `Done: ${i.text}`);
           box.addEventListener('change', () => {
             i.done = box.checked;
+            if (box.checked) document.dispatchEvent(new CustomEvent('yoko:cheer'));
             render();
           });
           card.append(box);

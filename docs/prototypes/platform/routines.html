@@ -185,6 +185,7 @@
           box.checked = r.checked.includes(i);
           box.addEventListener('change', () => {
             r.checked = box.checked ? [...r.checked, i] : r.checked.filter((c) => c !== i);
+            if (isDone(r)) document.dispatchEvent(new CustomEvent('yoko:cheer'));
             render();
           });
           label.append(box, el('span', '', step));
@@ -225,6 +226,7 @@
             r.last = { step: r.steps[r.position], when: 'today' };
             r.position = (r.position + 1) % r.steps.length;
             r.doneToday = true;
+            document.dispatchEvent(new CustomEvent('yoko:cheer'));
             render();
           });
           actions.append(done);

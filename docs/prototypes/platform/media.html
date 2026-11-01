@@ -272,6 +272,7 @@
           box.setAttribute('aria-label', `Volume ${v}`);
           box.addEventListener('change', () => {
             draft.owned = box.checked ? [...draft.owned, v].sort((a, b) => a - b) : draft.owned.filter((o) => o !== v);
+            if (box.checked) document.dispatchEvent(new CustomEvent('yoko:cheer'));
             syncOwnedHint(total);
           });
           label.append(box, el('span', '', v));

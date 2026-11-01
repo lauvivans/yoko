@@ -276,7 +276,8 @@
   document.querySelectorAll('[data-mascot]').forEach((el) => el.insertAdjacentHTML('afterbegin', window.mascots?.[el.dataset.mascot] ?? ''));
 
   // Every page with the shell gets the search palette, in this order.
-  ['search-data.js', 'search.js'].forEach((src) => {
+  // Pages with a mascot also get its visits (buddy.js).
+  [...['search-data.js', 'search.js'], ...(window.mascots?.[page] ? ['buddy.js'] : [])].forEach((src) => {
     const script = document.createElement('script');
     script.src = src;
     script.async = false;

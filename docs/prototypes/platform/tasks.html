@@ -453,6 +453,7 @@
       const chooseStatus = (index) => {
         const id = menuButton.dataset.id;
         tasks.find((t) => t.id === Number(id)).status = statuses[index].id;
+        if (statuses[index].id === 'completed') document.dispatchEvent(new CustomEvent('yoko:cheer'));
         closeStatus(false);
         render();
         list.querySelector(`.c-task__status[data-id="${id}"]`)?.focus();
