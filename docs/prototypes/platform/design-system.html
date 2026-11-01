@@ -36,6 +36,10 @@
 
     .c-states{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:14px}
 
+    .c-photo-samples{display:grid;grid-template-columns:repeat(auto-fill,minmax(120px,1fr));align-items:end;gap:14px}
+    .c-photo-sample{display:flex;align-items:flex-end;padding:8px;aspect-ratio:var(--ratio);border-radius:var(--border-r-default);background:var(--photo-placeholder) center / cover,linear-gradient(135deg,var(--from),var(--to))}
+    .c-photo-sample--busy{background:var(--photo-placeholder) center / cover,var(--photo-texture),linear-gradient(135deg,var(--from),var(--to))}
+
     .c-breakpoints{width:100%;border-collapse:collapse;font-size:var(--text-sm)}
     .c-breakpoints th,.c-breakpoints td{padding:8px 10px;text-align:left;border-bottom:var(--border-w-default) solid var(--border-color-line)}
     .c-breakpoints th{font-size:var(--text-xs);color:var(--text-color-muted)}
@@ -98,6 +102,17 @@
               <label class="c-field"><span>Disabled</span><select class="c-select__native" disabled><option>Personal</option></select></label>
               <label class="c-field"><span>With colors</span><select class="c-select__native"><option style="--option-color:var(--bg-status-todo)">To do</option><option style="--option-color:var(--bg-status-in-progress)">In progress</option><option style="--option-color:var(--bg-status-blocked)">Blocked</option></select></label>
               <div><select class="c-select__native" aria-label="Standalone example"><option>1 hour before</option><option>1 day before</option></select></div>
+            </div>
+          </section>
+
+          <section aria-labelledby="photo-title">
+            <h2 id="photo-title">Photo placeholder</h2>
+            <p class="p-tokens__intro">Sample images are a gradient with <code>--photo-placeholder</code> on top, so they read as photos without keeping real pictures or artwork in the repository. <code>--photo-texture</code> makes a sample busy, to check captions and tags over busy images. Images the user uploads show as they are.</p>
+            <div class="c-photo-samples">
+              <div class="c-photo-sample" style="--ratio:3 / 4;--from:#f6b26b;--to:#e06666"><span class="c-tag c-tag--plain">Portrait</span></div>
+              <div class="c-photo-sample" style="--ratio:1;--from:#9fc5e8;--to:#3d85c6"><span class="c-tag c-tag--plain">Square</span></div>
+              <div class="c-photo-sample" style="--ratio:4 / 3;--from:#93c47d;--to:#38761d"><span class="c-tag c-tag--plain">Landscape</span></div>
+              <div class="c-photo-sample c-photo-sample--busy" style="--ratio:3 / 4;--from:#ffd966;--to:#e69138"><span class="c-tag c-tag--plain">Busy</span></div>
             </div>
           </section>
 

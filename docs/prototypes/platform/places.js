@@ -4,7 +4,7 @@ const { closeOnBackdrop } = window.YokoUI;
 
 $('module-badge').insertAdjacentHTML('afterbegin', window.mascots.places);
 
-// Sample data for the prototype. Photos are gradients, not real pictures; ratio is width / height.
+// Sample data for the prototype. Photos are gradients with a photo icon, not real pictures; ratio is width / height.
 const categories = {
   Travel: 'var(--bg-cat-travel)',
   Social: 'var(--bg-cat-social)',
@@ -12,7 +12,7 @@ const categories = {
   Reading: 'var(--bg-cat-reading)',
   Family: 'var(--bg-cat-family)',
 };
-const photo = (from, to, caption, ratio) => ({ colors: [from, to], caption, ratio });
+const photo = (from, to, caption, ratio, busy = false) => ({ colors: [from, to], caption, ratio, busy });
 const places = [
   { id: 1, title: 'Primrose Hill', where: 'Camden, London', x: 18, y: 19, category: 'Hobby', visited: '2025-03-12', fav: true,
     note: 'Sunset picnic with the whole city at our feet. Bring a blanket, the grass gets wet early.',
@@ -22,7 +22,7 @@ const places = [
     photos: [photo('#b4a7d6', '#674ea7', 'The tower of books', 2 / 3), photo('#d5a6bd', '#a64d79', 'Reading room', 4 / 3)] },
   { id: 3, title: 'Borough Market', where: 'Southwark, London', x: 54, y: 83, category: 'Social', visited: '2025-03-15', fav: true,
     note: 'Lunch with friends. Go before noon on Saturdays or it gets packed.',
-    photos: [photo('#ffd966', '#e69138', 'Food stalls', 1), photo('#ea9999', '#cc0000', 'Strawberries', 4 / 5), photo('#b6d7a8', '#6aa84f', 'Green market', 3 / 2)] },
+    photos: [photo('#ffd966', '#e69138', 'Food stalls', 1, true), photo('#ea9999', '#cc0000', 'Strawberries', 4 / 5), photo('#b6d7a8', '#6aa84f', 'Green market', 3 / 2, true)] },
   { id: 4, title: 'Tower Bridge', where: 'Tower Hamlets, London', x: 65, y: 73, category: 'Travel', visited: '2025-03-15', fav: false,
     note: 'Walked across at night. The glass floor of the walkway is scary and worth it.',
     photos: [photo('#6fa8dc', '#1c4587', 'At night', 3 / 4), photo('#a2c4c9', '#45818e', 'From the river', 16 / 9)] },
@@ -42,7 +42,8 @@ const icons = {
   close: '<svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path stroke="currentColor" stroke-width="1.8" stroke-linecap="round" d="M18 6 6 18M6 6l12 12"/></svg>',
 };
 
-const background = (p) => (p.url ? `url("${p.url}")` : `linear-gradient(135deg, ${p.colors[0]}, ${p.colors[1]})`);
+const background = (p) =>
+  p.url ? `url("${p.url}")` : [`var(--photo-placeholder)`, p.busy && 'var(--photo-texture)', `linear-gradient(135deg, ${p.colors[0]}, ${p.colors[1]})`].filter(Boolean).join(', ');
 const formatDate = (iso) => new Date(`${iso}T00:00`).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' });
 const todayIso = () => {
   const now = new Date();

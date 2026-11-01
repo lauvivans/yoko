@@ -174,19 +174,19 @@
         remove: '<svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path stroke="currentColor" stroke-width="1.8" stroke-linecap="round" d="M18 6 6 18M6 6l12 12"/></svg>',
       };
 
-      // Sample data. Covers are gradients: the prototype is public and keeps no artwork.
+      // Sample data. Covers are gradients with a photo icon: the prototype is public and keeps no artwork.
       let nextId = 1;
       const range = (from, to) => Array.from({ length: to - from + 1 }, (_, i) => from + i);
       const media = [
         { id: nextId++, title: 'Sasaki and Miyano', type: 'Anime', colors: ['#f6b26b', '#e06666'], hasManga: true, volumes: 10, owned: [1, 2], hasAnime: true, episodes: 12, watched: 12, links: [] },
         { id: nextId++, title: 'Kimi ni Todoke', type: 'Anime', colors: ['#9fc5e8', '#e06666'], hasManga: true, volumes: 30, owned: range(1, 30), hasAnime: true, episodes: 38, watched: 25, links: [{ label: 'Chapter 0: Prologue', url: 'https://chapmanganelo.com/manga-oe89998/chapter-0' }] },
-        { id: nextId++, title: 'Hyouka', type: 'Anime', colors: ['#ffe599', '#6aa84f'], hasManga: true, volumes: 6, owned: range(1, 6), hasAnime: true, episodes: 22, watched: 22, links: [{ label: 'Chapter 1', url: 'https://chapmanganelo.com/manga-ds91538/chapter-1' }] },
+        { id: nextId++, title: 'Hyouka', type: 'Anime', colors: ['#ffe599', '#6aa84f'], busy: true, hasManga: true, volumes: 6, owned: range(1, 6), hasAnime: true, episodes: 22, watched: 22, links: [{ label: 'Chapter 1', url: 'https://chapmanganelo.com/manga-ds91538/chapter-1' }] },
         { id: nextId++, title: 'Kamisama Hajimemashita', type: 'Anime', colors: ['#f4cccc', '#a64d79'], hasManga: true, volumes: 25, owned: range(1, 25), hasAnime: false, links: [] },
         { id: nextId++, title: 'Akuyaku Reijō Nanode Rasubosu o Katte Mimashita', type: 'Anime', colors: ['#b4a7d6', '#1c4587'], hasManga: true, volumes: 10, owned: range(1, 10), hasAnime: false, links: [] },
         { id: nextId++, title: 'Frieren: Beyond Journey’s End', type: 'Anime', colors: ['#a2c4c9', '#45818e'], hasManga: false, hasAnime: true, episodes: 28, watched: 20, links: [] },
         { id: nextId++, title: 'Spy x Family', type: 'Anime', colors: ['#ea9999', '#38761d'], hasManga: true, volumes: 13, owned: [1, 2, 3, 4], hasAnime: true, episodes: 37, watched: 37, links: [] },
         { id: nextId++, title: 'Stardew Valley', type: 'Game', colors: ['#b6d7a8', '#e69138'], percent: 70, links: [] },
-        { id: nextId++, title: 'Hollow Knight', type: 'Game', colors: ['#6fa8dc', '#20124d'], percent: 40, links: [] },
+        { id: nextId++, title: 'Hollow Knight', type: 'Game', colors: ['#6fa8dc', '#20124d'], busy: true, percent: 40, links: [] },
         { id: nextId++, title: 'Celeste', type: 'Game', colors: ['#d5a6bd', '#674ea7'], percent: 100, links: [] },
         { id: nextId++, title: 'Spirited Away', type: 'Movie', colors: ['#9fc5e8', '#cc0000'], seen: true, links: [] },
         { id: nextId++, title: 'Your Name', type: 'Movie', colors: ['#cfe2f3', '#3d85c6'], seen: true, links: [] },
@@ -217,7 +217,8 @@
         if (m.type === 'Movie') return { ratio: m.seen ? 1 : 0, text: m.seen ? 'Watched' : 'Not watched yet' };
         return { ratio: m.percent / 100, text: m.percent >= 100 ? 'Finished' : `${m.percent}% done` };
       };
-      const coverBackground = (m) => (m.cover ? `url("${m.cover}")` : `linear-gradient(160deg, ${m.colors[0]}, ${m.colors[1]})`);
+      const coverBackground = (m) =>
+        m.cover ? `url("${m.cover}")` : ['var(--photo-placeholder)', m.busy && 'var(--photo-texture)', `linear-gradient(160deg, ${m.colors[0]}, ${m.colors[1]})`].filter(Boolean).join(', ');
       const safeUrl = (text) => {
         try {
           const url = new URL(text);
