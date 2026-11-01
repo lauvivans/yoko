@@ -45,6 +45,7 @@
 
     .p-landing h2{font-size:var(--text-lg);font-weight:var(--font-bold);text-align:center}
     .c-features{display:grid;gap:14px;list-style:none;padding:0;margin:16px 0 0}
+    .c-features__note{margin-top:4px;text-align:center;font-size:var(--text-sm);color:var(--text-color-muted)}
     .c-feature{display:grid;gap:6px;align-content:start;padding:18px;border-radius:var(--border-r-default);border:var(--border-w-default) solid var(--border-color-dark);background:var(--feature-color);color:var(--text-color-on-color);transition:transform var(--duration-default) var(--ease-spring),box-shadow var(--duration-default)}
     .c-feature:hover{transform:translateY(-4px) rotate(-1deg);box-shadow:var(--shadow-md)}
     .c-feature h3{display:flex;align-items:center;gap:8px;font-size:var(--text-base);font-weight:var(--font-bold)}
@@ -137,7 +138,7 @@
           <span class="u-visually-hidden">Your days, in one place.</span>
           <span aria-hidden="true">Your <span class="c-hero__words" id="hero-words"><span class="c-hero__word">days</span></span>, <span class="c-hero__highlight">in one place.</span></span>
         </h1>
-        <p class="js-intro">Yoko keeps your events, recurring actions, tasks, notes, places and links together, and asks how you’re feeling along the way.</p>
+        <p class="js-intro">Yoko keeps your events, routines, tasks, notes, lists, places, links and favorite stories together, and asks how you’re feeling along the way.</p>
         <div class="c-hero__actions js-intro">
           <a class="c-button c-button--module" href="login.html">Get started</a>
           <a class="c-button c-button--ghost" href="#features">See what it does</a>
@@ -146,13 +147,17 @@
 
       <section id="features" aria-labelledby="features-title">
         <h2 id="features-title" class="js-reveal">Everything you want to keep track of</h2>
+        <p class="c-features__note js-reveal">Turn on only the modules you use. The rest stays out of your way.</p>
         <ul class="c-features">
           <li class="c-feature" style="--feature-color:var(--blue)"><h3>Occurrences</h3><p>Count down to your events and count up the days you kept your habits, with goals.</p></li>
           <li class="c-feature" style="--feature-color:var(--bg-places)"><h3 id="places-feature">Places</h3><p>Pin the places you’ve been to on a map and keep their photos.</p><a class="c-feature__more" href="#places">See what you can do ↓</a></li>
           <li class="c-feature" style="--feature-color:var(--bg-cat-reading)"><h3>Links</h3><p>Save what you find on the web, sort it into collections and track what you’ve read.</p></li>
           <li class="c-feature" style="--feature-color:var(--bg-cat-finance)"><h3>Tasks</h3><p>Plan your day with time ranges and a status for each task.</p></li>
           <li class="c-feature" style="--feature-color:var(--bg-cat-study)"><h3>Notes</h3><p>Write down whatever is on your mind, with or without a title.</p></li>
-          <li class="c-feature" style="--feature-color:var(--bg-cat-social)"><h3>Mood</h3><p>Tell Yoko how you feel and look back at your mood history.</p></li>
+          <li class="c-feature" style="--feature-color:var(--bg-cat-social)"><h3>Mood</h3><p>Tell Yoko how you feel, write what was going on, and look back at your mood history.</p></li>
+          <li class="c-feature" style="--feature-color:var(--bg-cat-health)"><h3>Routines</h3><p>Steps you repeat on set days, like skincare, or a cycle that moves on, like a hair schedule.</p></li>
+          <li class="c-feature" style="--feature-color:var(--bg-cat-home)"><h3>Lists</h3><p>Checklists to tick off and collections to keep, with sections, like a capsule wardrobe.</p></li>
+          <li class="c-feature" style="--feature-color:var(--bg-cat-work)"><h3>Media</h3><p>The anime, manga, games and movies you love, with covers, the volumes you’re missing and where to watch.</p></li>
         </ul>
       </section>
 
@@ -236,8 +241,8 @@
     </footer>
   </div>
 
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js" integrity="sha512-7eHRwcbYkK4d9g/6tD/mhkf++eoTHwpNM9woBxtPUBWm67zeAfFC+HrdoE2GanKeocly/VxeLvIqwvCdk7qScg==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js" integrity="sha512-onMTRKJBKz8M1TnqqDuGBlowlH0ohFzMXYRNebz+yOcc5TQr/zAKsthzhuv0hiyUKEiQEQXEynnXCvNTOk50dg==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
   <script src="mascots.js"></script>
   <script src="landing.js"></script>
 </body>

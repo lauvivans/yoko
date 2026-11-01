@@ -262,7 +262,7 @@ if (hasMotion) {
       .to('#yoko-eye', { scaleY: 1, duration: motion.fast, ease: 'power2.out' });
   blink();
 
-  const words = ['days', 'tasks', 'notes', 'places', 'links', 'habits', 'moods'];
+  const words = ['days', 'tasks', 'routines', 'notes', 'lists', 'places', 'links', 'movies', 'moods'];
   let wordIndex = 0;
   // The new word rolls in while the old one rolls out, so the line is never empty.
   const nextWord = () => {
