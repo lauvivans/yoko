@@ -14,9 +14,9 @@
   if (!art || visitsOff() || window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
 
   const SIZE = 72;
-  const FIRST_VISIT_MS = 6000;
-  const VISIT_EVERY_MS = [25000, 45000];
-  const MAX_VISITS = 4;
+  const FIRST_VISIT_MS = 1500;
+  const VISIT_EVERY_MS = [12000, 20000];
+  const MAX_VISITS = 6;
   const BUBBLE_MS = 2600;
   // Mascots drawn facing left turn around when they swim to the right.
   const facesLeft = ['occurrences', 'routines'];
@@ -93,9 +93,9 @@
       const out = height() - SIZE + 14;
       face(Math.random() < 0.5);
       place(x, hidden);
-      await move([[x, hidden], [x, out]], 700, 'cubic-bezier(.34,1.56,.64,1)');
-      if (text) await say(text);
-      else await wait(2200);
+      const rise = move([[x, hidden], [x, out]], 380, 'cubic-bezier(.34,1.56,.64,1)');
+      if (text) await Promise.all([rise, say(text)]);
+      else await Promise.all([rise, wait(2200)]);
       await move([[x, out], [x, hidden]], 500, 'ease-in');
     },
     // Swim across the bottom, bobbing.
@@ -129,14 +129,14 @@
 
   // Click: a happy hop and a line.
   body.addEventListener('click', async () => {
-    await hop();
-    await say(pick(lines));
+    await Promise.all([hop(), say(pick(lines))]);
   });
 
   // Cheer when something is done (pages send yoko:cheer).
   const onCheer = () => {
     if (acting) {
-      hop().then(() => say(pick(cheers)));
+      hop();
+      say(pick(cheers));
       return;
     }
     run(async () => {

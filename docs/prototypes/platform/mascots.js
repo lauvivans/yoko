@@ -70,15 +70,17 @@
         '<circle class="m-light" cx="24" cy="30.5" r="2"/>',
     ),
 
-    // Routines: a seahorse, curled tail and crown, as steady as a morning routine.
+    // Routines: a seahorse, crown and curled tail, as steady as a morning routine.
     routines: mascot(
       'var(--bg-cat-health)',
-      '<path class="m-line" stroke-width="7" d="M27 19c5.5 3 6.5 9.5 3.5 14.5-2.2 3.6-5.6 5.2-8.2 4.3-2.6-.9-2.3-4 .1-4.6 2-.5 3.1 1 2.6 2.4"/>' +
-        '<path class="m-accent" d="M33 21.5l5.5 1.8-4.6 4Z"/>' +
-        '<path class="m-line" stroke-width="2" d="M23.5 7l1.2-3.6 1.6 3.4M27.6 7.6l3-2.4.3 3.6"/>' +
-        '<circle class="m-body" cx="26" cy="13.5" r="7.5"/>' +
-        '<path class="m-body" d="M11 12.2h11v3.8H11a1.9 1.9 0 0 1 0-3.8Z"/>' +
-        eye(27.5, 12.5, 3.3),
+      '<path class="m-line" stroke-width="5" d="M26.5 34.5c-1.2 4.2-.2 8 3.4 8.6 3 .5 4.4-2.4 2.5-4.1-1.5-1.3-3.4.2-2.5 1.7"/>' +
+        '<path class="m-accent" d="M34.5 21.5 40.5 20l-1.2 6-4.6 1.2Z"/>' +
+        '<path class="m-body" d="M25 16.5c5.5-1.2 10.8 2.6 11.2 9.2.4 5.6-3.2 9.8-7.8 10.8-3.6.8-6.3-1.6-6.3-5.6v-9.5c0-2.6 1-4.4 2.9-4.9Z"/>' +
+        '<path class="m-line" stroke-width="1.8" d="M24.5 7.6 25.5 4l1.8 3.3M28.6 7.2l2.7-2.6.6 3.4"/>' +
+        '<ellipse class="m-body" cx="27.3" cy="12" rx="6.6" ry="5.6" transform="rotate(-10 27.3 12)"/>' +
+        '<path class="m-body" d="M13 11.9h9.5v3.4H13a1.7 1.7 0 0 1 0-3.4Z"/><circle class="m-body" cx="12.3" cy="13.6" r="2.1"/>' +
+        '<path class="m-light-line" stroke-width="1.2" d="M23.6 22.5h3M23.3 26h3.6M23.4 29.5h3.6M24.4 33h3"/>' +
+        eye(28.5, 11.4, 3),
     ),
 
     // Media: a penguin with a tub of popcorn, ready for the next episode.
