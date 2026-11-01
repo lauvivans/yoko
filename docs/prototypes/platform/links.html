@@ -74,7 +74,6 @@
     .p-links__actions .c-button{flex:1;justify-content:center;text-decoration:none}
     .p-links__empty{padding:30px;text-align:center;color:var(--text-color-muted);border:2px dashed var(--border-color-line);border-radius:var(--border-r-default)}
     .p-links__end{display:flex;flex-direction:column;align-items:center;gap:6px;padding:12px 0 4px;color:var(--text-color-muted);font-size:var(--text-xs);font-weight:var(--font-highlight)}
-    .p-links__end img{width:140px;height:auto;transform:rotate(-8deg)}
 
     @media (min-width:769px){
       .p-links{display:grid;grid-template-columns:180px minmax(0,1fr);height:100%}
@@ -158,12 +157,13 @@
     </form>
   </dialog>
 
+  <script src="mascots.js"></script>
   <script src="shell.js"></script>
   <script src="components.js"></script>
   <script>
     // Sample taken from the Koda links (public), as they would look after the move.
-    // The list always ends with Yoko and a line, also when it is empty.
-    const endOfList = (text) => `<div class="p-links__end"><img src="../../../client/public/mascot.svg" alt=""><span>${text}</span></div>`;
+    // The list always ends with its mascot and a line, also when it is empty.
+    const endOfList = (text) => `<div class="p-links__end"><span class="c-empty-mascot">${window.mascots.links}</span><span>${text}</span></div>`;
 
     const links = [
       {

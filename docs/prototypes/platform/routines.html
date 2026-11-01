@@ -19,7 +19,6 @@
     .p-routines__section{display:grid;gap:10px}
     .p-routines__today{display:grid;gap:12px}
     .p-routines__message{display:flex;flex-direction:column;align-items:center;gap:10px;padding:24px 0;text-align:center;color:var(--text-color-muted);font-size:var(--text-sm);font-weight:var(--font-highlight)}
-    .p-routines__message img{width:110px;height:auto;transform:rotate(-8deg)}
 
     /* A routine due today: a checklist, or the next step of a cycle */
     .c-routine{display:grid;gap:12px;padding:14px 16px;border-radius:var(--border-r-default);border:var(--border-w-default) solid var(--border-color-line);border-left:6px solid var(--routine-color);background:var(--bg-surface)}
@@ -141,6 +140,7 @@
     </form>
   </dialog>
 
+  <script src="mascots.js"></script>
   <script src="shell.js"></script>
   <script src="components.js"></script>
   <script>
@@ -185,6 +185,7 @@
           box.checked = r.checked.includes(i);
           box.addEventListener('change', () => {
             r.checked = box.checked ? [...r.checked, i] : r.checked.filter((c) => c !== i);
+            if (isDone(r)) document.dispatchEvent(new CustomEvent('yoko:cheer'));
             render();
           });
           label.append(box, el('span', '', step));
@@ -225,6 +226,7 @@
             r.last = { step: r.steps[r.position], when: 'today' };
             r.position = (r.position + 1) % r.steps.length;
             r.doneToday = true;
+            document.dispatchEvent(new CustomEvent('yoko:cheer'));
             render();
           });
           actions.append(done);
@@ -338,10 +340,9 @@
           $('today').replaceChildren(...due.map(todayCard));
         } else {
           const message = el('div', 'p-routines__message');
-          const img = document.createElement('img');
-          img.src = '../../../client/public/mascot.svg';
-          img.alt = '';
-          message.append(img, el('span', '', query ? 'No routine due today matches your search.' : 'Nothing to do today. Enjoy it!'));
+          const mascot = el('span', 'c-empty-mascot');
+          mascot.innerHTML = window.mascots.routines;
+          message.append(mascot, el('span', '', query ? 'No routine due today matches your search.' : 'Nothing to do today. Enjoy it!'));
           $('today').replaceChildren(message);
         }
         $('all').replaceChildren(

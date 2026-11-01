@@ -21,6 +21,17 @@
   --dark-md:#262626;
   --dark:#1a1a1a;
   --white:#fff;
+  /* Night tones for the dusk mascot themes (Halloween, Gothic) */
+  --dusk:#5b5370;
+  --night:#3f3a52;
+  --plum:#7a4f6d;
+  --moss:#5d7553;
+  --pumpkin:#e8935a;
+  --bone:#ece5d3;
+  /* Muted tones for the outlined Sea cast, next to the night tones above */
+  --tide:#4a6f85;
+  --kelp:#4f7a68;
+  --slate:#636b78;
 
   /* Category colors */
   --bg-cat-personal:#ccf0ec;
@@ -106,6 +117,8 @@
   --shadow-sm:0 4px 12px rgba(57,61,63,.18);
   --shadow-md:0 6px 16px rgba(57,61,63,.25);
   --shadow-lg:0 18px 40px rgba(57,61,63,.18);
+  /* Mascot outline: the same as the body in light, a light edge in dark so the silhouette stays visible */
+  --mascot-outline:var(--dark);
   /* Illustrated map (Places) */
   --map-land:#f3efe6;
   --map-block:#ebe5d8;
@@ -125,6 +138,7 @@
   --shadow-sm:0 4px 12px rgba(0,0,0,.3);
   --shadow-md:0 6px 16px rgba(0,0,0,.4);
   --shadow-lg:0 18px 40px rgba(0,0,0,.45);
+  --mascot-outline:var(--text-color-muted);
   /* Illustrated map (Places) */
   --map-land:#262a2c;
   --map-block:#2d3234;

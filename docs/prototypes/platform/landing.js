@@ -22,8 +22,8 @@ const motion = {
   idle: seconds('--duration-idle'),
 };
 
-$('places-feature').insertAdjacentHTML('afterbegin', window.otter);
-$('places-badge').insertAdjacentHTML('afterbegin', window.otter);
+document.querySelectorAll('[data-mascot]').forEach((el) => el.insertAdjacentHTML('afterbegin', window.mascots[el.dataset.mascot] ?? ''));
+$('places-badge').insertAdjacentHTML('afterbegin', window.mascots.places);
 
 /* Yoko says hi */
 

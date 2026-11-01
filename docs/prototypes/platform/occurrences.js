@@ -263,7 +263,7 @@
     deleteButton.setAttribute('aria-disabled', String(selected === 0));
   };
 
-  // The octopus only shows in empty states, where there is room for it.
+  // The whale only shows in empty states, where there is room for it.
   const showMessage = (text, { reset = false, empty = true } = {}) => {
     messageText.textContent = text;
     messageReset.hidden = !reset;
@@ -401,6 +401,7 @@
     if (done) {
       const o = occurrences.find((item) => item.id === Number(done.dataset.done));
       o.doneToday = !o.doneToday;
+      if (o.doneToday) document.dispatchEvent(new CustomEvent('yoko:cheer'));
       const step = o.doneToday ? 1 : -1;
       o.doneDays += step;
       if (o.goal) o.goal.done = Math.max(0, o.goal.done + step);

@@ -72,7 +72,6 @@
     .c-status-list [aria-selected="true"]::after{content:"✓";margin-left:auto;padding-left:12px}
 
     .p-tasks__message{display:flex;flex-direction:column;align-items:center;gap:10px;padding:32px 0;text-align:center;color:var(--text-color-muted);font-size:var(--text-sm);font-weight:var(--font-highlight)}
-    .p-tasks__message img{width:140px;height:auto;transform:rotate(-8deg)}
 
     @media (min-width:481px){
       .c-task{grid-template-columns:auto minmax(0,1fr) auto}
@@ -150,7 +149,7 @@
             </div>
             <ul class="p-tasks__list" id="tasks"></ul>
             <div class="p-tasks__message" id="message" hidden>
-              <img src="../../../client/public/mascot.svg" alt="">
+              <span class="c-empty-mascot" data-mascot="tasks"></span>
               <p id="message-text"></p>
               <button class="c-button c-button--ghost" type="button" id="message-reset" hidden>Reset filters</button>
             </div>
@@ -200,6 +199,7 @@
     </form>
   </dialog>
 
+  <script src="mascots.js"></script>
   <script src="shell.js"></script>
   <script src="components.js"></script>
   <script>
@@ -453,6 +453,7 @@
       const chooseStatus = (index) => {
         const id = menuButton.dataset.id;
         tasks.find((t) => t.id === Number(id)).status = statuses[index].id;
+        if (statuses[index].id === 'completed') document.dispatchEvent(new CustomEvent('yoko:cheer'));
         closeStatus(false);
         render();
         list.querySelector(`.c-task__status[data-id="${id}"]`)?.focus();

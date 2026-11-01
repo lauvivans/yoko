@@ -49,10 +49,18 @@
 
     /* Modules: one switch per module */
     .c-modules{display:grid;gap:4px}
+    .c-setting--stacked{grid-template-columns:minmax(0,1fr)}
+    .c-mascot-themes{display:grid;gap:8px}
+    .c-mascot-theme{display:grid;gap:6px;padding:10px 12px;border-radius:var(--border-r-default);border:1px solid var(--border-color-line);background:var(--bg-surface-raised);cursor:pointer}
+    .c-mascot-theme:has(input:checked){border:var(--border-w-default) solid var(--border-color-dark);background:var(--bg-surface);box-shadow:var(--shadow-sm)}
+    .c-mascot-theme:has(input:focus-visible){outline:2px solid var(--accent);outline-offset:2px}
+    .c-mascot-theme__name{font-size:var(--text-sm);font-weight:var(--font-bold)}
+    .c-mascot-theme__cast{display:flex;flex-wrap:wrap;gap:2px}
+    .c-mascot-theme__cast svg{width:28px;height:28px}
     .c-module-switch{display:flex;align-items:center;gap:12px;padding:8px 0;border-top:1px solid var(--border-color-line);font-size:var(--text-sm);font-weight:var(--font-highlight)}
     .c-module-switch:first-child{border-top:0}
-    .c-module-switch__icon{display:grid;place-items:center;flex:none;width:34px;height:34px;border-radius:var(--border-r-default);border:var(--border-w-default) solid var(--border-color-dark);background:var(--module-color);color:var(--dark)}
-    .c-module-switch__icon svg{width:20px;height:20px}
+    .c-module-switch__icon{display:grid;place-items:center;flex:none;width:40px;height:40px;border-radius:var(--border-r-default);border:var(--border-w-default) solid var(--border-color-dark);background:var(--module-color);color:var(--dark)}
+    .c-module-switch__icon svg{width:32px;height:32px}
     .c-module-switch span:nth-child(2){margin-right:auto}
     .c-module-switch .c-switch[aria-disabled="true"]{cursor:not-allowed;opacity:var(--opacity-strong)}
 
@@ -82,6 +90,8 @@
 
     @media (min-width:481px){
       .c-setting{grid-template-columns:minmax(0,1fr) auto;align-items:center;gap:16px}
+      .c-setting--stacked{grid-template-columns:minmax(0,1fr)}
+      .c-mascot-themes{grid-template-columns:repeat(2,minmax(0,1fr))}
       .c-account-form__address{grid-template-columns:repeat(3,minmax(0,1fr))}
       .c-device{grid-template-columns:auto minmax(0,1fr) auto}
       .c-device__icon{grid-row:auto}
@@ -173,6 +183,16 @@
                     <label><input class="u-visually-hidden" type="radio" name="theme" value="system">System</label>
                   </div>
                 </div>
+              </div>
+              <div class="c-setting">
+                <span class="c-setting__label" id="buddy-label">Mascot on screen<small>Each module’s mascot walks along the top of the module, and cheers when you finish something.</small></span>
+                <div class="c-setting__control">
+                  <button class="c-switch" type="button" role="switch" aria-checked="true" aria-labelledby="buddy-label" id="buddy-switch"></button>
+                </div>
+              </div>
+              <div class="c-setting c-setting--stacked">
+                <span class="c-setting__label" id="mascot-theme-label">Mascot theme<small>Every module gets a friend from the same world.</small></span>
+                <div class="c-mascot-themes" role="radiogroup" aria-labelledby="mascot-theme-label" id="mascot-themes"></div>
               </div>
               <div class="c-setting">
                 <label class="c-setting__label" for="language">Language<small>Portuguese pages live under /pt-BR/.</small></label>
@@ -297,6 +317,7 @@
     </form>
   </dialog>
 
+  <script src="mascots.js"></script>
   <script src="shell.js"></script>
   <script src="components.js"></script>
   <script src="data.js"></script>
@@ -407,6 +428,50 @@
       $('theme-toggle').addEventListener('click', showThemePreference);
       $('time-options').addEventListener('change', (e) => ($('time-example').textContent = e.target.value === '24' ? 'Like 13:30' : 'Like 1:30 PM'));
 
+      // Mascot on screen, remembered when the browser allows it.
+      const BUDDY_KEY = 'yoko-prototype-buddy';
+      const buddySwitch = $('buddy-switch');
+      try {
+        buddySwitch.setAttribute('aria-checked', String(localStorage.getItem(BUDDY_KEY) !== 'off'));
+      } catch {
+        // Storage blocked: visits stay on.
+      }
+      buddySwitch.addEventListener('click', () => {
+        const on = buddySwitch.getAttribute('aria-checked') !== 'true';
+        buddySwitch.setAttribute('aria-checked', String(on));
+        try {
+          localStorage.setItem(BUDDY_KEY, on ? 'on' : 'off');
+        } catch {
+          // Storage blocked: the choice just isn't remembered.
+        }
+      });
+
+      // Mascot theme: each option previews its whole cast, and the module switches below follow the choice.
+      $('mascot-themes').replaceChildren(
+        ...window.YokoMascots.themes.map((theme) => {
+          const option = document.createElement('label');
+          option.className = 'c-mascot-theme';
+          const input = document.createElement('input');
+          input.className = 'u-visually-hidden';
+          input.type = 'radio';
+          input.name = 'mascot-theme';
+          input.value = theme.id;
+          input.checked = theme.id === window.YokoMascots.theme;
+          input.addEventListener('change', () => {
+            window.YokoMascots.setTheme(theme.id);
+            renderModuleSwitches();
+          });
+          const name = document.createElement('span');
+          name.className = 'c-mascot-theme__name';
+          name.textContent = theme.name;
+          const cast = document.createElement('span');
+          cast.className = 'c-mascot-theme__cast';
+          cast.innerHTML = Object.values(theme.cast).join('');
+          option.append(input, name, cast);
+          return option;
+        }),
+      );
+
       // Modules: at least one stays on, so the app always has somewhere to go.
       const moduleColors = { occurrences: 'var(--blue)', places: 'var(--yellow)', links: 'var(--bg-cat-reading)', notes: 'var(--bg-cat-study)', tasks: 'var(--bg-cat-finance)', mood: 'var(--bg-cat-social)', routines: 'var(--bg-cat-health)', media: 'var(--bg-cat-work)', lists: 'var(--bg-cat-home)' };
       const renderModuleSwitches = () => {
@@ -417,8 +482,7 @@
           const icon = document.createElement('span');
           icon.className = 'c-module-switch__icon';
           icon.style.setProperty('--module-color', moduleColors[m.id]);
-          const svg = document.querySelector(`.c-sidebar [data-module="${m.id}"] svg`);
-          if (svg) icon.append(svg.cloneNode(true));
+          icon.insertAdjacentHTML('afterbegin', window.mascots[m.id] ?? '');
           const name = document.createElement('span');
           name.id = `module-${m.id}`;
           name.textContent = m.label;

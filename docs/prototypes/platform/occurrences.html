@@ -54,7 +54,6 @@
     /* Empty states show Yoko, large and centered */
     .app__main{position:relative}
     .p-occurrence__message.is-empty{padding:32px 0}
-    .p-occurrence__mascot{width:140px;height:auto;transform:rotate(-8deg)}
 
     /* Filter and sort popovers: full width under the toolbar on mobile, under their button from tablet up */
     .p-occurrence__empty{padding:40px;text-align:center;color:var(--text-color-muted);border:2px dashed var(--border-color-line);border-radius:var(--border-r-default)}
@@ -249,7 +248,7 @@
           <div class="c-occurrence-cards" id="cards"></div>
           <p class="p-occurrence__loading" id="load-more" hidden>Loading more events…</p>
           <div class="p-occurrence__message" id="message">
-            <img class="p-occurrence__mascot" id="message-mascot" src="../../../client/public/mascot.svg" alt="" hidden>
+            <span class="c-empty-mascot" id="message-mascot" data-mascot="occurrences" hidden></span>
             <p id="message-text">That’s everything for now.</p>
             <button class="c-button c-button--ghost" type="button" id="message-reset" hidden>Reset filters</button>
             <button class="c-button c-button--ghost" type="button" id="show-less" hidden>Show less</button>
@@ -351,6 +350,7 @@
     </form>
   </dialog>
 
+  <script src="mascots.js"></script>
   <script src="shell.js"></script>
   <script src="occurrences.js"></script>
 </body>

@@ -40,6 +40,7 @@
     { label: 'Media', href: 'media.html' },
     { label: 'Lists', href: 'lists.html' },
     { label: 'Settings', href: 'settings.html' },
+    { label: 'Mascots', href: 'mascots.html' },
     { label: 'Design system', href: 'design-system.html' },
   ];
   const creates = [

@@ -2,7 +2,7 @@
 const $ = (id) => document.getElementById(id);
 const { closeOnBackdrop } = window.YokoUI;
 
-$('module-badge').insertAdjacentHTML('afterbegin', window.otter);
+$('module-badge').insertAdjacentHTML('afterbegin', window.mascots.places);
 
 // Sample data for the prototype. Photos are gradients, not real pictures; ratio is width / height.
 const categories = {
