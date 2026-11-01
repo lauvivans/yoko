@@ -85,6 +85,14 @@
   --opacity-soft:20%;
   --opacity-md:50%;
   --opacity-strong:70%;
+
+  /* Motion, in ms so scripts can read them too. Pages turn animations off under prefers-reduced-motion. */
+  --duration-fast:150ms;
+  --duration-default:300ms;
+  --duration-slow:600ms;
+  --duration-idle:4000ms;
+  --ease-out:cubic-bezier(.22,1,.36,1);
+  --ease-spring:cubic-bezier(.34,1.56,.64,1);
 }
 
 /* Theme colors. Light is a soft gray, never pure white (prototype review, 2026-10-31). */
@@ -98,6 +106,14 @@
   --shadow-sm:0 4px 12px rgba(57,61,63,.18);
   --shadow-md:0 6px 16px rgba(57,61,63,.25);
   --shadow-lg:0 18px 40px rgba(57,61,63,.18);
+  /* Illustrated map (Places) */
+  --map-land:#f3efe6;
+  --map-block:#ebe5d8;
+  --map-park:#cfe8c4;
+  --map-water:#a8dbff;
+  --map-road:#fdfdff;
+  --map-road-edge:#e2dccd;
+  --map-label:#6b6458;
 }
 [data-theme="dark"]{
   --bg-page:#1f2223;
@@ -109,4 +125,12 @@
   --shadow-sm:0 4px 12px rgba(0,0,0,.3);
   --shadow-md:0 6px 16px rgba(0,0,0,.4);
   --shadow-lg:0 18px 40px rgba(0,0,0,.45);
+  /* Illustrated map (Places) */
+  --map-land:#262a2c;
+  --map-block:#2d3234;
+  --map-park:#2f4a37;
+  --map-water:#24465e;
+  --map-road:#3b4144;
+  --map-road-edge:#1e2224;
+  --map-label:#9aa3a7;
 }

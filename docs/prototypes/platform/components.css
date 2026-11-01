@@ -62,21 +62,28 @@
   .c-popover--right{left:auto;right:0}
 }
 
-/* Workspace: a list with an edit panel. The panel sits on the right on large screens and takes the whole content on smaller ones */
+/* Workspace: a list with an edit panel. The panel takes the screen on mobile, slides over the list on tablets and laptops, and sits next to it on large screens */
 .c-workspace__list{display:flex;flex-direction:column;gap:18px}
-.c-workspace__panel{display:grid;gap:14px;max-width:560px}
-.c-workspace__panel .c-button--ghost{justify-self:start}
-.c-workspace__panel .c-form{padding:18px 16px;border-radius:var(--border-r-default);border:1px solid var(--border-color-line);background:var(--bg-surface)}
-.c-workspace__panel .c-workspace__close{display:none}
-.c-workspace.is-editing .c-workspace__list{display:none}
+.c-workspace__panel{position:fixed;inset:0;z-index:700;display:grid;align-content:start;gap:14px;padding:16px;overflow-y:auto;background:var(--bg-surface-raised)}
+.c-workspace__panel[hidden]{display:none}
+@media (prefers-reduced-motion:no-preference){.c-workspace__panel{animation:panel-in var(--duration-default) var(--ease-out)}}
+@keyframes panel-in{from{opacity:0;transform:translateX(24px)}}
+@media (min-width:769px){
+  .c-workspace__panel{inset:var(--topbar) 0 0 auto;width:min(420px,100%);padding:20px;border-left:1px solid var(--border-color-line);box-shadow:var(--shadow-lg)}
+}
 @media (min-width:1280px){
   .c-workspace.is-editing{display:grid;grid-template-columns:minmax(0,1fr) 360px;align-items:start;gap:20px}
-  .c-workspace.is-editing .c-workspace__list{display:flex}
-  .c-workspace__panel{position:sticky;top:22px;max-width:none}
-  .c-workspace__panel .c-form{max-height:calc(min(860px,92vh) - var(--topbar) - 48px);overflow-y:auto;padding-bottom:22px}
-  .c-workspace__panel .c-workspace__back{display:none}
-  .c-workspace__panel .c-workspace__close{display:grid}
+  .c-workspace__panel{position:sticky;top:22px;inset:auto;width:auto;z-index:auto;padding:0;overflow:visible;background:none;border:0;box-shadow:none;animation:none}
+  .c-workspace__panel .c-form{max-height:calc(min(860px,92vh) - var(--topbar) - 48px);overflow-y:auto;padding:18px 16px 22px;border-radius:var(--border-r-default);border:1px solid var(--border-color-line);background:var(--bg-surface)}
 }
+
+/* Swipe a row to the left to reveal its action (delete). The card slides over the action. */
+.c-swipe{position:relative}
+.c-swipe__action{all:unset;position:absolute;inset:0;display:flex;align-items:center;justify-content:flex-end;padding-right:22px;border-radius:var(--border-r-default);background:var(--red);color:var(--dark);font-size:var(--text-sm);font-weight:var(--font-bold);cursor:pointer}
+.c-swipe__action:focus-visible{outline:2px solid var(--accent)}
+/* Two classes so a card's own reset (all:unset) can't drop the positioning that keeps it above the action */
+.c-swipe .c-swipe__card{position:relative;touch-action:pan-y;transition:transform var(--duration-default) var(--ease-out)}
+.c-swipe.is-swiping .c-swipe__card{transition:none}
 
 /* Progress bar */
 .c-progress{display:block;height:6px;border-radius:var(--border-r-pill);background:var(--bg-surface-raised);overflow:hidden}

@@ -61,7 +61,7 @@
           <div class="c-workspace__list">
             <div class="p-notes__head">
               <h1>Notes</h1>
-              <button class="c-button c-button--module" type="button" id="add-note">
+              <button class="c-button c-button--module" type="button" id="add-note" data-new>
                 <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path stroke="currentColor" stroke-width="1.8" stroke-linecap="round" d="M12 5v14M5 12h14"/></svg>
                 Add note
               </button>
@@ -92,10 +92,6 @@
           </div>
 
           <section class="c-workspace__panel" id="edit-panel" aria-label="Edit note" hidden>
-            <button class="c-button c-button--ghost c-workspace__back" type="button" id="back-to-list">
-              <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" d="M15 19.92 8.48 13.4c-.77-.77-.77-2.03 0-2.8L15 4.08"/></svg>
-              Back to notes
-            </button>
           </section>
         </div>
       </main>
@@ -252,7 +248,6 @@
 
       $('add-note').addEventListener('click', () => openForm());
       $('close-form').addEventListener('click', closeForm);
-      $('back-to-list').addEventListener('click', closeForm);
       list.addEventListener('change', updateSelection);
       list.addEventListener('click', (e) => {
         const open = e.target.closest('.c-note__open');

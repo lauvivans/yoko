@@ -46,7 +46,7 @@
     }
   </style>
 </head>
-<body data-page="home" data-search="Search everything">
+<body data-page="home">
   <div class="app">
     <div class="app__main">
       <main class="app__content">
@@ -61,8 +61,8 @@
                 <span class="c-module-card__stat">5 events</span>
               </a>
               <a class="c-module-card" href="places.html" style="--card-color:var(--yellow)">
-                <span class="c-module-card__icon" data-icon="cat"></span>
-                <h3>Places <small>by Nori</small></h3>
+                <span class="c-module-card__icon" data-icon="otter"></span>
+                <h3>Places</h3>
                 <p>Mark the places you have been to on the map and keep their photos.</p>
                 <span class="c-module-card__stat">6 places · 15 photos</span>
               </a>
@@ -102,6 +102,7 @@
     </div>
   </div>
 
+  <script src="mascots.js"></script>
   <script src="shell.js"></script>
   <script src="components.js"></script>
   <script src="data.js"></script>
@@ -110,7 +111,7 @@
     const sidebarIcon = (id) => document.querySelector(`.c-sidebar [href][aria-label^="${id}"] svg`)?.outerHTML ?? '';
     const names = { occurrences: 'Occurrences', links: 'Links', notes: 'Notes', tasks: 'Tasks', mood: 'Mood' };
     document.querySelectorAll('[data-icon]').forEach((el) => {
-      el.innerHTML = el.dataset.icon === 'cat' ? window.noriCat : sidebarIcon(names[el.dataset.icon]);
+      el.innerHTML = el.dataset.icon === 'otter' ? window.otter : sidebarIcon(names[el.dataset.icon]);
     });
   </script>
 </body>

@@ -24,10 +24,6 @@
     search: stroke('<path d="M11.5 21a9.5 9.5 0 1 0 0-19 9.5 9.5 0 0 0 0 19ZM22 22l-2-2"/>'),
   };
 
-  // Nori's cat, used as the Places mascot.
-  window.noriCat =
-    '<svg viewBox="0 0 48 48" aria-hidden="true"><path fill="#1a1a1a" d="M11 15 12.5 4l6.5 8h10l6.5-8L37 15v24a5 5 0 0 1-5 5H16a5 5 0 0 1-5-5Z"/><circle cx="18.5" cy="23" r="3.4" fill="#fddc5c"/><circle cx="29.5" cy="23" r="3.4" fill="#fddc5c"/><circle cx="18.5" cy="23" r="1.4" fill="#1a1a1a"/><circle cx="29.5" cy="23" r="1.4" fill="#1a1a1a"/><path fill="#fdfdff" d="M22.5 29h3l-1.5 2.2Z"/><path fill="none" stroke="#1a1a1a" stroke-width="2.2" stroke-linecap="round" d="M37 40c4.5.5 7-2.5 6-6.5s-3.5-4.5-2.5-8.5"/></svg>';
-
   const modules = [
     { id: 'occurrences', label: 'Occurrences', href: 'occurrences.html', color: 'var(--blue)' },
     { id: 'places', label: 'Places', href: 'places.html', color: 'var(--yellow)' },
@@ -37,7 +33,7 @@
     { id: 'mood', label: 'Mood history', href: 'mood.html', color: 'var(--blue)' },
   ];
 
-  // Each module has its own accent: Yoko's blue, or Nori's yellow on Places.
+  // Each module has its own accent: Yoko's blue, or yellow on Places.
   const current = modules.find((m) => m.id === page);
   if (current?.color) root.style.setProperty('--module', current.color);
 
@@ -78,7 +74,11 @@
       <span class="c-topbar__mood" id="mood-phrase"></span>
     </div>
     <div class="c-topbar__actions">
-      <label class="c-search">${icons.search}<input type="search" id="search" placeholder="${document.body.dataset.search || 'Search'}" aria-label="${document.body.dataset.search || 'Search'}"></label>
+      <div class="c-search" id="search-box">
+        <button class="c-search__open" type="button" id="search-open" aria-haspopup="dialog" aria-keyshortcuts="Control+K Meta+K">${icons.search}<span class="c-search__text" id="search-text">${document.body.dataset.search || 'Search'}</span><kbd class="c-search__kbd" id="search-shortcut"></kbd></button>
+        <button class="c-search__clear" type="button" id="search-clear" aria-label="Clear the filter" hidden><svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path stroke="currentColor" stroke-width="1.8" stroke-linecap="round" d="M18 6 6 18M6 6l12 12"/></svg></button>
+        <input type="search" id="search" hidden>
+      </div>
       <div class="c-mood">
         <button class="c-icon-btn" type="button" id="mood-toggle" aria-label="How are you feeling?" aria-expanded="false" aria-controls="mood-popover">${icons.mood}</button>
         <div class="c-mood__popover" id="mood-popover">
@@ -89,6 +89,11 @@
             <button class="c-mood__arrow" type="button" id="mood-next" aria-label="More moods">${icons.chevronRight}</button>
           </div>
           <span class="c-mood__name" id="mood-name" aria-live="polite"></span>
+          <form class="c-mood__note" id="mood-note" hidden>
+            <label class="u-visually-hidden" for="mood-why">What’s happening?</label>
+            <textarea id="mood-why" rows="3" maxlength="280" placeholder="What’s happening? (optional)"></textarea>
+            <button class="c-button c-button--module" type="submit">Save</button>
+          </form>
         </div>
       </div>
     </div>`;
@@ -117,16 +122,27 @@
   const moodName = document.getElementById('mood-name');
   const moodPrev = document.getElementById('mood-prev');
   const moodNext = document.getElementById('mood-next');
+  const moodNote = document.getElementById('mood-note');
+  const moodWhy = document.getElementById('mood-why');
+  // Mood faces drawn in the app's style, instead of the system emoji that change with each OS.
+  const face = (color, parts) => `<svg class="c-face" viewBox="0 0 24 24" style="--face-color:${color}" aria-hidden="true"><circle class="c-face__head" cx="12" cy="12" r="10"/>${parts}</svg>`;
+  const dot = (x, y) => `<circle class="c-face__dot" cx="${x}" cy="${y}" r="1.25"/>`;
+  const line = (d) => `<path class="c-face__line" d="${d}"/>`;
+  const eyes = dot(8.5, 10) + dot(15.5, 10);
+  const smile = line('M8 14c1 1.7 2.4 2.5 4 2.5s3-.8 4-2.5');
+  const happyEyes = line('M7 10.5c.7-1.3 2.3-1.3 3 0M14 10.5c.7-1.3 2.3-1.3 3 0');
+  const blush = '<circle class="c-face__blush" cx="6.5" cy="13.6" r="1.6"/><circle class="c-face__blush" cx="17.5" cy="13.6" r="1.6"/>';
   const moods = [
-    { name: 'Happy', emoji: '😊' },
-    { name: 'Excited', emoji: '🤩' },
-    { name: 'Grateful', emoji: '🥰' },
-    { name: 'Calm', emoji: '😌' },
-    { name: 'Curious', emoji: '🤔' },
-    { name: 'Tired', emoji: '😴' },
-    { name: 'Anxious', emoji: '😰' },
-    { name: 'Sad', emoji: '😢' },
+    { name: 'Happy', face: face('var(--yellow)', eyes + smile) },
+    { name: 'Excited', face: face('var(--bg-cat-health)', happyEyes + '<path class="c-face__dot" d="M7.5 13.5h9c0 2.7-2 4.5-4.5 4.5s-4.5-1.8-4.5-4.5Z"/>') },
+    { name: 'Grateful', face: face('var(--bg-cat-family)', happyEyes + blush + smile) },
+    { name: 'Calm', face: face('var(--bg-cat-reading)', line('M7 10c.7 1.2 2.3 1.2 3 0M14 10c.7 1.2 2.3 1.2 3 0M9.5 15c.8.8 1.6 1.1 2.5 1.1s1.7-.3 2.5-1.1')) },
+    { name: 'Curious', face: face('var(--bg-cat-study)', eyes + line('M14 6.8l3-1.1M10 15.6c1.4-.7 2.9-.7 4.5.3')) },
+    { name: 'Tired', face: face('var(--bg-cat-work)', line('M7 10.5h3M14 10.5h3M16.5 2.5h3l-3 3.5h3') + '<ellipse class="c-face__dot" cx="12" cy="15.5" rx="1.4" ry="1.7"/>') },
+    { name: 'Anxious', face: face('var(--bg-cat-travel)', eyes + line('M6.8 7.6l2.6-1M17.2 7.6l-2.6-1M8 16l1.33-1 1.33 1 1.34-1 1.33 1 1.34-1 1.33 1')) },
+    { name: 'Sad', face: face('var(--blue)', eyes + line('M8.5 16.5c.9-1.3 2.1-1.9 3.5-1.9s2.6.6 3.5 1.9') + '<path class="c-face__tear" d="M7.6 12.3c.6.9 1 1.5 1 2a1 1 0 0 1-2 0c0-.5.4-1.1 1-2Z"/>') },
   ];
+  window.moodFaces = Object.fromEntries(moods.map((m) => [m.name, m.face]));
   const visibleMoods = 4;
   let firstMood = 0;
   let selectedMood = null;
@@ -145,7 +161,7 @@
     const button = document.createElement('button');
     button.type = 'button';
     button.className = 'c-mood__option';
-    button.textContent = mood.emoji;
+    button.innerHTML = mood.face;
     button.setAttribute('aria-label', mood.name);
     button.setAttribute('aria-pressed', 'false');
     const showName = () => (moodName.textContent = mood.name);
@@ -157,11 +173,9 @@
     button.addEventListener('click', () => {
       selectedMood = mood;
       moodList.querySelectorAll('button').forEach((b) => b.setAttribute('aria-pressed', String(b === button)));
-      document.getElementById('mood-phrase').innerHTML = `I’m feeling <strong>${mood.name}</strong> today`;
-      moodToggle.innerHTML = `<span class="c-mood__current">${mood.emoji}</span>`;
-      moodToggle.setAttribute('aria-label', `Feeling ${mood.name.toLowerCase()}. Change mood`);
-      moodPopover.classList.remove('is-open');
-      moodToggle.setAttribute('aria-expanded', 'false');
+      moodName.textContent = mood.name;
+      moodNote.hidden = false;
+      moodWhy.focus();
     });
     moodList.appendChild(button);
   });
@@ -174,8 +188,33 @@
     showMoods();
   });
   showMoods();
+  // Saving logs the mood with its optional note. The Mood history page listens to add it to the list.
+  moodNote.addEventListener('submit', (e) => {
+    e.preventDefault();
+    const mood = selectedMood;
+    document.getElementById('mood-phrase').innerHTML = `I’m feeling <strong>${mood.name}</strong> today`;
+    moodToggle.innerHTML = `<span class="c-mood__current">${mood.face}</span>`;
+    moodToggle.setAttribute('aria-label', `Feeling ${mood.name.toLowerCase()}. Change mood`);
+    document.dispatchEvent(new CustomEvent('yoko:mood', { detail: { mood: mood.name, why: moodWhy.value.trim() } }));
+    moodWhy.value = '';
+    moodNote.hidden = true;
+    moodPopover.classList.remove('is-open');
+    moodToggle.setAttribute('aria-expanded', 'false');
+    moodToggle.focus();
+  });
+  moodWhy.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter' && (e.ctrlKey || e.metaKey)) moodNote.requestSubmit();
+  });
   moodToggle.addEventListener('click', () => {
     const open = moodPopover.classList.toggle('is-open');
     moodToggle.setAttribute('aria-expanded', String(open));
+  });
+
+  // Every page with the shell gets the search palette, in this order.
+  ['search-data.js', 'search.js'].forEach((src) => {
+    const script = document.createElement('script');
+    script.src = src;
+    script.async = false;
+    document.body.append(script);
   });
 })();

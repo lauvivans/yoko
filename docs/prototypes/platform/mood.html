@@ -19,7 +19,7 @@
     /* Entries can't be edited (product requirements), so a card only shows and can be selected for deletion */
     .c-mood-entry{display:grid;grid-template-columns:auto minmax(0,1fr) auto;align-items:start;gap:12px;padding:12px 14px;border-radius:var(--border-r-default);border:var(--border-w-default) solid var(--border-color-line);background:var(--bg-surface)}
     .c-mood-entry:has(input:checked){box-shadow:0 0 0 2px var(--text-color-default)}
-    .c-mood-entry__emoji{font-size:var(--text-xl);line-height:1}
+    .c-mood-entry__face svg{width:40px;height:40px}
     .c-mood-entry__text{display:grid;gap:2px}
     .c-mood-entry__feeling{font-size:var(--text-base);font-weight:var(--font-regular)}
     .c-mood-entry__feeling b{font-weight:var(--font-bold)}
@@ -91,9 +91,8 @@
   <script src="components.js"></script>
   <script>
     (() => {
-      const { escapeHtml, closeOnBackdrop, dropdowns, renderChips } = window.YokoUI;
+      const { escapeHtml, closeOnBackdrop, dropdowns, renderChips, swipeRows } = window.YokoUI;
       const $ = (id) => document.getElementById(id);
-      const emojis = { Happy: '😊', Excited: '🤩', Grateful: '🥰', Calm: '😌', Curious: '🤔', Tired: '😴', Anxious: '😰', Sad: '😢' };
       const at = (daysAgo, time) => {
         const [h, m] = time.split(':').map(Number);
         const d = new Date();
@@ -150,15 +149,15 @@
           .map(
             ([day, items]) => `<section class="p-mood__day"><h2>${day}</h2><ul class="p-mood__entries">${items
               .map(
-                (e) => `<li class="c-mood-entry">
-                  <span class="c-mood-entry__emoji" aria-hidden="true">${emojis[e.mood]}</span>
+                (e) => `<li class="c-swipe"><button class="c-swipe__action" type="button" data-delete="${e.id}" inert>Delete</button><div class="c-swipe__card c-mood-entry">
+                  <span class="c-mood-entry__face">${window.moodFaces[e.mood]}</span>
                   <div class="c-mood-entry__text">
                     <span class="c-mood-entry__feeling">I was feeling <b>${e.mood}</b></span>
                     ${e.why ? `<span class="c-mood-entry__why">${escapeHtml(e.why)}</span>` : ''}
                     <span class="c-mood-entry__time">${e.date.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' })}</span>
                   </div>
                   <input type="checkbox" value="${e.id}" aria-label="Select ${e.mood} on ${day}">
-                </li>`,
+                </div></li>`,
               )
               .join('')}</ul></section>`,
           )
@@ -191,21 +190,47 @@
 
       const deleteDialog = $('delete-dialog');
       closeOnBackdrop(deleteDialog);
+      let swipedDelete = null;
       $('delete').addEventListener('click', () => {
         const selected = history.querySelectorAll('input:checked').length;
         if (selected === 0) return;
+        swipedDelete = null;
         $('delete-count').textContent = `${selected} ${selected === 1 ? 'entry' : 'entries'}`;
         deleteDialog.returnValue = '';
         deleteDialog.showModal();
       });
       deleteDialog.addEventListener('close', () => {
-        if (deleteDialog.returnValue !== 'delete') return;
+        if (deleteDialog.returnValue !== 'delete') {
+          swipedDelete = null;
+          return;
+        }
+        if (swipedDelete !== null) {
+          entries.splice(entries.findIndex((e) => e.id === swipedDelete), 1);
+          swipedDelete = null;
+          render();
+          return;
+        }
         history.querySelectorAll('input:checked').forEach((input) => entries.splice(entries.findIndex((e) => e.id === Number(input.value)), 1));
         render();
       });
 
+      swipeRows({
+        list: history,
+        ignore: 'input',
+        onAction: (button) => {
+          swipedDelete = Number(button.dataset.delete);
+          $('delete-count').textContent = '1 entry';
+          deleteDialog.returnValue = '';
+          deleteDialog.showModal();
+        },
+      });
+
       document.addEventListener('keydown', (e) => {
         if (e.key === 'Escape') popovers.closeOpen();
+      });
+      document.addEventListener('yoko:mood', (e) => {
+        entries.push({ id: nextId++, date: new Date(), mood: e.detail.mood, why: e.detail.why });
+        render();
       });
       $('search').addEventListener('input', (e) => {
         query = e.target.value.trim().toLowerCase();

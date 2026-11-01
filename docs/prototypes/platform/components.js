@@ -52,15 +52,12 @@ window.YokoUI = (() => {
   // One form, two places: a dialog to create, the workspace panel to edit.
   const workspace = ({ root, panel, dialog, form, onChange }) => {
     let editing = false;
-    const content = document.querySelector('.app__content');
-    const wide = window.matchMedia('(min-width:1280px)');
     const open = (isEdit) => {
       editing = isEdit;
       if (isEdit) {
         panel.append(form);
         root.classList.add('is-editing');
         panel.hidden = false;
-        if (!wide.matches) content.scrollTop = 0;
         form.querySelector('input,textarea')?.focus();
       } else {
         dialog.append(form);
@@ -82,5 +79,82 @@ window.YokoUI = (() => {
     return { open, close, isEditing: () => editing };
   };
 
-  return { escapeHtml, closeOnBackdrop, dropdowns, renderChips, workspace };
+  // Swipe to reveal a row action. Rows are .c-swipe with a .c-swipe__action button and a .c-swipe__card.
+  // Only a horizontal drag is taken; vertical drags keep scrolling the page.
+  const swipeRows = ({ list, ignore, onAction }) => {
+    const ACTION_WIDTH = 96;
+    const START_DISTANCE = 8;
+    let swipe = null;
+    let openRow = null;
+    let justSwiped = false;
+    const setOffset = (row, x) => {
+      row.querySelector('.c-swipe__card').style.transform = x ? `translateX(${x}px)` : '';
+      row.querySelector('.c-swipe__action').inert = x === 0;
+    };
+    const close = () => {
+      if (openRow) setOffset(openRow, 0);
+      openRow = null;
+    };
+    list.addEventListener('pointerdown', (e) => {
+      const card = e.target.closest('.c-swipe__card');
+      if (!card || (ignore && e.target.closest(ignore)) || e.button > 0) return;
+      const row = card.closest('.c-swipe');
+      if (openRow && openRow !== row) close();
+      swipe = { row, startX: e.clientX, startY: e.clientY, base: openRow === row ? -ACTION_WIDTH : 0, moving: false, x: 0, pointerId: e.pointerId };
+    });
+    list.addEventListener('pointermove', (e) => {
+      if (!swipe) return;
+      const dx = e.clientX - swipe.startX;
+      const dy = e.clientY - swipe.startY;
+      if (!swipe.moving) {
+        if (Math.abs(dy) > START_DISTANCE && Math.abs(dy) > Math.abs(dx)) {
+          swipe = null;
+          return;
+        }
+        if (Math.abs(dx) < START_DISTANCE) return;
+        swipe.moving = true;
+        swipe.row.classList.add('is-swiping');
+        swipe.row.setPointerCapture?.(swipe.pointerId);
+      }
+      swipe.x = Math.max(-ACTION_WIDTH * 1.5, Math.min(0, swipe.base + dx));
+      setOffset(swipe.row, swipe.x);
+    });
+    const end = () => {
+      if (!swipe) return;
+      if (swipe.moving) {
+        justSwiped = true;
+        setTimeout(() => (justSwiped = false));
+        swipe.row.classList.remove('is-swiping');
+        const open = swipe.x < -ACTION_WIDTH / 2;
+        setOffset(swipe.row, open ? -ACTION_WIDTH : 0);
+        openRow = open ? swipe.row : null;
+      }
+      swipe = null;
+    };
+    list.addEventListener('pointerup', end);
+    list.addEventListener('pointercancel', end);
+    // A drag ends with a click; it shouldn't also open or select what is under it.
+    list.addEventListener(
+      'click',
+      (e) => {
+        if (!justSwiped) return;
+        justSwiped = false;
+        e.stopPropagation();
+        e.preventDefault();
+      },
+      true,
+    );
+    document.addEventListener('click', (e) => {
+      if (openRow && !openRow.contains(e.target)) close();
+    });
+    list.addEventListener('click', (e) => {
+      const button = e.target.closest('.c-swipe__action');
+      if (!button) return;
+      onAction(button);
+      close();
+    });
+    return { close };
+  };
+
+  return { escapeHtml, closeOnBackdrop, dropdowns, renderChips, workspace, swipeRows };
 })();

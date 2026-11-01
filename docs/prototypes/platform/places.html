@@ -9,11 +9,10 @@
   <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@400..700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="tokens.css">
   <link rel="stylesheet" href="shell.css">
+  <link rel="stylesheet" href="components.css">
   <style>
     .p-places{position:absolute;inset:0;overflow:hidden}
     /* Illustrated map, not a real one: an SVG that pans and zooms */
-    [data-theme="light"]{--map-land:#f3efe6;--map-block:#ebe5d8;--map-park:#cfe8c4;--map-water:#a8dbff;--map-road:#fdfdff;--map-road-edge:#e2dccd;--map-label:#6b6458}
-    [data-theme="dark"]{--map-land:#262a2c;--map-block:#2d3234;--map-park:#2f4a37;--map-water:#24465e;--map-road:#3b4144;--map-road-edge:#1e2224;--map-label:#9aa3a7}
     .c-fakemap{position:absolute;inset:0;z-index:0;overflow:hidden;background:var(--map-land);cursor:grab;touch-action:none;user-select:none}
     .c-fakemap.is-dragging{cursor:grabbing}
     .c-fakemap__layer{position:absolute;transform-origin:0 0;transition:transform .2s}
@@ -36,17 +35,10 @@
     .c-filter:focus-visible{outline:2px solid var(--accent)}
     .p-places__count{display:none;margin-left:auto;padding:6px 12px;border-radius:var(--border-r-pill);font-size:var(--text-xs);font-weight:var(--font-highlight);background:var(--bg-surface);color:var(--text-color-muted);border:1px solid var(--border-color-line)}
 
-    /* Pins in the category colors */
-    .c-pin-btn{all:unset;position:absolute;left:var(--x);top:var(--y);transform:translate(-50%,-100%) scale(var(--inv,1));transform-origin:50% 100%;cursor:pointer;z-index:2;transition:transform .2s}
-    .c-pin-btn:focus-visible .c-pin{outline:3px solid var(--accent);outline-offset:3px}
-    .c-pin{width:30px;height:30px;border-radius:50% 50% 50% 0;transform:rotate(-45deg);background:var(--pin-color);border:2px solid var(--dark-md);box-shadow:0 3px 8px rgba(0,0,0,.3);display:grid;place-items:center;transition:transform .15s}
-    .c-pin span{transform:rotate(45deg);font-size:var(--text-xs);font-weight:var(--font-bold);color:var(--dark-md)}
-    .c-pin.is-selected{transform:rotate(-45deg) scale(1.25);box-shadow:0 0 0 4px var(--yellow)}
-
     /* Place card */
     .c-place{position:absolute;left:8px;right:8px;bottom:8px;max-height:62%;display:flex;flex-direction:column;border-radius:var(--border-r-default);background:var(--bg-surface);color:var(--text-color-default);box-shadow:var(--shadow-lg);border:1px solid var(--border-color-line);overflow:hidden;z-index:600}
     .c-place__gallery{position:relative;flex-shrink:0}
-    .c-place__photo{height:140px;display:flex;align-items:flex-end;padding:12px;color:#fff;font-weight:var(--font-bold);font-size:var(--text-xs);text-shadow:0 1px 4px rgba(0,0,0,.4);background-size:cover}
+    .c-place__photo{all:unset;box-sizing:border-box;width:100%;height:140px;display:flex;cursor:zoom-in;align-items:flex-end;padding:12px;color:#fff;font-weight:var(--font-bold);font-size:var(--text-xs);text-shadow:0 1px 4px rgba(0,0,0,.4);background-size:cover}
     .c-place__close{position:absolute;top:10px;right:10px;background:rgba(0,0,0,.35);color:#fff}
     .c-place__close:hover{background:rgba(0,0,0,.5)}
     .c-place__thumbs{display:flex;gap:6px;padding:8px 12px;overflow-x:auto;border-bottom:1px solid var(--border-color-line)}
@@ -69,7 +61,89 @@
     .c-place__actions{display:flex;gap:8px;margin-top:auto;padding:12px 16px;border-top:1px solid var(--border-color-line)}
     .c-place__actions .c-button{flex:1;justify-content:center}
 
+    .c-tag--button{border:0;font-family:inherit;cursor:pointer}
+    .c-tag--button:hover{background:var(--bg-surface)}
+    .c-tag--button:focus-visible{outline:2px solid var(--accent)}
+    .c-tag--button:disabled{cursor:default}
+    .c-place__photo:disabled{cursor:default}
+    .c-place__photo:focus-visible{outline:2px solid var(--accent);outline-offset:-4px}
+
+    /* Picking the spot of a new place */
+    .c-pick{position:absolute;left:50%;bottom:16px;translate:-50% 0;z-index:600;display:flex;flex-wrap:wrap;align-items:center;justify-content:center;gap:8px;width:max-content;max-width:calc(100% - 20px);padding:8px 8px 8px 16px;border-radius:var(--border-r-pill);background:var(--bg-shell);color:var(--text-color-shell);font-size:var(--text-sm);font-weight:var(--font-highlight);box-shadow:var(--shadow-md)}
+    .c-pick .c-button--ghost{background:transparent;color:var(--text-color-shell);border-color:var(--border-color-shell)}
+    .is-picking .c-fakemap{cursor:crosshair}
+    .c-pin.is-draft{border-style:dashed}
+
+    /* Photos inside the place form */
+    .c-photos{display:flex;flex-wrap:wrap;gap:8px;margin:0;padding:0;list-style:none}
+    .c-photos__item{position:relative;width:72px;height:56px;border-radius:var(--border-r-soft);background-size:cover;background-position:center}
+    .c-photos__remove{all:unset;position:absolute;top:-6px;right:-6px;display:grid;place-items:center;width:22px;height:22px;border-radius:var(--border-r-full);background:var(--bg-shell);color:var(--text-color-shell);cursor:pointer}
+    .c-photos__remove svg{width:14px;height:14px}
+    .c-photos__remove:focus-visible{outline:2px solid var(--accent)}
+    .c-photos__add{display:grid;place-items:center;width:72px;height:56px;border-radius:var(--border-r-soft);border:1px dashed var(--text-color-muted);background:var(--bg-surface-raised);color:var(--text-color-muted);cursor:pointer}
+    .c-photos__add svg{width:20px;height:20px}
+    .c-photos__add:focus-within{outline:2px solid var(--accent)}
+    .c-dialog__delete{margin-right:auto}
+    .c-button:disabled{opacity:var(--opacity-md);cursor:default}
+
+    /* Add photos */
+    .c-dropzone{display:grid;justify-items:center;gap:4px;padding:24px 16px;border-radius:var(--border-r-default);border:var(--border-w-highlight) dashed var(--border-color-line);text-align:center;font-size:var(--text-sm);cursor:pointer}
+    .c-dropzone svg{width:32px;height:32px;color:var(--text-color-muted)}
+    .c-dropzone span{font-size:var(--text-xs);color:var(--text-color-muted)}
+    .c-dropzone:hover,.c-dropzone.is-over{border-color:var(--text-color-default);background:var(--bg-surface-raised)}
+    .c-dropzone:focus-within{outline:2px solid var(--accent)}
+    .c-uploads{display:grid;gap:8px;max-height:40vh;margin:0;padding:0;overflow-y:auto;list-style:none}
+    .c-uploads:empty{display:none}
+    .c-upload{position:relative;display:grid;grid-template-columns:56px 1fr;align-items:center;gap:10px;padding-right:20px}
+    .c-upload__preview{height:44px;border-radius:var(--border-r-soft);background-size:cover;background-position:center}
+    .c-upload__caption{min-width:0;padding:7px 10px;border-radius:var(--border-r-default);border:1px solid var(--border-color-line);background:var(--bg-surface-raised);color:var(--text-color-default);font:inherit;font-size:var(--text-sm)}
+    .c-upload__caption:focus-visible{outline:2px solid var(--accent)}
+    .c-upload .c-photos__remove{top:50%;right:-4px;translate:0 -50%}
+
+    /* Gallery: a pinboard of photos with their own heights */
+    .c-gallery{width:100%;max-width:100%;height:100%;max-height:100%;margin:0;padding:0;border:0;background:var(--bg-page);color:var(--text-color-default)}
+    .c-gallery[open]{display:flex;flex-direction:column}
+    .c-gallery__head{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:14px 16px}
+    .c-gallery__head h2{font-size:var(--text-lg);font-weight:var(--font-bold)}
+    .c-gallery__head h2 b{font-weight:inherit}
+    .c-gallery__head p{font-size:var(--text-xs);color:var(--text-color-muted)}
+    .c-gallery__head .c-icon-btn:hover{background:var(--bg-surface-raised)}
+    /* CSS columns give the pinboard layout: grid can't pack items of different heights yet, so items space themselves */
+    .c-gallery__wall{flex:1;columns:2 150px;column-gap:12px;margin:0;padding:0 16px 24px;list-style:none;overflow-y:auto}
+    .c-gallery__wall li{break-inside:avoid;margin-bottom:16px}
+    .c-gallery__item{all:unset;display:grid;gap:4px;width:100%;cursor:zoom-in}
+    .c-gallery__item:focus-visible .c-gallery__photo{outline:3px solid var(--accent);outline-offset:2px}
+    .c-gallery__photo{display:block;aspect-ratio:var(--ratio);border-radius:var(--border-r-default);background-size:cover;background-position:center;transition:transform var(--duration-default) var(--ease-out),box-shadow var(--duration-default)}
+    .c-gallery__item:hover .c-gallery__photo{transform:translateY(-3px);box-shadow:var(--shadow-md)}
+    .c-gallery__caption{font-size:var(--text-sm);font-weight:var(--font-bold)}
+    .c-gallery__place{font-size:var(--text-xs);color:var(--text-color-muted)}
+
+    /* Viewer: one photo in full screen */
+    .c-viewer{width:100%;max-width:100%;height:100%;max-height:100%;margin:0;padding:0;border:0;background:var(--bg-shell);color:var(--text-color-shell)}
+    .c-viewer[open]{display:grid;grid-template-rows:1fr auto}
+    .c-viewer::backdrop{background:var(--bg-shell)}
+    .c-viewer .c-icon-btn{color:var(--text-color-shell)}
+    .c-viewer .c-icon-btn:hover{background:var(--bg-shell-hover)}
+    .c-viewer__close{position:absolute;top:10px;right:10px;z-index:1}
+    .c-viewer__stage{display:grid;grid-template-columns:auto 1fr auto;align-items:center;gap:4px;min-height:0;padding:56px 4px 0;touch-action:pan-y}
+    .c-viewer__photo{grid-column:2;justify-self:center;width:min(100%,calc((100vh - 160px) * var(--ratio)));aspect-ratio:var(--ratio);border-radius:var(--border-r-default);background-size:cover;background-position:center}
+    #viewer-prev{grid-column:1;grid-row:1}
+    #viewer-next{grid-column:3;grid-row:1}
+    .c-viewer__info{display:grid;justify-items:center;gap:2px;padding:14px 16px 20px;text-align:center;font-size:var(--text-sm)}
+    .c-viewer__info span{color:var(--text-color-shell-muted)}
+    .c-viewer__count{font-size:var(--text-xs)}
+    @media (prefers-reduced-motion:no-preference){
+      .c-viewer__photo.is-next{animation:slide-in var(--duration-default) var(--ease-out)}
+      .c-viewer__photo.is-prev{animation:slide-in-back var(--duration-default) var(--ease-out)}
+    }
+    @keyframes slide-in{from{opacity:0;transform:translateX(40px)}}
+    @keyframes slide-in-back{from{opacity:0;transform:translateX(-40px)}}
+
     @media (min-width:769px){
+      .c-pick{top:66px;bottom:auto}
+      .c-gallery__wall{columns:4 200px;column-gap:16px;padding:0 24px 32px}
+      .c-gallery__head{padding:18px 24px}
+      .c-viewer__stage{gap:16px;padding:56px 16px 0}
       .p-places__toolbar{top:14px;left:14px;right:14px}
       .p-places__count{display:block}
       .c-fakemap__zoom{display:flex}
@@ -82,7 +156,7 @@
   <div class="app">
     <div class="app__main">
       <main class="app__content">
-        <div class="p-places">
+        <div class="p-places" id="places-root">
           <div class="c-fakemap" id="map" aria-label="Map of the places you have been to (illustration)">
             <div class="c-fakemap__layer" id="map-layer">
               <svg class="c-fakemap__art" viewBox="0 0 1000 700" preserveAspectRatio="xMidYMid slice" aria-hidden="true">
@@ -131,11 +205,21 @@
           </div>
           <span class="c-fakemap__note">Illustrative map, not to scale</span>
 
+          <div class="c-pick" id="pick" role="status" hidden>
+            <span>Tap the map where you went</span>
+            <button class="c-button c-button--module" type="button" id="pick-center">Pin at map center</button>
+            <button class="c-button c-button--ghost" type="button" id="pick-cancel">Cancel</button>
+          </div>
+
           <div class="p-places__toolbar">
-            <span class="c-module" id="module-badge"><span>Places <small>by Nori</small></span></span>
-            <button class="c-button c-button--module" type="button">
+            <span class="c-module" id="module-badge"><span>Places</span></span>
+            <button class="c-button c-button--module" type="button" id="add-place" data-new>
               <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path stroke="currentColor" stroke-width="1.8" stroke-linecap="round" d="M12 5v14M5 12h14"/></svg>
               Add place
+            </button>
+            <button class="c-button c-button--ghost" type="button" id="open-gallery">
+              <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><g stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M9 22h6c5 0 7-2 7-7V9c0-5-2-7-7-7H9C4 2 2 4 2 9v6c0 5 2 7 7 7Z"/><path d="M9 10a2 2 0 1 0 0-4 2 2 0 0 0 0 4ZM2.67 18.95l4.93-3.31c.79-.53 1.93-.47 2.64.14l.33.29c.78.67 2.04.67 2.82 0l4.16-3.57c.78-.67 2.04-.67 2.82 0L22 13.9"/></g></svg>
+              Gallery
             </button>
             <div id="filters" style="display:contents"></div>
             <span class="p-places__count" id="count"></span>
@@ -143,7 +227,7 @@
 
           <article class="c-place" id="place" aria-live="polite">
             <div class="c-place__gallery">
-              <div class="c-place__photo" id="photo"></div>
+              <button class="c-place__photo" type="button" id="photo"></button>
               <button class="c-icon-btn c-place__close" type="button" id="close" aria-label="Close place">
                 <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path stroke="currentColor" stroke-width="1.8" stroke-linecap="round" d="m7 7 10 10M17 7 7 17"/></svg>
               </button>
@@ -163,11 +247,11 @@
               <p class="c-place__note" id="note"></p>
             </div>
             <div class="c-place__actions">
-              <button class="c-button c-button--ghost" type="button">
+              <button class="c-button c-button--ghost" type="button" id="edit-place">
                 <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><g stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="m13.26 3.6-8.21 8.69c-.31.33-.61.98-.67 1.43l-.37 3.24c-.13 1.17.71 1.97 1.87 1.77l3.22-.55c.45-.08 1.08-.41 1.39-.75l8.21-8.69c1.42-1.5 2.06-3.21-.15-5.3-2.2-2.07-3.87-1.34-5.29.16Z"/><path d="M11.89 5.05a6.126 6.126 0 0 0 5.45 5.15M3 22h18"/></g></svg>
                 Edit
               </button>
-              <button class="c-button c-button--module" type="button">
+              <button class="c-button c-button--module" type="button" id="add-photos">
                 <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><g stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M9 10a2 2 0 1 0 0-4 2 2 0 0 0 0 4ZM13 2H9C4 2 2 4 2 9v6c0 5 2 7 7 7h6c5 0 7-2 7-7v-5M15.75 5h5.5M18.5 7.75v-5.5M2.67 18.95l4.93-3.31c.79-.53 1.93-.47 2.64.14l.33.29c.78.67 2.04.67 2.82 0l4.16-3.57c.78-.67 2.04-.67 2.82 0L22 13.9"/></g></svg>
                 Add photos
               </button>
@@ -178,217 +262,117 @@
     </div>
   </div>
 
+  <dialog class="c-dialog" id="place-dialog" aria-labelledby="place-form-title">
+    <form class="c-form" id="place-form" novalidate>
+      <div class="c-dialog__head">
+        <h2 id="place-form-title">New place</h2>
+        <button class="c-icon-btn" type="button" id="close-place-form" aria-label="Close">
+          <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path stroke="currentColor" stroke-width="1.8" stroke-linecap="round" d="M18 6 6 18M6 6l12 12"/></svg>
+        </button>
+      </div>
+      <label class="u-visually-hidden" for="place-title">Name</label>
+      <input class="c-dialog__title" id="place-title" name="title" placeholder="Name this place" maxlength="60" autocomplete="off" required>
+      <label class="c-field"><span>Where</span><input name="where" placeholder="Neighborhood, city" maxlength="80" autocomplete="off"></label>
+      <div class="c-dialog__row">
+        <label class="c-field"><span>Category</span><select name="category"></select></label>
+        <label class="c-field"><span>Visited on</span><input type="date" name="visited" required></label>
+      </div>
+      <label class="c-field"><span>Note</span><textarea name="note" rows="3" maxlength="500" placeholder="What do you want to remember?"></textarea></label>
+      <div class="c-field" role="group" aria-labelledby="form-photos-label">
+        <span id="form-photos-label">Photos</span>
+        <ul class="c-photos" id="form-photos">
+          <li>
+            <label class="c-photos__add" id="form-photos-add">
+              <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path stroke="currentColor" stroke-width="1.8" stroke-linecap="round" d="M12 5v14M5 12h14"/></svg>
+              <span class="u-visually-hidden">Add photos</span>
+              <input class="u-visually-hidden" type="file" id="form-photos-input" accept="image/*" multiple>
+            </label>
+          </li>
+        </ul>
+      </div>
+      <label class="c-dialog__check"><input type="checkbox" name="fav"> Favorite</label>
+      <div class="c-dialog__actions">
+        <button class="c-button c-button--danger c-dialog__delete" type="button" id="delete-place">Delete</button>
+        <button class="c-button c-button--ghost" type="button" id="cancel-place">Cancel</button>
+        <button class="c-button c-button--module" type="submit" id="submit-place">Create</button>
+      </div>
+    </form>
+  </dialog>
+
+  <dialog class="c-dialog c-confirm" id="delete-dialog" aria-labelledby="delete-title">
+    <form method="dialog">
+      <div class="c-dialog__head">
+        <h2 id="delete-title">Are you sure you want to delete <b id="delete-name"></b>?</h2>
+        <button class="c-icon-btn" value="cancel" aria-label="Close">
+          <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path stroke="currentColor" stroke-width="1.8" stroke-linecap="round" d="M18 6 6 18M6 6l12 12"/></svg>
+        </button>
+      </div>
+      <p class="c-confirm__note">Its photos go with it. This can’t be undone.</p>
+      <div class="c-dialog__actions">
+        <button class="c-button c-button--ghost" value="cancel">Cancel</button>
+        <button class="c-button c-button--danger" value="delete">Delete</button>
+      </div>
+    </form>
+  </dialog>
+
+  <dialog class="c-dialog" id="photos-dialog" aria-labelledby="photos-title">
+    <form class="c-form" id="photos-form" novalidate>
+      <div class="c-dialog__head">
+        <h2 id="photos-title">Add photos</h2>
+        <button class="c-icon-btn" type="button" id="close-photos" aria-label="Close">
+          <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path stroke="currentColor" stroke-width="1.8" stroke-linecap="round" d="M18 6 6 18M6 6l12 12"/></svg>
+        </button>
+      </div>
+      <label class="c-dropzone" id="dropzone">
+        <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><g stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M9 10a2 2 0 1 0 0-4 2 2 0 0 0 0 4ZM13 2H9C4 2 2 4 2 9v6c0 5 2 7 7 7h6c5 0 7-2 7-7v-5M15.75 5h5.5M18.5 7.75v-5.5M2.67 18.95l4.93-3.31c.79-.53 1.93-.47 2.64.14l.33.29c.78.67 2.04.67 2.82 0l4.16-3.57c.78-.67 2.04-.67 2.82 0L22 13.9"/></g></svg>
+        <strong>Drop photos here</strong>
+        <span>or click to choose them</span>
+        <input class="u-visually-hidden" type="file" id="photo-files" accept="image/*" multiple>
+      </label>
+      <ul class="c-uploads" id="uploads" aria-label="Photos to add"></ul>
+      <div class="c-dialog__actions">
+        <button class="c-button c-button--ghost" type="button" id="cancel-photos">Cancel</button>
+        <button class="c-button c-button--module" type="submit" id="submit-photos" disabled>Add photos</button>
+      </div>
+    </form>
+  </dialog>
+
+  <dialog class="c-gallery" id="gallery" aria-labelledby="gallery-title">
+    <div class="c-gallery__head">
+      <div>
+        <h2 id="gallery-title">All photos</h2>
+        <p id="gallery-count"></p>
+      </div>
+      <button class="c-icon-btn" type="button" id="close-gallery" aria-label="Close gallery">
+        <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path stroke="currentColor" stroke-width="1.8" stroke-linecap="round" d="M18 6 6 18M6 6l12 12"/></svg>
+      </button>
+    </div>
+    <ul class="c-gallery__wall" id="gallery-wall"></ul>
+  </dialog>
+
+  <dialog class="c-viewer" id="viewer" aria-label="Photo viewer">
+    <button class="c-icon-btn c-viewer__close" type="button" id="close-viewer" aria-label="Close photo">
+      <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path stroke="currentColor" stroke-width="1.8" stroke-linecap="round" d="M18 6 6 18M6 6l12 12"/></svg>
+    </button>
+    <div class="c-viewer__stage" id="viewer-stage">
+      <button class="c-icon-btn c-viewer__nav" type="button" id="viewer-prev" aria-label="Previous photo">
+        <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" d="M15 19.92 8.48 13.4c-.77-.77-.77-2.03 0-2.8L15 4.08"/></svg>
+      </button>
+      <div class="c-viewer__photo" id="viewer-photo" role="img"></div>
+      <button class="c-icon-btn c-viewer__nav" type="button" id="viewer-next" aria-label="Next photo">
+        <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" d="m8.91 19.92 6.52-6.52c.77-.77.77-2.03 0-2.8L8.91 4.08"/></svg>
+      </button>
+    </div>
+    <div class="c-viewer__info" aria-live="polite">
+      <strong id="viewer-caption"></strong>
+      <span id="viewer-place"></span>
+      <span class="c-viewer__count" id="viewer-count"></span>
+    </div>
+  </dialog>
+
+  <script src="mascots.js"></script>
   <script src="shell.js"></script>
-  <script>
-    document.getElementById('module-badge').insertAdjacentHTML('afterbegin', window.noriCat);
-
-    // Sample data for the prototype. Photos are gradients, not real pictures.
-    const categories = {
-      Travel: 'var(--bg-cat-travel)',
-      Social: 'var(--bg-cat-social)',
-      Hobby: 'var(--bg-cat-hobby)',
-      Reading: 'var(--bg-cat-reading)',
-      Family: 'var(--bg-cat-family)',
-    };
-
-    const places = [
-      { id: 1, title: 'Primrose Hill', where: 'Camden, London', x: 18, y: 19, category: 'Hobby', visited: '12 Mar 2025', fav: true,
-        note: 'Sunset picnic with the whole city at our feet. Bring a blanket, the grass gets wet early.',
-        photos: [['#f6b26b', '#e06666', 'Sunset from the top'], ['#93c47d', '#38761d', 'The lawn'], ['#9fc5e8', '#3d85c6', 'City view']] },
-      { id: 2, title: 'British Library', where: "King's Cross, London", x: 47, y: 17, category: 'Reading', visited: '14 Mar 2025', fav: false,
-        note: 'Saw the treasures gallery. The King’s Library tower is even taller in person.',
-        photos: [['#b4a7d6', '#674ea7', 'The tower of books'], ['#d5a6bd', '#a64d79', 'Reading room']] },
-      { id: 3, title: 'Borough Market', where: 'Southwark, London', x: 54, y: 83, category: 'Social', visited: '15 Mar 2025', fav: true,
-        note: 'Lunch with friends. Go before noon on Saturdays or it gets packed.',
-        photos: [['#ffd966', '#e69138', 'Food stalls'], ['#ea9999', '#cc0000', 'Strawberries'], ['#b6d7a8', '#6aa84f', 'Green market']] },
-      { id: 4, title: 'Tower Bridge', where: 'Tower Hamlets, London', x: 65, y: 73, category: 'Travel', visited: '15 Mar 2025', fav: false,
-        note: 'Walked across at night. The glass floor of the walkway is scary and worth it.',
-        photos: [['#6fa8dc', '#1c4587', 'At night'], ['#a2c4c9', '#45818e', 'From the river']] },
-      { id: 5, title: 'Regent’s Park', where: 'Marylebone, London', x: 31, y: 31, category: 'Family', visited: '16 Mar 2025', fav: false,
-        note: 'Rose garden with the family. Queen Mary’s Gardens are at their best in June.',
-        photos: [['#f4cccc', '#e06666', 'Rose garden'], ['#d9ead3', '#93c47d', 'Boating lake']] },
-      { id: 6, title: 'Shoreditch', where: 'Hackney, London', x: 66, y: 22, category: 'Hobby', visited: '17 Mar 2025', fav: false,
-        note: 'Street art walk. Every wall changes from one month to the next.',
-        photos: [['#c27ba0', '#741b47', 'Mural'], ['#ffe599', '#bf9000', 'Brick Lane']] },
-    ];
-
-    const icons = {
-      calendar: '<svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" d="M8 2v3M16 2v3M3.5 9.09h17M21 8.5V17c0 3-1.5 5-5 5H8c-3.5 0-5-2-5-5V8.5c0-3 1.5-5 5-5h8c3.5 0 5 2 5 5Z"/></svg>',
-      gallery: '<svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><g stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M9 22h6c5 0 7-2 7-7V9c0-5-2-7-7-7H9C4 2 2 4 2 9v6c0 5 2 7 7 7Z"/><path d="M9 10a2 2 0 1 0 0-4 2 2 0 0 0 0 4ZM2.67 18.95l4.93-3.31c.79-.53 1.93-.47 2.64.14l.33.29c.78.67 2.04.67 2.82 0l4.16-3.57c.78-.67 2.04-.67 2.82 0L22 13.9"/></g></svg>',
-      plus: '<svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path stroke="currentColor" stroke-width="1.8" stroke-linecap="round" d="M12 5v14M5 12h14"/></svg>',
-    };
-
-    const gradient = ([from, to]) => `linear-gradient(135deg, ${from}, ${to})`;
-
-    // Pan and zoom the illustration.
-    const mapEl = document.getElementById('map');
-    const layer = document.getElementById('map-layer');
-    const view = { x: 0, y: 0, scale: 1 };
-    // Keep the drawing at its 1000x700 ratio and cover the area, so pins stay on their spots.
-    const base = { left: 0, top: 0 };
-    const fit = () => {
-      const ratio = Math.max(mapEl.clientWidth / 1000, mapEl.clientHeight / 700);
-      base.left = (mapEl.clientWidth - 1000 * ratio) / 2;
-      base.top = (mapEl.clientHeight - 700 * ratio) / 2;
-      Object.assign(layer.style, { left: base.left + "px", top: base.top + "px", width: 1000 * ratio + "px", height: 700 * ratio + "px" });
-    };
-    fit();
-    window.addEventListener("resize", fit);
-    const applyView = () => {
-      layer.style.transform = `translate(${view.x}px, ${view.y}px) scale(${view.scale})`;
-      layer.style.setProperty('--inv', 1 / view.scale);
-    };
-    const zoom = (factor) => {
-      const next = Math.min(2.5, Math.max(1, view.scale * factor));
-      const cx = mapEl.clientWidth / 2 - base.left;
-      const cy = mapEl.clientHeight / 2 - base.top;
-      view.x = cx - ((cx - view.x) / view.scale) * next;
-      view.y = cy - ((cy - view.y) / view.scale) * next;
-      view.scale = next;
-      if (next === 1) view.x = view.y = 0;
-      applyView();
-    };
-    document.getElementById('zoom-in').addEventListener('click', () => zoom(1.4));
-    document.getElementById('zoom-out').addEventListener('click', () => zoom(1 / 1.4));
-    mapEl.addEventListener(
-      'wheel',
-      (e) => {
-        e.preventDefault();
-        zoom(e.deltaY < 0 ? 1.15 : 1 / 1.15);
-      },
-      { passive: false }
-    );
-
-    let drag = null;
-    mapEl.addEventListener('pointerdown', (e) => {
-      if (e.target.closest('.c-pin-btn')) return;
-      drag = { x: e.clientX - view.x, y: e.clientY - view.y };
-      mapEl.classList.add('is-dragging');
-      mapEl.setPointerCapture(e.pointerId);
-    });
-    mapEl.addEventListener('pointermove', (e) => {
-      if (!drag) return;
-      view.x = e.clientX - drag.x;
-      view.y = e.clientY - drag.y;
-      applyView();
-    });
-    mapEl.addEventListener('pointerup', () => {
-      drag = null;
-      mapEl.classList.remove('is-dragging');
-    });
-
-    const markers = new Map();
-    let selectedId = null;
-    let activeFilter = 'All';
-    let query = '';
-
-    const pins = document.getElementById('pins');
-    places.forEach((place, i) => {
-      const pin = document.createElement('button');
-      pin.type = 'button';
-      pin.className = 'c-pin-btn';
-      pin.style.setProperty('--x', `${place.x}%`);
-      pin.style.setProperty('--y', `${place.y}%`);
-      pin.setAttribute('aria-label', place.title);
-      pin.innerHTML = `<span class="c-pin" style="--pin-color:${categories[place.category]}"><span>${i + 1}</span></span>`;
-      pin.addEventListener('click', () => select(place.id));
-      pins.appendChild(pin);
-      markers.set(place.id, pin);
-    });
-
-    function select(id) {
-      selectedId = id;
-      markers.forEach((pin, pinId) => pin.firstElementChild.classList.toggle('is-selected', pinId === id));
-      renderCard(places.find((p) => p.id === id), 0);
-      document.getElementById('place').hidden = false;
-    }
-
-    function renderCard(place, photoIndex) {
-      const photo = place.photos[photoIndex];
-      const photoEl = document.getElementById('photo');
-      photoEl.style.backgroundImage = gradient(photo);
-      photoEl.textContent = photo[2];
-
-      const thumbs = document.getElementById('thumbs');
-      thumbs.innerHTML = '';
-      place.photos.forEach((p, i) => {
-        const thumb = document.createElement('button');
-        thumb.type = 'button';
-        thumb.className = 'c-thumb' + (i === photoIndex ? ' is-selected' : '');
-        thumb.style.backgroundImage = gradient(p);
-        thumb.setAttribute('aria-label', `Show photo: ${p[2]}`);
-        thumb.addEventListener('click', () => renderCard(place, i));
-        thumbs.appendChild(thumb);
-      });
-      const add = document.createElement('button');
-      add.type = 'button';
-      add.className = 'c-thumb c-thumb--add';
-      add.setAttribute('aria-label', 'Add photos');
-      add.innerHTML = icons.plus;
-      thumbs.appendChild(add);
-
-      document.getElementById('title').textContent = place.title;
-      document.getElementById('where').textContent = place.where;
-      document.getElementById('note').textContent = place.note;
-      document.getElementById('meta').innerHTML = `
-        <span class="c-tag" style="--tag-color:${categories[place.category]}">${place.category}</span>
-        <span class="c-tag c-tag--plain">${icons.calendar} Visited ${place.visited}</span>
-        <span class="c-tag c-tag--plain">${icons.gallery} ${place.photos.length} photos</span>`;
-
-      const fav = document.getElementById('fav');
-      fav.classList.toggle('is-on', place.fav);
-      fav.setAttribute('aria-pressed', String(place.fav));
-      fav.onclick = () => {
-        place.fav = !place.fav;
-        renderCard(place, photoIndex);
-      };
-    }
-
-    document.getElementById('close').addEventListener('click', () => {
-      document.getElementById('place').hidden = true;
-      markers.forEach((pin) => pin.firstElementChild.classList.remove('is-selected'));
-      selectedId = null;
-    });
-
-    const filters = document.getElementById('filters');
-    ['All', ...Object.keys(categories)].forEach((name) => {
-      const button = document.createElement('button');
-      button.type = 'button';
-      button.className = 'c-filter' + (name === 'All' ? ' is-active' : '');
-      button.textContent = name;
-      if (categories[name]) button.style.setProperty('--filter-color', categories[name]);
-      button.setAttribute('aria-pressed', String(name === 'All'));
-      button.addEventListener('click', () => {
-        activeFilter = name;
-        filters.querySelectorAll('.c-filter').forEach((b) => {
-          b.classList.toggle('is-active', b === button);
-          b.setAttribute('aria-pressed', String(b === button));
-        });
-        applyFilters();
-      });
-      filters.appendChild(button);
-    });
-
-    document.getElementById('search').addEventListener('input', (event) => {
-      query = event.target.value.trim().toLowerCase();
-      applyFilters();
-    });
-
-    function applyFilters() {
-      let visible = 0;
-      places.forEach((place) => {
-        const matches =
-          (activeFilter === 'All' || place.category === activeFilter) &&
-          (!query || place.title.toLowerCase().includes(query) || place.where.toLowerCase().includes(query));
-        markers.get(place.id).hidden = !matches;
-        if (matches) visible++;
-      });
-      document.getElementById('count').textContent = `${visible} of ${places.length} places`;
-      if (selectedId) select(selectedId);
-    }
-
-    applyFilters();
-    select(1);
-  </script>
+  <script src="components.js"></script>
+  <script src="places.js"></script>
 </body>
 </html>

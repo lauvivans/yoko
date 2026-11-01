@@ -5,10 +5,14 @@
     Social: '<path d="M17 9c0 3.87-3.36 7-7.5 7l-.93 1.12-.55.66c-.47.56-1.37.44-1.68-.23L5 14.6C3.18 13.32 2 11.29 2 9c0-3.87 3.36-7 7.5-7 3.02 0 5.63 1.67 6.8 4.07.45.89.7 1.88.7 2.93Z"/><path d="M22 12.86c0 2.29-1.18 4.32-3 5.6l-1.34 2.95c-.31.67-1.21.8-1.68.23l-1.48-1.78c-2.42 0-4.58-1.07-5.93-2.74L9.5 16c4.14 0 7.5-3.13 7.5-7 0-1.05-.25-2.04-.7-2.93 3.27.75 5.7 3.51 5.7 6.79ZM7 9h5"/>',
     Travel: '<path d="M12 13.43a3.12 3.12 0 1 0 0-6.24 3.12 3.12 0 0 0 0 6.24Z"/><path d="M3.62 8.49c1.97-8.66 14.8-8.65 16.76.01 1.15 5.08-2.01 9.38-4.78 12.04a5.193 5.193 0 0 1-7.21 0c-2.76-2.66-5.92-6.97-4.77-12.05Z"/>',
     Study: '<path d="M22 16.74V4.67c0-1.2-.98-2.09-2.17-1.99h-.06c-2.1.18-5.29 1.25-7.07 2.37l-.17.11c-.29.18-.77.18-1.06 0l-.25-.15C9.44 3.9 6.26 2.84 4.16 2.67 2.97 2.57 2 3.47 2 4.66v12.08c0 .96.78 1.86 1.74 1.98l.29.04c2.17.29 5.52 1.39 7.44 2.44l.04.02c.27.15.7.15.96 0 1.92-1.06 5.28-2.17 7.46-2.46l.33-.04c.96-.12 1.74-1.02 1.74-1.98ZM12 5.49v15"/>',
-    Family: '<path d="M12.62 20.81c-.34.12-.9.12-1.24 0C8.48 19.82 2 15.69 2 8.69 2 5.6 4.49 3.1 7.56 3.1c1.82 0 3.43.88 4.44 2.24a5.53 5.53 0 0 1 4.44-2.24C19.51 3.1 22 5.6 22 8.69c0 7-6.48 11.13-9.38 12.12Z"/>',
+    Family: '<path d="M9 11a4 4 0 1 0 0-8 4 4 0 0 0 0 8ZM2 21c0-3.6 3.1-6 7-6s7 2.4 7 6M16 3.3a4 4 0 0 1 0 7.4M18 15.2c2.4.6 4 2.6 4 5.8"/>',
+    Work: '<path d="M8 22h8c4 0 4.7-1.6 4.9-3.5l.8-8c.2-2-.4-3.5-3.7-3.5H6c-3.3 0-3.9 1.5-3.7 3.5l.8 8C3.3 20.4 4 22 8 22ZM8 7v-.8C8 4.4 8 3 11.2 3h1.6C16 3 16 4.4 16 6.2V7M2.3 11.5A16 16 0 0 0 12 14.3a16 16 0 0 0 9.7-2.8"/>',
+    Finance: '<path d="M18 13.5a1.5 1.5 0 1 0 0-.01M3 9V6.5A3.5 3.5 0 0 1 6.5 3h11A3.5 3.5 0 0 1 21 6.5V9M3 9v8.5A3.5 3.5 0 0 0 6.5 21h11a3.5 3.5 0 0 0 3.5-3.5V15M3 9h18v6h-4a3 3 0 0 1 0-6"/>',
+    Home: '<path d="M9 21V14.5a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1V21M3 10.5 12 3l9 7.5M5 9v10a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V9"/>',
+    Health: '<path d="M12.62 20.81c-.34.12-.9.12-1.24 0C8.48 19.82 2 15.69 2 8.69 2 5.6 4.49 3.1 7.56 3.1c1.82 0 3.43.88 4.44 2.24a5.53 5.53 0 0 1 4.44-2.24C19.51 3.1 22 5.6 22 8.69c0 7-6.48 11.13-9.38 12.12Z"/>',
+    Reading: '<path d="M12 6.5C10.5 5 8 4 3 4v14c5 0 7.5 1 9 2.5M12 6.5C13.5 5 16 4 21 4v14c-5 0-7.5 1-9 2.5M12 6.5v14"/>',
+    Hobby: '<path d="M12 3a9 9 0 0 0 0 18c1.1 0 1.7-.8 1.7-1.6 0-.9-.7-1.3-.7-2.2 0-.9.7-1.6 1.6-1.6H17a4 4 0 0 0 4-4c0-4.6-4-8.6-9-8.6ZM7.5 11.5h.01M10 7.5h.01M15 7.5h.01"/>',
   };
-  // Categories without their own icon in the prototype use a tag.
-  const tagIcon = '<path d="m4.17 15.3 4.53 4.53a4.78 4.78 0 0 0 6.75 0l4.39-4.39a4.78 4.78 0 0 0 0-6.75L15.3 4.17a4.75 4.75 0 0 0-3.6-1.39l-5 .24c-2 .09-3.59 1.68-3.69 3.67l-.24 5c-.06 1.35.45 2.66 1.41 3.61Z"/><path d="M9.5 12a2.5 2.5 0 1 0 0-5 2.5 2.5 0 0 0 0 5Z"/>';
   const categories = ['Personal', 'Work', 'Study', 'Finance', 'Family', 'Travel', 'Home', 'Health', 'Reading', 'Social', 'Hobby'];
   const dayNames = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
   const dayMs = 86400000;
@@ -224,7 +228,7 @@
   // Cards
   const categoryHtml = (o) => `
     <span class="c-occurrence-card__category">
-      <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><g stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">${categoryIcons[o.category] ?? tagIcon}</g></svg>
+      <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><g stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">${categoryIcons[o.category]}</g></svg>
       ${o.category}
     </span>`;
 
@@ -434,10 +438,18 @@
   const field = (name) => form.elements.namedItem(name);
   const weekdayInputs = () => [...form.querySelectorAll('input[name="weekday"]')];
   // Same width as the CSS rule that puts the panel next to the list ($desktop-lg-min).
-  const sidePanel = window.matchMedia('(min-width:1280px)');
   let formIsAction = false;
 
-  field('category').innerHTML = categories.map((c) => `<option>${c}</option>`).join('');
+  // Category cards: radio buttons with the category color and icon. form.elements.category is a RadioNodeList, so .value still works.
+  $('occurrence-category').innerHTML = categories
+    .map(
+      (c) => `<label class="c-category" style="--category-color:var(--bg-cat-${c.toLowerCase()})">
+        <input class="u-visually-hidden" type="radio" name="category" value="${c}">
+        <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><g stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">${categoryIcons[c]}</g></svg>
+        ${c}
+      </label>`,
+    )
+    .join('');
 
   const syncTime = () => {
     const allDay = field('allDay').checked;
@@ -454,6 +466,7 @@
     const ends = form.querySelector('input[name="ends"]:checked').value;
     field('endsOn').disabled = ends !== 'on';
     field('endsAfter').disabled = ends !== 'after';
+    $('ends-count-unit').textContent = Number(field('endsAfter').value) === 1 ? 'occurrence' : 'occurrences';
   };
 
   const openForm = (o = null) => {
@@ -492,15 +505,13 @@
     syncRepeat();
     $('submit-form').textContent = o ? 'Save' : 'Create';
 
-    // Creating opens a dialog. Editing opens a panel next to the list, or takes the whole content on small screens.
+    // Creating opens a dialog. Editing opens the side panel.
     if (o) {
-      $('back-label').textContent = `Back to ${view.toLowerCase()}`;
       editPage.setAttribute('aria-label', `Edit ${noun(o)}`);
       editPage.append(form);
       occurrencePage.classList.add('is-editing');
       editPage.hidden = false;
       render();
-      if (!sidePanel.matches) content.scrollTop = 0;
       field('title').focus();
     } else {
       formDialog.append(form);
@@ -524,10 +535,10 @@
     if (['unit', 'every', 'ends'].includes(e.target.name)) syncRepeat();
   });
   field('every').addEventListener('input', syncRepeat);
+  field('endsAfter').addEventListener('input', syncRepeat);
   field('allDay').addEventListener('change', syncTime);
   addButton.addEventListener('click', () => openForm());
   $('close-form').addEventListener('click', closeForm);
-  $('back-to-list').addEventListener('click', closeForm);
   closeOnBackdrop(formDialog);
 
   const validate = () => {
