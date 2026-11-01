@@ -1,0 +1,103 @@
+<!doctype html>
+<html lang="en" data-theme="light">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Yoko — Meet the crew</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@300..700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="tokens.css">
+  <link rel="stylesheet" href="shell.css">
+  <style>
+    .p-crew{display:grid;gap:24px;padding:20px 12px 40px}
+    .p-crew__intro{display:grid;gap:12px;justify-items:center;text-align:center}
+    .p-crew__intro img{width:130px;height:auto;transform:rotate(-8deg)}
+    .p-crew__intro h1{font-size:var(--text-xl);font-weight:var(--font-bold);line-height:1.1}
+    .p-crew__intro p{max-width:48ch;font-size:var(--text-base)}
+    .c-crew{display:grid;gap:14px;margin:0;padding:0;list-style:none}
+    .c-crew-card{display:grid;grid-template-columns:auto minmax(0,1fr);align-items:center;gap:14px;padding:16px;border-radius:var(--border-r-default);border:var(--border-w-default) solid var(--border-color-dark);background:var(--crew-color);color:var(--text-color-on-color);text-decoration:none;transition:transform var(--duration-default) var(--ease-spring),box-shadow var(--duration-default)}
+    .c-crew-card:hover{transform:translateY(-3px);box-shadow:var(--shadow-md)}
+    .c-crew-card:focus-visible{outline:2px solid var(--dark);outline-offset:3px}
+    .c-crew-card__art{display:grid;place-items:center;width:84px;height:84px;border-radius:var(--border-r-default);background:var(--bg-surface)}
+    .c-crew-card__art svg{width:68px;height:68px}
+    @media (prefers-reduced-motion:no-preference){
+      .c-crew-card:hover .c-crew-card__art svg{animation:crew-wiggle var(--duration-slow) var(--ease-spring)}
+    }
+    @keyframes crew-wiggle{30%{transform:rotate(-10deg) scale(1.08)}60%{transform:rotate(8deg)}}
+    .c-crew-card__text{display:grid;gap:4px}
+    .c-crew-card__text small{font-size:var(--text-xs);font-weight:var(--font-bold);letter-spacing:.04em;text-transform:uppercase;opacity:var(--opacity-strong)}
+    .c-crew-card__text strong{font-size:var(--text-lg)}
+    .c-crew-card__text span{font-size:var(--text-sm)}
+
+    @media (min-width:481px){
+      .c-crew{grid-template-columns:repeat(2,minmax(0,1fr))}
+    }
+    @media (min-width:769px){
+      .p-crew{padding:28px 24px 48px}
+    }
+    @media (min-width:1280px){
+      .c-crew{grid-template-columns:repeat(3,minmax(0,1fr))}
+    }
+  </style>
+</head>
+<body data-page="mascots">
+  <div class="app">
+    <div class="app__main">
+      <main class="app__content">
+        <div class="p-crew">
+          <section class="p-crew__intro" aria-labelledby="crew-title">
+            <img src="../../../client/public/mascot.svg" alt="Yoko, a red octopus">
+            <h1 id="crew-title">Meet the crew</h1>
+            <p>Yoko keeps everything together with its eight arms. Each module has a sea friend of its own, who shows up when a list ends or there’s nothing there yet.</p>
+          </section>
+          <ul class="c-crew" id="crew" aria-label="Module mascots"></ul>
+        </div>
+      </main>
+    </div>
+  </div>
+
+  <script src="mascots.js"></script>
+  <script src="shell.js"></script>
+  <script>
+    (() => {
+      const crew = [
+        { id: 'occurrences', module: 'Occurrences', animal: 'Whale', color: 'var(--blue)', why: 'Its song comes back every year, like the dates you keep.' },
+        { id: 'places', module: 'Places', animal: 'Otter', color: 'var(--yellow)', why: 'Holds on to a favorite pebble, like you hold on to the places you’ve been.' },
+        { id: 'links', module: 'Links', animal: 'Pufferfish', color: 'var(--bg-cat-reading)', why: 'Its spikes reach out in every direction, like links.' },
+        { id: 'notes', module: 'Notes', animal: 'Seal', color: 'var(--bg-cat-study)', why: 'Balances a pencil on its nose, always ready to write something down.' },
+        { id: 'tasks', module: 'Tasks', animal: 'Crab', color: 'var(--bg-cat-finance)', why: 'Two claws ready to get things done.' },
+        { id: 'mood', module: 'Mood history', animal: 'Jellyfish', color: 'var(--bg-cat-social)', why: 'Floats along with how you feel, rosy cheeks and all.' },
+        { id: 'routines', module: 'Routines', animal: 'Seahorse', color: 'var(--bg-cat-health)', why: 'Seahorse couples greet each other every morning, a routine of their own.' },
+        { id: 'media', module: 'Media', animal: 'Penguin', color: 'var(--bg-cat-work)', why: 'Never without popcorn, ready for the next episode.' },
+        { id: 'lists', module: 'Lists', animal: 'Puffin', color: 'var(--bg-cat-home)', why: 'Carries a row of fish in its beak, lined up like a list.' },
+      ];
+      const modules = Object.fromEntries(window.YokoModules.all.map((m) => [m.id, m.href]));
+      document.getElementById('crew').replaceChildren(
+        ...crew.map((member) => {
+          const item = document.createElement('li');
+          const card = document.createElement('a');
+          card.className = 'c-crew-card';
+          card.href = modules[member.id];
+          card.style.setProperty('--crew-color', member.color);
+          const art = document.createElement('span');
+          art.className = 'c-crew-card__art';
+          art.innerHTML = window.mascots[member.id];
+          const text = document.createElement('span');
+          text.className = 'c-crew-card__text';
+          const module = document.createElement('small');
+          module.textContent = member.module;
+          const animal = document.createElement('strong');
+          animal.textContent = member.animal;
+          const why = document.createElement('span');
+          why.textContent = member.why;
+          text.append(module, animal, why);
+          card.append(art, text);
+          item.append(card);
+          return item;
+        }),
+      );
+    })();
+  </script>
+</body>
+</html>

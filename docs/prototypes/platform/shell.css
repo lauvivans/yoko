@@ -122,6 +122,8 @@ body{min-height:100vh;background:var(--bg-page);color:var(--text-color-default);
 .c-mood__option svg{width:30px;height:30px}
 
 /* Module mascots (mascots.js): a dark body with the module color in the eyes */
+.c-empty-mascot{display:block}
+.c-empty-mascot svg{display:block;width:120px;height:120px;transform:rotate(-8deg)}
 .c-mascot .m-body{fill:var(--dark);stroke:var(--mascot-outline);stroke-width:1.2}
 .c-mascot .m-round{stroke-width:3;stroke-linejoin:round}
 .c-mascot .m-line{fill:none;stroke:var(--dark);stroke-linecap:round;stroke-linejoin:round}
@@ -131,6 +133,10 @@ body{min-height:100vh;background:var(--bg-page);color:var(--text-color-default);
 .c-mascot .m-light{fill:var(--white)}
 .c-mascot .m-light-line{fill:none;stroke:var(--white);stroke-linecap:round}
 .c-mascot .m-blush{fill:var(--red);opacity:var(--opacity-md)}
+.c-mascot .m-yellow{fill:var(--yellow)}
+.c-mascot .m-red{fill:var(--red)}
+.c-mascot .m-pop{fill:var(--white);stroke:var(--dark);stroke-width:.8}
+.c-mascot .m-fish{fill:none;stroke:var(--dark-soft);stroke-width:2.2;stroke-linecap:round}
 
 /* Mood faces */
 .c-face__head{fill:var(--face-color);stroke:var(--dark);stroke-width:1.5}

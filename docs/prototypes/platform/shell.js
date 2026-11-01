@@ -272,6 +272,9 @@
     moodToggle.setAttribute('aria-expanded', String(open));
   });
 
+  // Module mascots in empty states and list ends, on pages that load mascots.js first.
+  document.querySelectorAll('[data-mascot]').forEach((el) => el.insertAdjacentHTML('afterbegin', window.mascots?.[el.dataset.mascot] ?? ''));
+
   // Every page with the shell gets the search palette, in this order.
   ['search-data.js', 'search.js'].forEach((src) => {
     const script = document.createElement('script');

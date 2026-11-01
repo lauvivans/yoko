@@ -263,7 +263,7 @@
     deleteButton.setAttribute('aria-disabled', String(selected === 0));
   };
 
-  // The octopus only shows in empty states, where there is room for it.
+  // The whale only shows in empty states, where there is room for it.
   const showMessage = (text, { reset = false, empty = true } = {}) => {
     messageText.textContent = text;
     messageReset.hidden = !reset;

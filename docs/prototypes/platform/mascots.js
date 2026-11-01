@@ -19,15 +19,14 @@
         '<ellipse class="m-eye" cx="24" cy="36" rx="4.6" ry="3.6"/><circle class="m-body" cx="19.6" cy="35.2" r="2.6"/><circle class="m-body" cx="28.4" cy="35.2" r="2.6"/>',
     ),
 
-    // Occurrences: a turtle peeking out of its shell, the shell marked like a calendar.
+    // Occurrences: a whale blowing a spout, its song comes back every year like the dates you keep.
     occurrences: mascot(
       'var(--blue)',
-      '<rect class="m-body" x="8" y="35" width="8" height="8" rx="3.5"/><rect class="m-body" x="32" y="35" width="8" height="8" rx="3.5"/>' +
-        '<circle class="m-body" cx="24" cy="15" r="9.5"/>' +
-        '<path class="m-body" d="M5 39c0-11.5 8.5-19.5 19-19.5S43 27.5 43 39a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2Z"/>' +
-        '<path class="m-accent-line" stroke-width="1.6" d="M13 31.5h22M18 25.5v13M24 23.5v15M30 25.5v13"/>' +
-        eyes(13.5, 20, 28, 2.9) +
-        '<path class="m-light-line" stroke-width="1.4" d="M21.5 18.5c1.5 1.2 3.5 1.2 5 0"/>',
+      '<path class="m-body" d="M5 29c0-7.5 7-13 17.5-13 8.5 0 13.5 4 15.5 9.5l4.5-5.5c1.5 4 .5 8.5-3 10.5.5 6.5-5.5 12.5-17.5 12.5C11.5 43 5 37.5 5 29Z"/>' +
+        '<path class="m-accent-line" stroke-width="1.8" d="M16 15c-1.5-3-1-6 1-8.5M16 15c1.5-3.5 4-5.5 7.5-6"/>' +
+        '<circle class="m-eye" cx="14" cy="5.5" r="1.6"/><circle class="m-eye" cx="25.5" cy="8" r="1.6"/>' +
+        eye(14, 27, 3.3) +
+        '<path class="m-light-line" stroke-width="1.4" d="M8 33.5c3 2.4 7 3 10.5 2M10 38c4 2 9.5 2.4 14 1.2"/>',
     ),
 
     // Tasks: a crab with two open claws, ready to get things done.
@@ -82,26 +81,29 @@
         eye(27.5, 12.5, 3.3),
     ),
 
-    // Media: an anglerfish whose light glows like a screen at night.
+    // Media: a penguin with a tub of popcorn, ready for the next episode.
     media: mascot(
       'var(--bg-cat-work)',
-      '<path class="m-line" stroke-width="2" d="M24 15.5c0-5.5 3.5-9 8-9.5"/>' +
-        '<circle class="m-eye" cx="34" cy="6" r="4"/>' +
-        '<path class="m-body" d="M9.5 24.5 5 20v10l4.5-3.5ZM38.5 24.5 43 20v10l-4.5-3.5Z"/>' +
-        '<circle class="m-body" cx="24" cy="28" r="14"/>' +
-        eyes(24) +
-        '<path class="m-light" d="M15 31.5h18c-1.2 4.4-4.8 7-9 7s-7.8-2.6-9-7Z"/>' +
-        '<path class="m-line" stroke-width="1.1" d="M16.5 31.5l1.6 2.3 1.6-2.3 1.6 2.3 1.6-2.3 1.6 2.3 1.6-2.3 1.6 2.3 1.6-2.3 1.6 2.3 1.6-2.3"/>',
+      '<ellipse class="m-body" cx="11.5" cy="27" rx="3" ry="8" transform="rotate(18 11.5 27)"/><ellipse class="m-body" cx="36.5" cy="27" rx="3" ry="8" transform="rotate(-18 36.5 27)"/>' +
+        '<path class="m-body" d="M24 5c-8 0-12 7-12 16v13c0 6 5 9 12 9s12-3 12-9V21c0-9-4-16-12-16Z"/>' +
+        '<ellipse class="m-light" cx="24" cy="29" rx="7.5" ry="11"/>' +
+        eyes(15, 20, 28, 3) +
+        '<path class="m-yellow" d="M21.8 18.6h4.4L24 21.4Z"/>' +
+        '<ellipse class="m-yellow" cx="19" cy="43.2" rx="3.6" ry="1.5"/><ellipse class="m-yellow" cx="29" cy="43.2" rx="3.6" ry="1.5"/>' +
+        '<circle class="m-pop" cx="19" cy="29.5" r="2.3"/><circle class="m-pop" cx="22.5" cy="28" r="2.4"/><circle class="m-pop" cx="26" cy="28.4" r="2.4"/><circle class="m-pop" cx="29.2" cy="29.6" r="2.2"/>' +
+        '<path class="m-accent" d="M16.5 30.5h15l-2 10h-11Z"/>' +
+        '<path class="m-light-line" stroke-width="1.5" d="M21 31l.8 9M27 31l-.8 9"/>',
     ),
 
-    // Lists: a starfish, five arms and a dot on each, like a bullet list.
+    // Lists: a puffin with a row of fish in its beak, lined up like a list.
     lists: mascot(
       'var(--bg-cat-home)',
-      '<path class="m-body m-round" d="M24 8 29.58 18.31 41.12 20.44 33.03 28.94 34.58 40.56 24 35.5 13.42 40.56 14.97 28.94 6.88 20.44 18.42 18.31Z"/>' +
-        '<circle class="m-light" cx="24" cy="13.5" r="1.2"/><circle class="m-light" cx="36" cy="21.8" r="1.2"/><circle class="m-light" cx="31.6" cy="36" r="1.2"/>' +
-        '<circle class="m-light" cx="16.4" cy="36" r="1.2"/><circle class="m-light" cx="12" cy="21.8" r="1.2"/>' +
-        eyes(24, 20.5, 27.5, 2.8) +
-        '<path class="m-light-line" stroke-width="1.4" d="M21.5 29c1.5 1.3 3.5 1.3 5 0"/>',
+      '<ellipse class="m-red" cx="19" cy="43.4" rx="3.6" ry="1.5"/><ellipse class="m-red" cx="29" cy="43.4" rx="3.6" ry="1.5"/>' +
+        '<path class="m-body" d="M24 6c-8 0-12 6-12 14v14c0 6 5 9 12 9s12-3 12-9V20c0-8-4-14-12-14Z"/>' +
+        '<ellipse class="m-light" cx="24" cy="16.5" rx="8.5" ry="6.5"/><ellipse class="m-light" cx="24" cy="34" rx="7" ry="7.5"/>' +
+        eyes(15, 20.3, 27.7, 2.6) +
+        '<path class="m-fish" d="M17.5 23.5h13M17 26.5h14M17.5 29.5h13"/>' +
+        '<path class="m-red" d="M20.2 19.2h7.6L24 25.5Z"/><path class="m-yellow" d="M21.4 19.2h5.2l-.9 1.6h-3.4Z"/>',
     ),
   };
 })();
