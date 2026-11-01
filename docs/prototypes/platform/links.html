@@ -148,7 +148,7 @@
         <label class="c-field"><span>Tag</span><input name="tag" maxlength="30" placeholder="tech" autocomplete="off"></label>
       </div>
       <datalist id="collection-options"></datalist>
-      <label class="c-field"><span>Status</span><select name="status"></select></label>
+      <label class="c-field"><span>Status</span><select class="c-select__native" name="status"></select></label>
       <label class="c-field"><span>Description</span><textarea name="desc" rows="2" maxlength="300" placeholder="What is it about?"></textarea></label>
       <div class="c-dialog__actions">
         <button class="c-button c-button--ghost" type="button" id="cancel-link">Cancel</button>
@@ -159,6 +159,7 @@
 
   <script src="mascots.js"></script>
   <script src="shell.js"></script>
+  <script src="select.js"></script>
   <script src="components.js"></script>
   <script>
     // Sample taken from the Koda links (public), as they would look after the move.
@@ -608,6 +609,7 @@
         const option = document.createElement('option');
         option.value = key;
         option.textContent = v.label;
+        option.style.setProperty('--option-color', v.color);
         return option;
       })
     );

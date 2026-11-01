@@ -36,7 +36,7 @@
     .c-setting__label{display:grid;gap:2px;font-size:var(--text-sm);font-weight:var(--font-highlight)}
     .c-setting__label small{font-size:var(--text-xs);font-weight:var(--font-regular);color:var(--text-color-muted)}
     .c-setting__control{display:flex;flex-wrap:wrap;align-items:center;gap:8px}
-    .c-setting__control select,.c-setting__control input[type="time"]{padding:7px 10px;border-radius:var(--border-r-default);border:1px solid var(--border-color-line);background:var(--bg-surface-raised);color:var(--text-color-default);font:inherit;font-size:var(--text-sm)}
+    .c-setting__control input[type="time"]{padding:7px 10px;border-radius:var(--border-r-default);border:1px solid var(--border-color-line);background:var(--bg-surface-raised);color:var(--text-color-default);font:inherit;font-size:var(--text-sm)}
     .c-setting__control :focus-visible{outline:2px solid var(--accent)}
     [data-theme="dark"] .c-setting__control input{color-scheme:dark}
 
@@ -140,7 +140,7 @@
                   <div class="c-field" role="group" aria-labelledby="address-label">
                     <span id="address-label">Where you live</span>
                     <div class="c-account-form__address">
-                      <label class="c-field"><span class="u-visually-hidden">Country</span><select name="country" aria-label="Country"><option>Brazil</option><option>Portugal</option><option>United Kingdom</option><option>United States</option></select></label>
+                      <label class="c-field"><span class="u-visually-hidden">Country</span><select class="c-select__native" name="country" aria-label="Country"><option>Brazil</option><option>Portugal</option><option>United Kingdom</option><option>United States</option></select></label>
                       <label class="c-field"><span class="u-visually-hidden">State</span><input name="state" value="São Paulo" placeholder="State" aria-label="State" maxlength="40"></label>
                       <label class="c-field"><span class="u-visually-hidden">City</span><input name="city" value="São Paulo" placeholder="City" aria-label="City" maxlength="60"></label>
                     </div>
@@ -197,7 +197,7 @@
               <div class="c-setting">
                 <label class="c-setting__label" for="language">Language<small>Portuguese pages live under /pt-BR/.</small></label>
                 <div class="c-setting__control">
-                  <select id="language"><option value="en">English</option><option value="pt-BR" lang="pt-BR">Português (Brasil)</option></select>
+                  <select class="c-select__native" id="language"><option value="en">English</option><option value="pt-BR" lang="pt-BR">Português (Brasil)</option></select>
                 </div>
               </div>
               <div class="c-setting">
@@ -237,7 +237,7 @@
               <div class="c-setting">
                 <span class="c-setting__label" id="events-label">Event reminders<small>Before an event starts.</small></span>
                 <div class="c-setting__control">
-                  <select id="events-when" aria-label="When to remind about events"><option>10 minutes before</option><option selected>1 hour before</option><option>1 day before</option></select>
+                  <select class="c-select__native" id="events-when" aria-label="When to remind about events"><option>10 minutes before</option><option selected>1 hour before</option><option>1 day before</option></select>
                   <button class="c-switch" type="button" role="switch" aria-checked="true" aria-labelledby="events-label" data-controls="events-when"></button>
                 </div>
               </div>
@@ -319,6 +319,7 @@
 
   <script src="mascots.js"></script>
   <script src="shell.js"></script>
+  <script src="select.js"></script>
   <script src="components.js"></script>
   <script src="data.js"></script>
   <script>

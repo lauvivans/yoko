@@ -40,8 +40,8 @@
     .p-lists__group{display:grid;gap:8px}
     .p-lists__group h2{font-size:var(--text-base);font-weight:var(--font-bold)}
     .p-lists__empty-group{padding:12px 14px;border-radius:var(--border-r-default);background:var(--bg-surface-raised);font-size:var(--text-sm);color:var(--text-color-muted)}
-    .c-quick-add select{max-width:40%;padding:9px 12px;border-radius:var(--border-r-default);border:1px solid var(--border-color-line);background:var(--bg-surface);color:var(--text-color-default);font:inherit;font-size:var(--text-sm)}
-    .c-quick-add select:focus-visible{outline:2px solid var(--accent)}
+    .c-quick-add .c-select{max-width:40%}
+    .c-quick-add .c-select__button{background:var(--bg-surface)}
     .c-list-cover-field{display:flex;flex-wrap:wrap;align-items:center;gap:10px}
     .c-list-cover-field .p-lists__cover{width:56px;height:56px;background-color:var(--bg-surface-raised)}
     .p-lists__done-head{display:flex;flex-wrap:wrap;align-items:center;gap:8px;margin-top:6px}
@@ -97,7 +97,7 @@
             <form class="c-quick-add" id="quick-add" novalidate>
               <label class="u-visually-hidden" for="new-item">Add an item</label>
               <input id="new-item" maxlength="120" autocomplete="off" placeholder="Add an item and press Enter">
-              <select id="new-item-section" aria-label="Section" hidden></select>
+              <select class="c-select__native" id="new-item-section" aria-label="Section" hidden></select>
               <button class="c-button c-button--module" type="submit">Add</button>
             </form>
             <div class="p-lists__groups" id="items"></div>
@@ -164,7 +164,7 @@
         </button>
       </div>
       <label class="c-field"><span>Item</span><input name="text" maxlength="120" autocomplete="off" required></label>
-      <label class="c-field" id="item-section-field"><span>Section</span><select name="section"></select></label>
+      <label class="c-field" id="item-section-field"><span>Section</span><select class="c-select__native" name="section"></select></label>
       <label class="c-field" data-collection><span>Note</span><textarea name="note" rows="3" maxlength="300" placeholder="Why it’s here, who it’s for…"></textarea></label>
       <label class="c-field" data-collection><span>Link</span><input name="link" inputmode="url" placeholder="https://" autocomplete="off"></label>
       <div class="c-dialog__actions">
@@ -192,6 +192,7 @@
 
   <script src="mascots.js"></script>
   <script src="shell.js"></script>
+  <script src="select.js"></script>
   <script src="components.js"></script>
   <script>
     (() => {
