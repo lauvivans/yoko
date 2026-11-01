@@ -1,0 +1,125 @@
+<!doctype html>
+<html lang="en" data-theme="light">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Yoko — Your days, in one place</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@300..700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="tokens.css">
+  <link rel="stylesheet" href="shell.css">
+  <style>
+    /* The landing is shown at the app root to anyone signed out (decision in the prototype review, 2026-11-01) */
+    body{display:block}
+    .p-landing{display:grid;gap:56px;width:min(1100px,100%);margin:0 auto;padding:0 16px 32px}
+    .p-landing a:focus-visible,.p-landing button:focus-visible{outline:2px solid var(--dark);outline-offset:3px}
+
+    .c-landing-nav{display:flex;align-items:center;gap:12px;padding:14px 0}
+    .c-landing-nav__brand{display:flex;align-items:center;gap:8px;margin-right:auto;font-size:var(--text-lg);font-weight:var(--font-bold);color:inherit;text-decoration:none}
+    .c-landing-nav__brand img{width:34px;height:34px}
+    .c-landing-nav__link{font-size:var(--text-sm);font-weight:var(--font-highlight);color:inherit}
+    .c-landing-nav__docs{display:none}
+    .c-landing-nav .c-button{text-decoration:none}
+    .p-landing__main{display:grid;gap:inherit}
+
+    .c-hero{display:grid;gap:20px;justify-items:center;text-align:center}
+    .c-hero img{width:150px;height:auto;transform:rotate(-8deg)}
+    .c-hero h1{font-size:var(--text-xl);font-weight:var(--font-bold);line-height:1.1}
+    .c-hero h1 span{display:inline-block;padding:0 8px;border-radius:var(--border-r-soft);background:var(--blue);color:var(--text-color-on-color)}
+    .c-hero p{max-width:46ch;font-size:var(--text-base)}
+    .c-hero__actions{display:flex;flex-wrap:wrap;justify-content:center;gap:10px}
+    .c-hero__actions .c-button{text-decoration:none}
+
+    .p-landing h2{font-size:var(--text-lg);font-weight:var(--font-bold);text-align:center}
+    .c-features{display:grid;gap:14px;list-style:none;padding:0;margin:16px 0 0}
+    .c-feature{display:grid;gap:6px;padding:18px;border-radius:var(--border-r-default);border:var(--border-w-default) solid var(--border-color-dark);background:var(--feature-color);color:var(--text-color-on-color)}
+    .c-feature h3{font-size:var(--text-base);font-weight:var(--font-bold)}
+    .c-feature h3 small{font-size:var(--text-xs);font-weight:var(--font-highlight);opacity:var(--opacity-strong)}
+    .c-feature p{font-size:var(--text-sm)}
+
+    .c-open{display:grid;gap:12px;justify-items:center;padding:28px 20px;border-radius:var(--border-r-default);background:var(--bg-surface);text-align:center}
+    .c-open p{max-width:56ch;font-size:var(--text-sm)}
+    .c-open__links{display:flex;flex-wrap:wrap;justify-content:center;gap:10px}
+    .c-open__links .c-button{text-decoration:none}
+
+    .c-landing-footer{display:flex;flex-wrap:wrap;justify-content:space-between;gap:10px;padding-top:16px;border-top:var(--border-w-default) solid var(--border-color-line);font-size:var(--text-xs);color:var(--text-color-muted)}
+    .c-landing-footer nav{display:flex;flex-wrap:wrap;gap:14px}
+    .c-landing-footer a{color:inherit}
+
+    @media (min-width:481px){
+      .c-features{grid-template-columns:repeat(2,1fr)}
+    }
+    @media (min-width:769px){
+      .p-landing{gap:72px;padding:0 24px 40px}
+      .c-landing-nav__docs{display:inline}
+      .c-hero{grid-template-columns:1fr auto;justify-items:start;text-align:left;padding-top:32px}
+      .c-hero img{grid-column:2;grid-row:1 / span 3;width:260px}
+      .c-hero__actions{justify-content:flex-start}
+      .c-features{grid-template-columns:repeat(3,1fr)}
+    }
+  </style>
+</head>
+<body>
+  <div class="p-landing">
+    <header class="c-landing-nav">
+      <a class="c-landing-nav__brand" href="landing.html"><img src="../../../client/public/mascot.svg" alt="">Yoko!</a>
+      <a class="c-landing-nav__link c-landing-nav__docs" href="docs-home.html">Docs</a>
+      <a class="c-landing-nav__link" href="#" hreflang="pt-BR" lang="pt-BR">Português</a>
+      <a class="c-button c-button--module" href="login.html">Sign in</a>
+    </header>
+
+    <main class="p-landing__main">
+      <section class="c-hero" aria-labelledby="hero-title">
+        <img src="../../../client/public/mascot.svg" alt="Yoko, a red octopus">
+        <h1 id="hero-title">Your days, <span>in one place.</span></h1>
+        <p>Yoko keeps your events, recurring actions, tasks, notes, places and links together, and asks how you’re feeling along the way.</p>
+        <div class="c-hero__actions">
+          <a class="c-button c-button--module" href="login.html">Start for free</a>
+          <a class="c-button c-button--ghost" href="#features">See what it does</a>
+        </div>
+      </section>
+
+      <section id="features" aria-labelledby="features-title">
+        <h2 id="features-title">Everything you want to keep track of</h2>
+        <ul class="c-features">
+          <li class="c-feature" style="--feature-color:var(--blue)"><h3>Occurrences</h3><p>Count down to your events and count up the days you kept your habits, with goals.</p></li>
+          <li class="c-feature" style="--feature-color:var(--yellow)"><h3>Places <small>by Nori</small></h3><p>Pin the places you’ve been to on a map and keep their photos.</p></li>
+          <li class="c-feature" style="--feature-color:var(--bg-cat-reading)"><h3>Links</h3><p>Save what you find on the web, sort it into collections and track what you’ve read.</p></li>
+          <li class="c-feature" style="--feature-color:var(--bg-cat-finance)"><h3>Tasks</h3><p>Plan your day with time ranges and a status for each task.</p></li>
+          <li class="c-feature" style="--feature-color:var(--bg-cat-study)"><h3>Notes</h3><p>Write down whatever is on your mind, with or without a title.</p></li>
+          <li class="c-feature" style="--feature-color:var(--bg-cat-social)"><h3>Mood</h3><p>Tell Yoko how you feel and look back at your mood history.</p></li>
+        </ul>
+      </section>
+
+      <section class="c-open" aria-labelledby="open-title">
+        <h2 id="open-title">Open source, made in public</h2>
+        <p>Yoko is a side project built in the open. The code, the decisions and this prototype are all on GitHub, and your data can be exported whenever you want.</p>
+        <div class="c-open__links">
+          <a class="c-button c-button--ghost" href="https://github.com/lauvivans/yoko">See the code</a>
+          <a class="c-button c-button--ghost" href="docs-home.html">Read the docs</a>
+        </div>
+      </section>
+    </main>
+
+    <footer class="c-landing-footer">
+      <span>&copy; Yoko! 2024–2026</span>
+      <nav aria-label="Footer">
+        <a href="docs-home.html">Docs</a>
+        <a href="https://github.com/lauvivans/yoko">GitHub</a>
+        <a href="#" hreflang="pt-BR" lang="pt-BR">Português</a>
+      </nav>
+    </footer>
+  </div>
+
+  <script>
+    // Theme chosen in the app, when the browser allows reading it.
+    try {
+      const saved = localStorage.getItem('yoko-prototype-theme');
+      if (saved) document.documentElement.dataset.theme = saved;
+    } catch {
+      // Storage blocked: keep the light theme.
+    }
+  </script>
+</body>
+</html>

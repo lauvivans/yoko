@@ -1,0 +1,394 @@
+<!doctype html>
+<html lang="en" data-theme="light">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Yoko — Places</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@400..700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="tokens.css">
+  <link rel="stylesheet" href="shell.css">
+  <style>
+    .p-places{position:absolute;inset:0;overflow:hidden}
+    /* Illustrated map, not a real one: an SVG that pans and zooms */
+    [data-theme="light"]{--map-land:#f3efe6;--map-block:#ebe5d8;--map-park:#cfe8c4;--map-water:#a8dbff;--map-road:#fdfdff;--map-road-edge:#e2dccd;--map-label:#6b6458}
+    [data-theme="dark"]{--map-land:#262a2c;--map-block:#2d3234;--map-park:#2f4a37;--map-water:#24465e;--map-road:#3b4144;--map-road-edge:#1e2224;--map-label:#9aa3a7}
+    .c-fakemap{position:absolute;inset:0;z-index:0;overflow:hidden;background:var(--map-land);cursor:grab;touch-action:none;user-select:none}
+    .c-fakemap.is-dragging{cursor:grabbing}
+    .c-fakemap__layer{position:absolute;transform-origin:0 0;transition:transform .2s}
+    .c-fakemap.is-dragging .c-fakemap__layer{transition:none}
+    .c-fakemap__art{position:absolute;inset:0;width:100%;height:100%}
+    .c-fakemap__art text{font-family:'Quicksand',sans-serif;font-weight:var(--font-bold);fill:var(--map-label);letter-spacing:.02em}
+    .c-fakemap__art .is-water{fill:#4a90c2;font-style:italic;font-weight:var(--font-highlight)}
+    [data-theme="dark"] .c-fakemap__art .is-water{fill:#7fb3d6}
+    .c-fakemap__zoom{position:absolute;left:14px;top:66px;display:none;flex-direction:column;border-radius:var(--border-r-default);overflow:hidden;border:1px solid var(--border-color-line);box-shadow:0 4px 12px rgba(0,0,0,.18);z-index:500}
+    .c-fakemap__zoom button{all:unset;display:grid;place-items:center;width:34px;height:34px;background:var(--bg-surface);color:var(--text-color-default);font-size:var(--text-lg);font-weight:var(--font-bold);cursor:pointer}
+    .c-fakemap__zoom button + button{border-top:1px solid var(--border-color-line)}
+    .c-fakemap__zoom button:hover{background:var(--bg-surface-raised)}
+    .c-fakemap__zoom button:focus-visible{outline:2px solid var(--accent);outline-offset:-2px}
+    .c-fakemap__note{position:absolute;left:14px;bottom:10px;padding:2px 8px;border-radius:var(--border-r-soft);font-size:var(--text-xs);font-weight:var(--font-highlight);background:var(--bg-surface);color:var(--text-color-muted);opacity:.85;z-index:500}
+
+    .p-places__toolbar{position:absolute;top:10px;left:10px;right:10px;display:flex;flex-wrap:wrap;align-items:center;gap:8px;z-index:500;pointer-events:none}
+    .p-places__toolbar > *{pointer-events:auto;box-shadow:0 4px 12px rgba(0,0,0,.18)}
+    .c-filter{all:unset;padding:6px 12px;border-radius:var(--border-r-pill);font-size:var(--text-xs);font-weight:var(--font-bold);cursor:pointer;background:var(--bg-surface);color:var(--text-color-default);border:1px solid var(--border-color-line)}
+    .c-filter.is-active{background:var(--filter-color,var(--bg-surface-raised));color:var(--dark-md);border-color:var(--dark-md)}
+    .c-filter:focus-visible{outline:2px solid var(--accent)}
+    .p-places__count{display:none;margin-left:auto;padding:6px 12px;border-radius:var(--border-r-pill);font-size:var(--text-xs);font-weight:var(--font-highlight);background:var(--bg-surface);color:var(--text-color-muted);border:1px solid var(--border-color-line)}
+
+    /* Pins in the category colors */
+    .c-pin-btn{all:unset;position:absolute;left:var(--x);top:var(--y);transform:translate(-50%,-100%) scale(var(--inv,1));transform-origin:50% 100%;cursor:pointer;z-index:2;transition:transform .2s}
+    .c-pin-btn:focus-visible .c-pin{outline:3px solid var(--accent);outline-offset:3px}
+    .c-pin{width:30px;height:30px;border-radius:50% 50% 50% 0;transform:rotate(-45deg);background:var(--pin-color);border:2px solid var(--dark-md);box-shadow:0 3px 8px rgba(0,0,0,.3);display:grid;place-items:center;transition:transform .15s}
+    .c-pin span{transform:rotate(45deg);font-size:var(--text-xs);font-weight:var(--font-bold);color:var(--dark-md)}
+    .c-pin.is-selected{transform:rotate(-45deg) scale(1.25);box-shadow:0 0 0 4px var(--yellow)}
+
+    /* Place card */
+    .c-place{position:absolute;left:8px;right:8px;bottom:8px;max-height:62%;display:flex;flex-direction:column;border-radius:var(--border-r-default);background:var(--bg-surface);color:var(--text-color-default);box-shadow:var(--shadow-lg);border:1px solid var(--border-color-line);overflow:hidden;z-index:600}
+    .c-place__gallery{position:relative;flex-shrink:0}
+    .c-place__photo{height:140px;display:flex;align-items:flex-end;padding:12px;color:#fff;font-weight:var(--font-bold);font-size:var(--text-xs);text-shadow:0 1px 4px rgba(0,0,0,.4);background-size:cover}
+    .c-place__close{position:absolute;top:10px;right:10px;background:rgba(0,0,0,.35);color:#fff}
+    .c-place__close:hover{background:rgba(0,0,0,.5)}
+    .c-place__thumbs{display:flex;gap:6px;padding:8px 12px;overflow-x:auto;border-bottom:1px solid var(--border-color-line)}
+    .c-thumb{all:unset;flex-shrink:0;width:52px;height:40px;border-radius:var(--border-r-soft);cursor:pointer;background-size:cover;border:2px solid transparent}
+    .c-thumb.is-selected{border-color:var(--text-color-default)}
+    .c-thumb:focus-visible{outline:2px solid var(--accent)}
+    .c-thumb--add{display:grid;place-items:center;background:var(--bg-surface-raised);border:1px dashed var(--text-color-muted);color:var(--text-color-muted)}
+    .c-thumb--add svg{width:20px;height:20px}
+    .c-place__body{display:flex;flex-direction:column;gap:12px;padding:16px;overflow-y:auto}
+    .c-place__header{display:flex;align-items:flex-start;gap:10px}
+    .c-place__title{font-size:var(--text-lg);font-weight:var(--font-bold);line-height:1.2}
+    .c-place__where{font-size:var(--text-sm);color:var(--text-color-muted)}
+    .c-place__fav{all:unset;margin-left:auto;display:grid;place-items:center;width:36px;height:36px;border-radius:var(--border-r-default);cursor:pointer;color:var(--text-color-default)}
+    .c-place__fav:hover{background:var(--bg-surface-raised)}
+    .c-place__fav:focus-visible{outline:2px solid var(--accent)}
+    .c-place__fav svg{width:22px;height:22px}
+    .c-place__fav.is-on svg path{fill:var(--red);stroke:var(--red)}
+    .c-place__meta{display:flex;flex-wrap:wrap;gap:8px}
+    .c-place__note{font-size:var(--text-sm);line-height:1.6}
+    .c-place__actions{display:flex;gap:8px;margin-top:auto;padding:12px 16px;border-top:1px solid var(--border-color-line)}
+    .c-place__actions .c-button{flex:1;justify-content:center}
+
+    @media (min-width:769px){
+      .p-places__toolbar{top:14px;left:14px;right:14px}
+      .p-places__count{display:block}
+      .c-fakemap__zoom{display:flex}
+      .c-place{top:66px;left:auto;right:14px;bottom:14px;width:340px;max-height:none}
+      .c-place__photo{height:190px}
+    }
+  </style>
+</head>
+<body data-page="places" data-search="Search places">
+  <div class="app">
+    <div class="app__main">
+      <main class="app__content">
+        <div class="p-places">
+          <div class="c-fakemap" id="map" aria-label="Map of the places you have been to (illustration)">
+            <div class="c-fakemap__layer" id="map-layer">
+              <svg class="c-fakemap__art" viewBox="0 0 1000 700" preserveAspectRatio="xMidYMid slice" aria-hidden="true">
+                <g fill="var(--map-block)">
+                  <rect x="40" y="250" width="120" height="70" rx="10"/><rect x="420" y="90" width="150" height="80" rx="10"/><rect x="600" y="140" width="110" height="90" rx="10"/>
+                  <rect x="380" y="300" width="170" height="110" rx="10"/><rect x="620" y="300" width="130" height="90" rx="10"/><rect x="820" y="300" width="140" height="100" rx="10"/>
+                  <rect x="80" y="600" width="160" height="70" rx="10"/><rect x="420" y="590" width="150" height="80" rx="10"/><rect x="860" y="60" width="110" height="80" rx="10"/>
+                </g>
+                <g fill="var(--map-park)">
+                  <ellipse cx="180" cy="130" rx="62" ry="42"/>
+                  <path d="M230 170c40-30 140-25 170 15s5 105-55 115-150-5-150-50 5-55 35-80Z"/>
+                  <path d="M60 400c40-25 190-25 220 5s-10 60-90 62-150-2-155-30 0-25 25-37Z"/>
+                  <ellipse cx="840" cy="210" rx="78" ry="48"/>
+                  <ellipse cx="800" cy="610" rx="70" ry="44"/>
+                </g>
+                <g fill="none" stroke-linecap="round">
+                  <g stroke="var(--map-road-edge)" stroke-width="16">
+                    <path d="M-20 230C200 215 420 205 700 215s220 20 340 30"/><path d="M500 -20C495 140 490 330 470 470"/>
+                    <path d="M-20 330C260 330 520 340 1020 350"/><path d="M720 -20c-15 150-40 330-70 520"/><path d="M180 -20c40 160 90 330 120 720"/>
+                  </g>
+                  <g stroke="var(--map-road)" stroke-width="11">
+                    <path d="M-20 230C200 215 420 205 700 215s220 20 340 30"/><path d="M500 -20C495 140 490 330 470 470"/>
+                    <path d="M-20 330C260 330 520 340 1020 350"/><path d="M720 -20c-15 150-40 330-70 520"/><path d="M180 -20c40 160 90 330 120 720"/>
+                  </g>
+                  <g stroke="var(--map-road)" stroke-width="5">
+                    <path d="M40 60h360M560 60c120 10 260 30 460 30M380 410c-60 40-140 90-400 120M560 420c60 60 160 120 460 160"/>
+                    <path d="M330 260c20 60 30 120 30 200M600 240c30 50 40 120 30 210M880 90c-10 90-30 170-60 240"/>
+                    <path d="M520 470l-20 240M640 520l40 190M240 560c120 0 200 10 260 40"/>
+                  </g>
+                </g>
+                <path d="M-30 505C120 520 240 575 380 540s180-110 300-70 170 120 360 60" fill="none" stroke="var(--map-water)" stroke-width="44" stroke-linecap="round"/>
+                <g fill="none" stroke="var(--map-road-edge)" stroke-width="7"><path d="M470 455v95M650 470v95"/></g>
+                <g font-size="17">
+                  <text x="150" y="85">Camden</text><text x="440" y="75">King's Cross</text><text x="660" y="120">Shoreditch</text>
+                  <text x="270" y="210">Regent's Park</text><text x="120" y="440">Hyde Park</text><text x="420" y="390">The City</text>
+                  <text x="520" y="640">Southwark</text><text x="190" y="640">Westminster</text><text x="800" y="200">Victoria Park</text>
+                  <text class="is-water" x="590" y="500" font-size="16">River Thames</text>
+                </g>
+              </svg>
+              <div id="pins"></div>
+            </div>
+          </div>
+          <div class="c-fakemap__zoom">
+            <button type="button" id="zoom-in" aria-label="Zoom in">+</button>
+            <button type="button" id="zoom-out" aria-label="Zoom out">&minus;</button>
+          </div>
+          <span class="c-fakemap__note">Illustrative map, not to scale</span>
+
+          <div class="p-places__toolbar">
+            <span class="c-module" id="module-badge"><span>Places <small>by Nori</small></span></span>
+            <button class="c-button c-button--module" type="button">
+              <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path stroke="currentColor" stroke-width="1.8" stroke-linecap="round" d="M12 5v14M5 12h14"/></svg>
+              Add place
+            </button>
+            <div id="filters" style="display:contents"></div>
+            <span class="p-places__count" id="count"></span>
+          </div>
+
+          <article class="c-place" id="place" aria-live="polite">
+            <div class="c-place__gallery">
+              <div class="c-place__photo" id="photo"></div>
+              <button class="c-icon-btn c-place__close" type="button" id="close" aria-label="Close place">
+                <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path stroke="currentColor" stroke-width="1.8" stroke-linecap="round" d="m7 7 10 10M17 7 7 17"/></svg>
+              </button>
+            </div>
+            <div class="c-place__thumbs" id="thumbs"></div>
+            <div class="c-place__body">
+              <div class="c-place__header">
+                <div>
+                  <h1 class="c-place__title" id="title"></h1>
+                  <p class="c-place__where" id="where"></p>
+                </div>
+                <button class="c-place__fav" type="button" id="fav" aria-label="Favorite" aria-pressed="false">
+                  <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" d="M12.62 20.81c-.34.12-.9.12-1.24 0C8.48 19.82 2 15.69 2 8.69 2 5.6 4.49 3.1 7.56 3.1c1.82 0 3.43.88 4.44 2.24a5.53 5.53 0 0 1 4.44-2.24C19.51 3.1 22 5.6 22 8.69c0 7-6.48 11.13-9.38 12.12Z"/></svg>
+                </button>
+              </div>
+              <div class="c-place__meta" id="meta"></div>
+              <p class="c-place__note" id="note"></p>
+            </div>
+            <div class="c-place__actions">
+              <button class="c-button c-button--ghost" type="button">
+                <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><g stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="m13.26 3.6-8.21 8.69c-.31.33-.61.98-.67 1.43l-.37 3.24c-.13 1.17.71 1.97 1.87 1.77l3.22-.55c.45-.08 1.08-.41 1.39-.75l8.21-8.69c1.42-1.5 2.06-3.21-.15-5.3-2.2-2.07-3.87-1.34-5.29.16Z"/><path d="M11.89 5.05a6.126 6.126 0 0 0 5.45 5.15M3 22h18"/></g></svg>
+                Edit
+              </button>
+              <button class="c-button c-button--module" type="button">
+                <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><g stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M9 10a2 2 0 1 0 0-4 2 2 0 0 0 0 4ZM13 2H9C4 2 2 4 2 9v6c0 5 2 7 7 7h6c5 0 7-2 7-7v-5M15.75 5h5.5M18.5 7.75v-5.5M2.67 18.95l4.93-3.31c.79-.53 1.93-.47 2.64.14l.33.29c.78.67 2.04.67 2.82 0l4.16-3.57c.78-.67 2.04-.67 2.82 0L22 13.9"/></g></svg>
+                Add photos
+              </button>
+            </div>
+          </article>
+        </div>
+      </main>
+    </div>
+  </div>
+
+  <script src="shell.js"></script>
+  <script>
+    document.getElementById('module-badge').insertAdjacentHTML('afterbegin', window.noriCat);
+
+    // Sample data for the prototype. Photos are gradients, not real pictures.
+    const categories = {
+      Travel: 'var(--bg-cat-travel)',
+      Social: 'var(--bg-cat-social)',
+      Hobby: 'var(--bg-cat-hobby)',
+      Reading: 'var(--bg-cat-reading)',
+      Family: 'var(--bg-cat-family)',
+    };
+
+    const places = [
+      { id: 1, title: 'Primrose Hill', where: 'Camden, London', x: 18, y: 19, category: 'Hobby', visited: '12 Mar 2025', fav: true,
+        note: 'Sunset picnic with the whole city at our feet. Bring a blanket, the grass gets wet early.',
+        photos: [['#f6b26b', '#e06666', 'Sunset from the top'], ['#93c47d', '#38761d', 'The lawn'], ['#9fc5e8', '#3d85c6', 'City view']] },
+      { id: 2, title: 'British Library', where: "King's Cross, London", x: 47, y: 17, category: 'Reading', visited: '14 Mar 2025', fav: false,
+        note: 'Saw the treasures gallery. The King’s Library tower is even taller in person.',
+        photos: [['#b4a7d6', '#674ea7', 'The tower of books'], ['#d5a6bd', '#a64d79', 'Reading room']] },
+      { id: 3, title: 'Borough Market', where: 'Southwark, London', x: 54, y: 83, category: 'Social', visited: '15 Mar 2025', fav: true,
+        note: 'Lunch with friends. Go before noon on Saturdays or it gets packed.',
+        photos: [['#ffd966', '#e69138', 'Food stalls'], ['#ea9999', '#cc0000', 'Strawberries'], ['#b6d7a8', '#6aa84f', 'Green market']] },
+      { id: 4, title: 'Tower Bridge', where: 'Tower Hamlets, London', x: 65, y: 73, category: 'Travel', visited: '15 Mar 2025', fav: false,
+        note: 'Walked across at night. The glass floor of the walkway is scary and worth it.',
+        photos: [['#6fa8dc', '#1c4587', 'At night'], ['#a2c4c9', '#45818e', 'From the river']] },
+      { id: 5, title: 'Regent’s Park', where: 'Marylebone, London', x: 31, y: 31, category: 'Family', visited: '16 Mar 2025', fav: false,
+        note: 'Rose garden with the family. Queen Mary’s Gardens are at their best in June.',
+        photos: [['#f4cccc', '#e06666', 'Rose garden'], ['#d9ead3', '#93c47d', 'Boating lake']] },
+      { id: 6, title: 'Shoreditch', where: 'Hackney, London', x: 66, y: 22, category: 'Hobby', visited: '17 Mar 2025', fav: false,
+        note: 'Street art walk. Every wall changes from one month to the next.',
+        photos: [['#c27ba0', '#741b47', 'Mural'], ['#ffe599', '#bf9000', 'Brick Lane']] },
+    ];
+
+    const icons = {
+      calendar: '<svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" d="M8 2v3M16 2v3M3.5 9.09h17M21 8.5V17c0 3-1.5 5-5 5H8c-3.5 0-5-2-5-5V8.5c0-3 1.5-5 5-5h8c3.5 0 5 2 5 5Z"/></svg>',
+      gallery: '<svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><g stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M9 22h6c5 0 7-2 7-7V9c0-5-2-7-7-7H9C4 2 2 4 2 9v6c0 5 2 7 7 7Z"/><path d="M9 10a2 2 0 1 0 0-4 2 2 0 0 0 0 4ZM2.67 18.95l4.93-3.31c.79-.53 1.93-.47 2.64.14l.33.29c.78.67 2.04.67 2.82 0l4.16-3.57c.78-.67 2.04-.67 2.82 0L22 13.9"/></g></svg>',
+      plus: '<svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path stroke="currentColor" stroke-width="1.8" stroke-linecap="round" d="M12 5v14M5 12h14"/></svg>',
+    };
+
+    const gradient = ([from, to]) => `linear-gradient(135deg, ${from}, ${to})`;
+
+    // Pan and zoom the illustration.
+    const mapEl = document.getElementById('map');
+    const layer = document.getElementById('map-layer');
+    const view = { x: 0, y: 0, scale: 1 };
+    // Keep the drawing at its 1000x700 ratio and cover the area, so pins stay on their spots.
+    const base = { left: 0, top: 0 };
+    const fit = () => {
+      const ratio = Math.max(mapEl.clientWidth / 1000, mapEl.clientHeight / 700);
+      base.left = (mapEl.clientWidth - 1000 * ratio) / 2;
+      base.top = (mapEl.clientHeight - 700 * ratio) / 2;
+      Object.assign(layer.style, { left: base.left + "px", top: base.top + "px", width: 1000 * ratio + "px", height: 700 * ratio + "px" });
+    };
+    fit();
+    window.addEventListener("resize", fit);
+    const applyView = () => {
+      layer.style.transform = `translate(${view.x}px, ${view.y}px) scale(${view.scale})`;
+      layer.style.setProperty('--inv', 1 / view.scale);
+    };
+    const zoom = (factor) => {
+      const next = Math.min(2.5, Math.max(1, view.scale * factor));
+      const cx = mapEl.clientWidth / 2 - base.left;
+      const cy = mapEl.clientHeight / 2 - base.top;
+      view.x = cx - ((cx - view.x) / view.scale) * next;
+      view.y = cy - ((cy - view.y) / view.scale) * next;
+      view.scale = next;
+      if (next === 1) view.x = view.y = 0;
+      applyView();
+    };
+    document.getElementById('zoom-in').addEventListener('click', () => zoom(1.4));
+    document.getElementById('zoom-out').addEventListener('click', () => zoom(1 / 1.4));
+    mapEl.addEventListener(
+      'wheel',
+      (e) => {
+        e.preventDefault();
+        zoom(e.deltaY < 0 ? 1.15 : 1 / 1.15);
+      },
+      { passive: false }
+    );
+
+    let drag = null;
+    mapEl.addEventListener('pointerdown', (e) => {
+      if (e.target.closest('.c-pin-btn')) return;
+      drag = { x: e.clientX - view.x, y: e.clientY - view.y };
+      mapEl.classList.add('is-dragging');
+      mapEl.setPointerCapture(e.pointerId);
+    });
+    mapEl.addEventListener('pointermove', (e) => {
+      if (!drag) return;
+      view.x = e.clientX - drag.x;
+      view.y = e.clientY - drag.y;
+      applyView();
+    });
+    mapEl.addEventListener('pointerup', () => {
+      drag = null;
+      mapEl.classList.remove('is-dragging');
+    });
+
+    const markers = new Map();
+    let selectedId = null;
+    let activeFilter = 'All';
+    let query = '';
+
+    const pins = document.getElementById('pins');
+    places.forEach((place, i) => {
+      const pin = document.createElement('button');
+      pin.type = 'button';
+      pin.className = 'c-pin-btn';
+      pin.style.setProperty('--x', `${place.x}%`);
+      pin.style.setProperty('--y', `${place.y}%`);
+      pin.setAttribute('aria-label', place.title);
+      pin.innerHTML = `<span class="c-pin" style="--pin-color:${categories[place.category]}"><span>${i + 1}</span></span>`;
+      pin.addEventListener('click', () => select(place.id));
+      pins.appendChild(pin);
+      markers.set(place.id, pin);
+    });
+
+    function select(id) {
+      selectedId = id;
+      markers.forEach((pin, pinId) => pin.firstElementChild.classList.toggle('is-selected', pinId === id));
+      renderCard(places.find((p) => p.id === id), 0);
+      document.getElementById('place').hidden = false;
+    }
+
+    function renderCard(place, photoIndex) {
+      const photo = place.photos[photoIndex];
+      const photoEl = document.getElementById('photo');
+      photoEl.style.backgroundImage = gradient(photo);
+      photoEl.textContent = photo[2];
+
+      const thumbs = document.getElementById('thumbs');
+      thumbs.innerHTML = '';
+      place.photos.forEach((p, i) => {
+        const thumb = document.createElement('button');
+        thumb.type = 'button';
+        thumb.className = 'c-thumb' + (i === photoIndex ? ' is-selected' : '');
+        thumb.style.backgroundImage = gradient(p);
+        thumb.setAttribute('aria-label', `Show photo: ${p[2]}`);
+        thumb.addEventListener('click', () => renderCard(place, i));
+        thumbs.appendChild(thumb);
+      });
+      const add = document.createElement('button');
+      add.type = 'button';
+      add.className = 'c-thumb c-thumb--add';
+      add.setAttribute('aria-label', 'Add photos');
+      add.innerHTML = icons.plus;
+      thumbs.appendChild(add);
+
+      document.getElementById('title').textContent = place.title;
+      document.getElementById('where').textContent = place.where;
+      document.getElementById('note').textContent = place.note;
+      document.getElementById('meta').innerHTML = `
+        <span class="c-tag" style="--tag-color:${categories[place.category]}">${place.category}</span>
+        <span class="c-tag c-tag--plain">${icons.calendar} Visited ${place.visited}</span>
+        <span class="c-tag c-tag--plain">${icons.gallery} ${place.photos.length} photos</span>`;
+
+      const fav = document.getElementById('fav');
+      fav.classList.toggle('is-on', place.fav);
+      fav.setAttribute('aria-pressed', String(place.fav));
+      fav.onclick = () => {
+        place.fav = !place.fav;
+        renderCard(place, photoIndex);
+      };
+    }
+
+    document.getElementById('close').addEventListener('click', () => {
+      document.getElementById('place').hidden = true;
+      markers.forEach((pin) => pin.firstElementChild.classList.remove('is-selected'));
+      selectedId = null;
+    });
+
+    const filters = document.getElementById('filters');
+    ['All', ...Object.keys(categories)].forEach((name) => {
+      const button = document.createElement('button');
+      button.type = 'button';
+      button.className = 'c-filter' + (name === 'All' ? ' is-active' : '');
+      button.textContent = name;
+      if (categories[name]) button.style.setProperty('--filter-color', categories[name]);
+      button.setAttribute('aria-pressed', String(name === 'All'));
+      button.addEventListener('click', () => {
+        activeFilter = name;
+        filters.querySelectorAll('.c-filter').forEach((b) => {
+          b.classList.toggle('is-active', b === button);
+          b.setAttribute('aria-pressed', String(b === button));
+        });
+        applyFilters();
+      });
+      filters.appendChild(button);
+    });
+
+    document.getElementById('search').addEventListener('input', (event) => {
+      query = event.target.value.trim().toLowerCase();
+      applyFilters();
+    });
+
+    function applyFilters() {
+      let visible = 0;
+      places.forEach((place) => {
+        const matches =
+          (activeFilter === 'All' || place.category === activeFilter) &&
+          (!query || place.title.toLowerCase().includes(query) || place.where.toLowerCase().includes(query));
+        markers.get(place.id).hidden = !matches;
+        if (matches) visible++;
+      });
+      document.getElementById('count').textContent = `${visible} of ${places.length} places`;
+      if (selectedId) select(selectedId);
+    }
+
+    applyFilters();
+    select(1);
+  </script>
+</body>
+</html>

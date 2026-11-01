@@ -1,0 +1,101 @@
+<!doctype html>
+<html lang="en" data-theme="light">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Design reference · Yoko docs</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@300..700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="tokens.css">
+  <link rel="stylesheet" href="shell.css">
+  <link rel="stylesheet" href="docs.css">
+</head>
+<body class="d-page">
+  <a class="d-skip" href="#content">Skip to content</a>
+  <header class="d-nav">
+    <a class="d-nav__brand" href="docs-home.html"><img src="../../../client/public/mascot.svg" alt="">Yoko! <small>docs</small></a>
+    <nav class="d-nav__links" aria-label="Main">
+      <a href="docs-page.html?section=docs">Docs</a>
+      <a href="docs-page.html" aria-current="page">Dev docs</a>
+    </nav>
+    <div class="d-nav__end">
+      <a href="landing.html">App</a>
+      <a href="https://github.com/lauvivans/yoko">GitHub</a>
+      <a href="#" hreflang="pt-BR" lang="pt-BR">PT</a>
+      <button type="button" id="theme-toggle">☾</button>
+    </div>
+  </header>
+  <div class="d-doc">
+    <details class="d-sidebar" id="sidebar">
+      <summary>Dev docs menu</summary>
+      <nav aria-label="Dev docs">
+        <ul>
+          <li><a href="docs-page.html">Welcome dev</a></li>
+          <li><a href="docs-page.html">Project patterns</a></li>
+          <li><a href="docs-page.html">Used technologies</a></li>
+          <li>
+            <h2>Frontend</h2>
+            <ul><li><a href="docs-page.html" aria-current="page">Design reference</a></li></ul>
+          </li>
+        </ul>
+      </nav>
+    </details>
+
+    <main class="d-article" id="content">
+      <nav class="d-breadcrumbs" aria-label="Breadcrumbs"><a href="docs-home.html">Home</a><span aria-hidden="true">›</span><a href="docs-page.html">Dev docs</a><span aria-hidden="true">›</span><span>Frontend</span></nav>
+      <h1>Design reference</h1>
+      <p>The screens and the design tokens live in the HTML prototype at <code>docs/prototypes/platform/</code>. It is the living reference for the interface (<a href="https://github.com/lauvivans/yoko/blob/develop/docs/decisions/005-prototype-as-design-reference.md">decision 005</a>).</p>
+      <div class="d-callout" role="note"><b>The prototype wins</b><span>The code never gets ahead of the prototype. If a screen or token is different in the code, the prototype is right and the code is fixed.</span></div>
+
+      <h2 id="changing">Changing the design</h2>
+      <ol>
+        <li>Change the prototype.</li>
+        <li>Validate it.</li>
+        <li>Implement it in <code>client/</code>.</li>
+      </ol>
+
+      <h2 id="tokens">Design tokens</h2>
+      <p>The tokens are defined in <code>tokens.css</code> and copied to <code>client/src/assets/sass/tokens/</code> with the same names:</p>
+      <pre><code>/* prototype */            /* SASS */
+--bg-default            →  $bg-default
+--border-r-default      →  $border-r-default
+--text-sm               →  $text-sm</code></pre>
+      <ul>
+        <li><b>Colors:</b> base, categories, semantic, themes, shell and task status.</li>
+        <li><b>Typography:</b> Quicksand, from <code>text-xs</code> to <code>text-xl</code>.</li>
+        <li><b>Effects:</b> radius, border width, shadow and opacity.</li>
+        <li><b>Breakpoints:</b> mobile first, at 481px, 769px and 1280px.</li>
+      </ul>
+
+      <p class="d-edit"><a href="https://github.com/lauvivans/yoko/edit/develop/docs/dev-docs/frontend/design-ref.mdx">Edit this page</a></p>
+      <nav class="d-pager" aria-label="Pagination">
+        <a href="docs-page.html"><small>Previous</small>Used technologies</a>
+        <a href="docs-page.html"><small>Next</small>Welcome dev</a>
+      </nav>
+    </main>
+
+    <aside class="d-toc" aria-labelledby="toc-title">
+      <h2 id="toc-title">On this page</h2>
+      <ul><li><a href="#changing">Changing the design</a></li><li><a href="#tokens">Design tokens</a></li></ul>
+    </aside>
+  </div>
+  <script>
+    // The sidebar is a collapsible menu on phones and always open from desktop up.
+    const sidebar = document.getElementById('sidebar');
+    const desktop = window.matchMedia('(min-width:769px)');
+    const syncSidebar = () => (sidebar.open = desktop.matches);
+    desktop.addEventListener('change', syncSidebar);
+    syncSidebar();
+  </script>
+  <footer class="d-footer">
+    <div class="d-footer__cols">
+      <div><h2>Docs</h2><ul><li><a href="docs-page.html?section=docs">What is Yoko</a></li><li><a href="docs-page.html">Dev docs</a></li></ul></div>
+      <div><h2>More</h2><ul><li><a href="landing.html">App</a></li><li><a href="https://github.com/lauvivans/yoko">GitHub</a></li></ul></div>
+      <div><h2>Language</h2><ul><li><a href="#" aria-current="page">English</a></li><li><a href="#" hreflang="pt-BR" lang="pt-BR">Português</a></li></ul></div>
+    </div>
+    <p>&copy; Yoko! 2024–2026. Built with Docusaurus.</p>
+  </footer>
+  <script src="docs.js"></script>
+</body>
+</html>

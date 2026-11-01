@@ -27,7 +27,7 @@ body:
     id: design
     attributes:
       label: Design and references
-      description: Optional. Links to prototypes, Figma or design issues.
+      description: Optional. Links to the screens in the HTML prototype (docs/prototypes/platform/) or to design issues.
   - type: textarea
     id: acceptance
     attributes:

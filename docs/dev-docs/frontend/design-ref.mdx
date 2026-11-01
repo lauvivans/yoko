@@ -3,26 +3,23 @@ title: Design reference
 sidebar_position: 2
 ---
 
-## [Figma](https://www.figma.com/design/s9HB9I0wyGOTvnlWuWkOu6/yoko-?node-id=0-1&t=QBeoAmwyvJ2a6apC-1)
+The screens and the design tokens live in the HTML prototype at [`docs/prototypes/platform/`](https://github.com/lauvivans/yoko/tree/develop/docs/prototypes/platform). It is the living reference for the interface ([decision 005](https://github.com/lauvivans/yoko/blob/develop/docs/decisions/005-prototype-as-design-reference.md)).
+
+To see it, open `home.html` from a local clone in the browser. `design-system.html` shows every token with its current value.
+
+## Changing the design
+
+1. Change the prototype.
+2. Validate it.
+3. Implement it in `client/`.
+
+The code never gets ahead of the prototype. If a screen or token is different in the code, the prototype wins.
 
 ## Design tokens
 
-They are separated by:
+The tokens are defined in [`tokens.css`](https://github.com/lauvivans/yoko/blob/develop/docs/prototypes/platform/tokens.css) and copied to `client/src/assets/sass/tokens/` with the same names: `--bg-default` in the prototype is `$bg-default` in SASS.
 
-### Colors
-
-![Design tokens - colors](./img/colors.png)
-
-The base colors are the primary colors of the application, and they will be used to build the semantic tokens which are background-color, text-color and border-color.
-
-### Typography
-
-![Design tokens - typography](./img/typography.png)
-
-The Yoko main font family is Quicksand.
-
-### Effects
-
-![Design tokens - effects](./img/effects.png)
-
-### Breakpoints
+- **Colors:** base colors from the mascot and the sea, the 11 category colors, semantic colors (background, text and border), the light and dark themes and the always-dark shell.
+- **Typography:** Quicksand, in five sizes (`text-xs` to `text-xl`) and four weights.
+- **Effects:** border radius, border width, shadow and opacity.
+- **Breakpoints:** mobile first, at 481px, 769px and 1280px.

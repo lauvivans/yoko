@@ -1,0 +1,502 @@
+<!doctype html>
+<html lang="en" data-theme="light">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Yoko — Links</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@400..700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="tokens.css">
+  <link rel="stylesheet" href="shell.css">
+  <style>
+    .p-links{display:flex;flex-direction:column}
+
+    /* Collections: a scrolling row on mobile, a column on desktop */
+    .p-links__collections{display:flex;gap:4px;padding:10px;border-bottom:1px solid var(--border-color-line);overflow-x:auto}
+    .p-links__collections h2{display:none;font-size:var(--text-xs);font-weight:var(--font-bold);letter-spacing:.06em;text-transform:uppercase;color:var(--text-color-muted);padding:0 10px 6px}
+    .c-collection{all:unset;flex-shrink:0;display:flex;align-items:center;justify-content:space-between;gap:8px;padding:7px 10px;border-radius:var(--border-r-default);font-size:var(--text-sm);font-weight:var(--font-highlight);cursor:pointer;text-transform:capitalize}
+    .c-collection:hover{background:var(--bg-surface-raised)}
+    .c-collection:focus-visible{outline:2px solid var(--accent)}
+    .c-collection[aria-current="true"]{background:var(--module);color:var(--dark);box-shadow:inset 0 0 0 1px var(--dark)}
+    .c-collection span{font-size:var(--text-xs);font-weight:var(--font-bold);opacity:.65}
+
+    /* List */
+    .p-links__list{display:flex;flex-direction:column;gap:16px;padding:14px 12px;overflow-y:auto;min-width:0}
+    .p-links__head{display:flex;flex-wrap:wrap;align-items:center;gap:10px}
+    .p-links__head h1{font-size:var(--text-lg);font-weight:var(--font-bold);text-transform:capitalize;margin-right:auto}
+    .c-status-filter{display:inline-flex;padding:3px;gap:3px;border-radius:var(--border-r-pill);background:var(--bg-surface-raised);border:1px solid var(--border-color-line)}
+    .c-status-filter button{all:unset;padding:4px 12px;border-radius:var(--border-r-pill);font-size:var(--text-xs);font-weight:var(--font-bold);cursor:pointer;color:var(--text-color-muted)}
+    .c-status-filter button[aria-pressed="true"]{background:var(--bg-surface);color:var(--text-color-default);box-shadow:0 1px 3px rgba(0,0,0,.15)}
+    .c-status-filter button:focus-visible{outline:2px solid var(--accent)}
+    .p-links__group h2{font-size:var(--text-xs);font-weight:var(--font-bold);color:var(--text-color-muted);text-transform:uppercase;letter-spacing:.06em;margin-bottom:8px}
+    .p-links__group ul{display:flex;flex-direction:column;gap:8px;list-style:none;padding:0}
+
+    .c-link{all:unset;box-sizing:border-box;display:grid;grid-template-columns:36px minmax(0,1fr) auto;align-items:center;gap:12px;width:100%;padding:10px 12px;border-radius:var(--border-r-default);border:1px solid var(--border-color-line);background:var(--bg-surface);cursor:pointer;transition:border-color .15s,box-shadow .15s}
+    .c-link:hover{border-color:var(--text-color-muted)}
+    .c-link:focus-visible{outline:2px solid var(--accent)}
+    .c-link[aria-current="true"]{border-color:var(--dark);box-shadow:0 6px 0 -1px var(--dark)}
+    [data-theme="dark"] .c-link[aria-current="true"]{border-color:var(--blue);box-shadow:0 6px 0 -1px var(--blue)}
+    .c-link__favicon{display:grid;place-items:center;width:36px;height:36px;border-radius:var(--border-r-default);background:var(--fav-color);color:var(--dark);font-weight:var(--font-bold);font-size:var(--text-base);text-transform:uppercase}
+    .c-link__text{min-width:0}
+    .c-link__title{display:block;font-size:var(--text-base);font-weight:var(--font-bold);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+    .c-link__host{display:block;font-size:var(--text-xs);color:var(--text-color-muted)}
+    .c-status{display:inline-flex;align-items:center;gap:5px;padding:3px 9px;border-radius:var(--border-r-pill);font-size:var(--text-xs);font-weight:var(--font-bold);white-space:nowrap;color:var(--dark);background:var(--status-color)}
+    .c-status::before{content:'';width:7px;height:7px;border-radius:50%;background:currentColor;opacity:.6}
+
+    /* Detail */
+    .p-links__detail{display:none;flex-direction:column;gap:14px;padding:20px;border-left:1px solid var(--border-color-line);overflow-y:auto;background:var(--bg-surface-raised)}
+    .p-links__detail h2{font-size:var(--text-lg);font-weight:var(--font-bold);line-height:1.25}
+    .p-links__detail .c-link__host{font-size:var(--text-xs)}
+    .p-links__desc{font-size:var(--text-sm);line-height:1.6}
+    .p-links__desc:empty::before{content:'No description yet.';color:var(--text-color-muted);font-style:italic}
+    .p-links__label{font-size:var(--text-xs);font-weight:var(--font-bold);letter-spacing:.06em;text-transform:uppercase;color:var(--text-color-muted)}
+    .p-links__statuses{display:flex;gap:6px;flex-wrap:wrap}
+    .p-links__statuses button{all:unset;padding:5px 12px;border-radius:var(--border-r-pill);font-size:var(--text-xs);font-weight:var(--font-bold);cursor:pointer;border:1px solid var(--border-color-line);background:var(--bg-surface)}
+    .p-links__statuses button[aria-pressed="true"]{background:var(--status-color);color:var(--dark);border-color:var(--dark)}
+    .p-links__statuses button:focus-visible{outline:2px solid var(--accent)}
+    .p-links__note{width:100%;min-height:90px;padding:10px 12px;border-radius:var(--border-r-default);border:1px solid var(--border-color-line);background:var(--bg-surface);color:var(--text-color-default);font:inherit;font-size:var(--text-sm);resize:vertical}
+    .p-links__note:focus{outline:2px solid var(--accent)}
+    .c-goal{display:flex;flex-direction:column;gap:6px;padding:12px;border-radius:var(--border-r-default);background:var(--blue);color:var(--dark);border:1px solid var(--dark)}
+    .c-goal strong{font-size:var(--text-sm)}
+    .c-goal small{font-size:var(--text-xs);font-weight:var(--font-highlight)}
+    .c-goal__bar{height:8px;border-radius:var(--border-r-pill);background:rgba(26,26,26,.15);overflow:hidden}
+    .c-goal__bar span{display:block;height:100%;background:var(--dark);border-radius:inherit}
+    .p-links__actions{display:flex;gap:8px;margin-top:auto}
+    .p-links__actions .c-button{flex:1;justify-content:center;text-decoration:none}
+    .p-links__empty{padding:30px;text-align:center;color:var(--text-color-muted);border:2px dashed var(--border-color-line);border-radius:var(--border-r-default)}
+
+    /* Reading illustration from unDraw (Katerina Limpitsouni, undraw.co), recolored */
+    [data-theme="light"]{--illo-accent:#4a90c2;--illo-book:#ff615e;--illo-ink:#2f2e41;--illo-ink-2:#3f3d56;--illo-light:#e6e6e6;--illo-skin:#ffb6b6}
+    [data-theme="dark"]{--illo-accent:#7fb3d6;--illo-book:#ff615e;--illo-ink:#8a8fa8;--illo-ink-2:#6f7590;--illo-light:#4a4f52;--illo-skin:#ffb6b6}
+    .c-illo{display:block;width:min(320px,80%);height:auto;margin:8px auto 0}
+    .p-links__end{display:flex;flex-direction:column;align-items:center;gap:6px;padding:12px 0 4px;color:var(--text-color-muted);font-size:var(--text-xs);font-weight:var(--font-highlight)}
+    @media (min-width:769px){
+      .p-links{display:grid;grid-template-columns:180px minmax(0,1fr);height:100%}
+      .p-links__collections{flex-direction:column;padding:18px 12px;border-bottom:0;border-right:1px solid var(--border-color-line);overflow-x:visible;overflow-y:auto}
+      .p-links__collections h2{display:block}
+      .p-links__list{padding:18px 20px}
+    }
+    @media (min-width:1280px){
+      .p-links{grid-template-columns:200px minmax(0,1fr) 320px}
+      .p-links__detail{display:flex}
+    }
+  </style>
+</head>
+<body data-page="links" data-search="Search links">
+  <div class="app">
+    <div class="app__main">
+      <main class="app__content">
+        <div class="p-links">
+          <nav class="p-links__collections" aria-label="Collections">
+            <h2>Collections</h2>
+            <div id="collections" style="display:contents"></div>
+          </nav>
+
+          <section class="p-links__list" aria-labelledby="list-title">
+            <div class="p-links__head">
+              <h1 id="list-title">All links</h1>
+              <div class="c-status-filter" id="status-filter" role="group" aria-label="Filter by status"></div>
+              <button class="c-button c-button--module" type="button">
+                <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path stroke="currentColor" stroke-width="1.8" stroke-linecap="round" d="M12 5v14M5 12h14"/></svg>
+                Save link
+              </button>
+            </div>
+            <div id="groups"></div>
+          </section>
+
+          <aside class="p-links__detail" id="detail" aria-live="polite"></aside>
+        </div>
+      </main>
+    </div>
+  </div>
+
+  <script src="shell.js"></script>
+  <script>
+    // Sample taken from the Koda links (public), as they would look after the move.
+    const readingIllo = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 692.68042 327.47189" xmlns:xlink="http://www.w3.org/1999/xlink" class="c-illo" aria-hidden="true" focusable="false" artist="Katerina Limpitsouni" source="https://undraw.co/"><path d="M207.95311,68.81363c.05771,.00986,.1442,.0245,.24904,.04185,2.05136,.33957,14.45374,2.25308,26.95784-2.51012,5.29715-2.01785,3.49015-2.52077,15.28773-9.53614,13.83138-8.22473,17.38101-8.16726,18.41101-12.0023,2.05667-7.65797-8.92542-19.69644-16.19439-18.90382-1.91376,.20869-3.96328,1.34963-7.15104,.57599-.70038-.16997-3.76626-.91402-5.26088-3.4518-1.33332-2.26389-.20403-3.89699-.74025-5.7537-1.40748-4.87362-13.14017-7.30582-23.42653-5.58734-5.91628,.98842-10.51802,3.68683-19.47981,9.04331-15.59837,9.32311-23.39745,13.98468-25.15035,21.1267-1.66142,6.76936,2.32619,9.68618-.57391,16.93255-2.70041,6.74725-6.98935,6.29661-8.46524,11.75484-2.37505,8.78336,6.44004,18.42314,10.11211,22.4388,4.02599,4.40267,7.87633,6.81902,12.98792,10.02686,6.41596,4.02642,9.62385,6.03962,13.48076,5.83479,6.99272-.37136,27.77163,.89278,28.04263-4.8939,.10155-2.16864,25.30287-.39298,12.89362-23.7409-1.52204-2.86374-31.3393,.19518-31.73285-1.44996" fill="var(--illo-ink)"/><polygon points="492.19363 301.23849 521.24635 303.86831 557.32791 322.19307 563.27837 300.94149 568.4751 274.03646 557.64851 261.28551 538.94711 274.03646 499.84419 269.78612 492.19363 301.23849" fill="var(--illo-skin)"/><polygon points="253.32578 212.83187 231.22415 321.64 391.88614 275.73659 495.59389 304.63875 510.89502 271.48626 396.13644 223.03264 301.77942 224.73278 253.32578 212.83187" fill="var(--illo-ink)"/><path d="M560.58812,272.88506l3.40025,2.5502-21.11156,39.95731s14.26097,8.32013,18.51129,8.32013,18.75149-82.28,17.05136-94.43188c-1.70012-12.15189-12.75095-8.24963-12.75095-8.24963l-23.85457,50.39401,18.7542,1.45987h-.00003Z" fill="var(--illo-ink)"/><path d="M90.19861,259.08639c-2.22827-.23975-3.09741,2.81052-1.08447,3.79572,2.91522,1.42682,5.65747,3.22449,7.08679,5.35333,3.6543,5.44269,8.70343,2.29651,9.42133,1.80804,1.18036,1.96481,1.76154,3.95047,2.01196,5.71582l-1.72217,5.7063c-.07495,.38126,.0033-.0112,0,0h0l-1.32019,14.52243c-.90436,3.52759-.22186,6.92426,0,7.92133l-1.32019,18.48309,3.69104,.02966,.39789-18.08258,.07703-.02258c-.00214-.00742-.03003-.10638-.07031-.28308l.16443-7.47186c.33209-1.27954,.85791-2.6243,1.65973-3.95911,.7179,.48846,5.76703,3.63461,9.42133-1.80804,1.42932-2.12885,4.17157-3.92651,7.08679-5.35333,2.013-.98523,1.1438-4.03546-1.08447-3.79572-1.88776,.20312-3.94708,.50797-6.13757,.95401-9.28784,1.8912-9.48071,8.19778-9.39935,9.64383l-.06311-.03937c-.6344,1.0177-1.10504,2.04324-1.45447,3.04532l.30957-14.06967c.19177-.9967,2.33801-2.57559,2.0025-4.99521l-1.43542-20.77673c.50684,.87027,1.06842,1.43546,1.59839,1.37494,1.26727-.14471,1.90594-3.81177,1.74548-6.48105,1.57483,2.18188,4.56189,4.71756,5.651,3.98901,.8241-.5513,.33545-2.82092-.56433-4.88434,1.87482,1.12949,3.95117,1.87186,4.59552,1.15463,.87921-.97873-1.2276-4.31827-3.17059-6.18246,2.60083,.24255,5.90857-.17181,6.12543-1.3555,.17871-.97531-1.78992-2.20596-3.89703-2.99805,2.11639-.55804,4.09552-1.53036,4.02991-2.49228-.09351-1.37027-4.30072-2.19919-6.99231-2.01553-.15497,.01056-.3006,.02463-.43921,.04132,2.30585-1.3985,5.14258-4.28232,4.47894-5.43753-.4939-.85974-2.79156-.52673-4.91144,.2305,1.25452-1.79355,2.13647-3.81458,1.46478-4.50623-.95691-.98526-4.70325,1.10098-6.63861,2.98053-.18018,.17499-.33813,.34195-.47601,.50177,.00696-.13718,.01099-.28073,.01099-.43323,0-2.69788-1.1134-6.83887-2.48688-6.83887-.96411,0-1.7995,2.04074-2.21216,4.19025-.93365-2.04828-2.29547-3.92859-3.25635-3.68393-1.14856,.29245-1.34802,3.52484-.95349,6.08563-2.02661-1.64374-4.99622-3.1308-5.83295-2.26923-.67169,.69165,.21027,2.71268,1.46478,4.50623-2.11987-.75723-4.41754-1.09024-4.91144-.2305-.53729,.93518,1.21948,3.00293,3.13147,4.49875-2.53485,.11649-5.47321,.88214-5.55115,2.02481-.06561,.96191,1.91351,1.93423,4.02991,2.49228-2.10712,.79208-4.07568,2.02277-3.89703,2.99805,.21686,1.18369,3.52466,1.59805,6.12543,1.3555-1.94299,1.8642-4.0498,5.20374-3.17059,6.18246,.64435,.71722,2.7207-.02515,4.59552-1.15463-.89978,2.06339-1.38849,4.33304-.56433,4.88434,1.03137,.68994,3.76532-1.54755,5.38983-3.63962-.23828,2.6712,.31866,6.43002,1.59613,6.60434,.98242,.13406,2.12213-1.88861,2.81738-4.0296,.20862,.66647,.45886,1.31668,.73389,1.89011l-.42535,19.32935c-.35345-1.43094-.93842-2.94705-1.87231-4.44519l-.06311,.03934c.08136-1.44589-.11139-7.75262-9.39935-9.64389-2.19055-.44604-4.24988-.75089-6.13757-.95401l.00018-.00006Zm16.93048,39.62045l-.06958,3.16229c-.06366-.88736-.07074-1.96661,.06958-3.16229Z" fill="var(--illo-light)"/><path d="M691.10928,320.50921H1.57104c-.87128,0-1.57104,.69977-1.57104,1.57108,0,.8714,.69971,1.57108,1.57104,1.57108H691.10928c.87138,0,1.57114-.69968,1.57114-1.57108s-.69975-1.57108-1.57114-1.57108Z" fill="var(--illo-ink-2)"/><polygon points="187.55029 118.17785 198.6011 79.07493 225.80316 79.92498 235.15384 111.37732 187.55029 118.17785" fill="var(--illo-skin)"/><path d="M193.3963,106.99901l-.00003,.00002s-8.07559-2.12517-23.37674,17.4263c-15.30115,19.55144-8.50061,158.96187-8.50061,158.96187l110.93329-25.07687-29.0288-99.9399-5.8238-53.07155-44.20331,1.70013v.00002Z" fill="var(--illo-accent)"/><g><path id="uuid-b9858c30-f397-4403-a0fe-0b031a3a9912-354" d="M366.45686,142.90533l-36.49368,21.12966,8.01522,14.73706,37.21484-20.36362c3.9959-.20038,7.88572-1.3548,11.34401-3.36667,8.72489-4.91682,13.25945-13.39999,10.13164-18.95069-3.1278-5.55071-12.73366-6.06558-21.45478-1.14934-3.51317,1.91705-6.51604,4.64778-8.75724,7.96361Z" fill="var(--illo-skin)"/><polygon points="191.56717 146.19036 267.57108 215.8051 372.23734 165.16674 359.1078 139.0705 284.35672 168.70453 212.68449 111.00562 191.56717 146.19036" fill="var(--illo-accent)"/></g><path d="M166.61932,268.08605l30.60229-48.45361s61.20456-61.20456,84.15628-56.10419c22.95172,5.10037,50.15375,101.15753,50.15375,101.15753l-22.95172,14.45108-40.80304-56.95425s-4.25034,78.20581-16.89084,95.20709c-12.6405,17.00128-63.86517,9.35071-82.56659,0s-1.70013-49.30368-1.70013-49.30368v.00003Z" fill="var(--illo-ink)"/><polygon points="306.87979 268.93609 310.28003 285.08727 308.57993 295.28805 314.53036 307.18892 361.28384 312.2893 363.83405 290.18767 339.18219 277.4367 321.33087 259.58538 306.87979 268.93609" fill="var(--illo-skin)"/><path d="M357.88361,303.78869l-2.5502,3.40024-48.96231-14.10971s2.20883,21.76025,2.20883,26.01059,80.75604,4.25034,92.90793,2.5502c12.15189-1.7001,8.24963-12.75095,8.24963-12.75095l-50.39401-23.85458-1.45987,18.75418v.00003Z" fill="var(--illo-ink)"/><g><polygon points="302.06534 154.01392 343.46597 157.62881 367.81832 150.19365 381.6064 133.35326 392.88104 94.71783 328.57131 65.67645 327.39671 65.14753 318.4853 66.00484 302.43614 152.02112 302.06534 154.01392" fill="var(--illo-book)"/><polygon points="302.43614 152.02112 313.56487 153.53271 328.57131 65.67645 327.39671 65.14753 318.4853 66.00484 302.43614 152.02112" fill="var(--illo-ink)" opacity=".2"/><path d="M306.60485,159.99427c-1.61721-.128-3.08913-.95557-4.03858-2.27041s-1.27193-2.97262-.88449-4.54823l2.0967-8.52495,.19141,.02588c.11414,.01516,11.54737,1.53996,24.71786,2.09437,17.40542,.73277,29.9255-.55355,36.20647-3.72016,15.46956-7.80306,24.41796-49.93003,24.50639-50.35472l.04085-.19665,3.36381,.46595c1.5216,.21131,2.85763,1.011,3.76127,2.25216,.90181,1.2381,1.25202,2.75029,.98683,4.25777-2.07179,11.78037-8.84895,40.39035-26.98637,51.59762-.17768,.10969-.35479,.21707-.53527,.32452-18.20284,10.83457-50.35468,9.62998-63.42686,8.59685Z" fill="var(--illo-ink-2)"/></g><g><path id="uuid-89ceabf5-3d72-4b0e-954e-73915df3a7c3-355" d="M354.47742,147.35355c-3.60071,1.74715-6.73051,4.33139-9.12745,7.53648l-37.46074,19.36345,7.30257,15.10287,38.14453-18.56385c4.00091-.0094,7.94143-.97681,11.49181-2.82129,8.94968-4.49473,13.884-12.75178,11.02474-18.44545-2.85926-5.69367-12.42957-6.66652-21.37543-2.17222l-.00003,.00002Z" fill="var(--illo-skin)"/><polygon points="170.50291 149.82247 243.09692 222.98611 350.06122 177.40199 338.1924 150.70874 262.11191 176.74053 193.27579 115.68595 170.50291 149.82247" fill="var(--illo-accent)"/></g><circle cx="213.62604" cy="55.12785" r="39.39541" fill="var(--illo-skin)"/><path d="M200.93696,57.67721c.05771,.00986,.1442,.0245,.24904,.04185,2.05136,.33957,14.45374,2.25308,26.95784-2.51012,5.29715-2.01785,3.49015-2.52077,15.28773-9.53614,13.83138-8.22473,17.38101-8.16726,18.41101-12.0023,2.05667-7.65797-8.92542-19.69644-16.19439-18.90382-1.91376,.20869-3.96328,1.34963-7.15104,.57599-.70038-.16997-3.76626-.91402-5.26088-3.4518-1.33332-2.26389-.20403-3.89699-.74025-5.7537-1.40748-4.87362-13.14017-7.30582-23.42653-5.58734-5.91628,.98842-10.51802,3.68683-19.47981,9.04331-15.59837,9.32311-23.39748,13.98468-25.15035,21.12671-1.66142,6.76935,2.32619,9.68619-.57391,16.93256-2.70041,6.74725-6.98935,6.29661-8.46524,11.75484-2.37505,8.78336,6.44004,18.42314,10.11211,22.4388,4.02599,4.40267,7.87633,6.81902,12.98792,10.02686,6.41596,4.02642,9.62385,6.03962,13.48076,5.83479,6.99272-.37136,13.94788-6.70843,14.21893-12.49513,.10155-2.16864-.80314-2.81903-3.04218-10.2743-.93279-3.10603-1.57983-5.67019-1.97334-7.31533" fill="var(--illo-ink)"/></svg>`;
+
+    const links = [
+      {
+        "id": 1,
+        "collection": "books",
+        "tag": "tech",
+        "title": "Typescript in 50 lessons",
+        "url": "https://typescript-book.com/",
+        "desc": "Everything you need to know about TypeScript in 50 short lessons",
+        "status": "done"
+      },
+      {
+        "id": 2,
+        "collection": "books",
+        "tag": "tech",
+        "title": "concorrencia101",
+        "url": "https://concorrencia101.leandronsp.com/",
+        "desc": "",
+        "status": "done"
+      },
+      {
+        "id": 3,
+        "collection": "books",
+        "tag": "tech",
+        "title": "Engenharia de Software Moderna",
+        "url": "https://engsoftmoderna.info/",
+        "desc": "",
+        "status": "want"
+      },
+      {
+        "id": 4,
+        "collection": "books",
+        "tag": "tech",
+        "title": "Redes de Computadores para quem está começando: entenda a jornada por trás de cada clique",
+        "url": "https://a.co/d/0fD9GkmJ",
+        "desc": "",
+        "status": "want"
+      },
+      {
+        "id": 5,
+        "collection": "books",
+        "tag": "tech",
+        "title": "Atomic Design",
+        "url": "https://atomicdesign.bradfrost.com/",
+        "desc": "",
+        "status": "reading"
+      },
+      {
+        "id": 6,
+        "collection": "books",
+        "tag": "design",
+        "title": "The Non-Designer's Design Book: Design and Typographic Principles for the Visual Novice",
+        "url": "https://a.co/d/09Q6zjHi",
+        "desc": "",
+        "status": "done"
+      },
+      {
+        "id": 7,
+        "collection": "guides",
+        "tag": "tech",
+        "title": "Fundamentos do Git, um guia completo",
+        "url": "https://leandronsp.com/articles/pt-br-fundamentos-do-git-um-guia-completo-2djh",
+        "desc": "",
+        "status": "done"
+      },
+      {
+        "id": 8,
+        "collection": "guides",
+        "tag": "tech",
+        "title": "Front End Interview Handbook",
+        "url": "https://www.frontendinterviewhandbook.com/",
+        "desc": "",
+        "status": "want"
+      },
+      {
+        "id": 9,
+        "collection": "guides",
+        "tag": "tech",
+        "title": "Tech Interview Handbook",
+        "url": "https://www.techinterviewhandbook.org/",
+        "desc": "",
+        "status": "want"
+      },
+      {
+        "id": 10,
+        "collection": "guides",
+        "tag": "tech",
+        "title": "Windows CMD commands",
+        "url": "https://ss64.com/nt/",
+        "desc": "",
+        "status": "reading"
+      },
+      {
+        "id": 11,
+        "collection": "articles",
+        "tag": "tech",
+        "title": "CSS Tricks",
+        "url": "https://css-tricks.com",
+        "desc": "",
+        "status": "done"
+      },
+      {
+        "id": 12,
+        "collection": "articles",
+        "tag": "tech",
+        "title": "HTTP headers",
+        "url": "https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers",
+        "desc": "",
+        "status": "done"
+      },
+      {
+        "id": 13,
+        "collection": "articles",
+        "tag": "tech",
+        "title": "How to check for undefined in JavaScript",
+        "url": "https://ui.dev/check-for-undefined-javascript",
+        "desc": "",
+        "status": "want"
+      },
+      {
+        "id": 14,
+        "collection": "articles",
+        "tag": "tech",
+        "title": "O processo de software",
+        "url": "https://www.macoratti.net/proc_sw1.htm",
+        "desc": "",
+        "status": "want"
+      },
+      {
+        "id": 15,
+        "collection": "podcasts",
+        "tag": "tech",
+        "title": "Dev show",
+        "url": "https://devshow.com.br/",
+        "desc": "",
+        "status": "reading"
+      },
+      {
+        "id": 16,
+        "collection": "courses",
+        "tag": "tech",
+        "title": "dio",
+        "url": "https://www.dio.me/en",
+        "desc": "",
+        "status": "done"
+      },
+      {
+        "id": 17,
+        "collection": "courses",
+        "tag": "tech",
+        "title": "speakerdeck/jessilyneh",
+        "url": "https://speakerdeck.com/jessilyneh",
+        "desc": "",
+        "status": "done"
+      },
+      {
+        "id": 18,
+        "collection": "courses",
+        "tag": "tech",
+        "title": "speakerdeck.com/camilacampos",
+        "url": "https://speakerdeck.com/camilacampos",
+        "desc": "",
+        "status": "want"
+      },
+      {
+        "id": 19,
+        "collection": "tooling",
+        "tag": "image",
+        "title": "tinify",
+        "url": "https://tinypng.com/",
+        "desc": "Smart AVIF, WebP, PNG and JPEG Compression for Faster Websites",
+        "status": "want"
+      },
+      {
+        "id": 20,
+        "collection": "tooling",
+        "tag": "image",
+        "title": "GRATISPNG",
+        "url": "https://www.gratispng.com/",
+        "desc": "",
+        "status": "reading"
+      },
+      {
+        "id": 21,
+        "collection": "tooling",
+        "tag": "image",
+        "title": "Shopify stock photos",
+        "url": "https://www.shopify.com/stock-photos",
+        "desc": "",
+        "status": "done"
+      },
+      {
+        "id": 22,
+        "collection": "cool stuff",
+        "tag": "cool stuff",
+        "title": "DRIVEN AND LISTEN",
+        "url": "https://driveandlisten.herokuapp.com/",
+        "desc": "",
+        "status": "done"
+      },
+      {
+        "id": 23,
+        "collection": "cool stuff",
+        "tag": "cool stuff",
+        "title": "LETMEGOOGLETHAT",
+        "url": "https://letmegooglethat.com/",
+        "desc": "",
+        "status": "want"
+      },
+      {
+        "id": 24,
+        "collection": "cool stuff",
+        "tag": "cool stuff",
+        "title": "EMOJIPEDIA",
+        "url": "https://emojipedia.org/",
+        "desc": "",
+        "status": "want"
+      }
+    ];
+
+    const statuses = {
+      later: { label: 'Later', color: 'var(--bg-cat-home)' },
+      progress: { label: 'In progress', color: 'var(--blue)' },
+      done: { label: 'Done', color: 'var(--bg-cat-reading)' },
+    };
+    const statusFromSample = { want: 'later', reading: 'progress', done: 'done' };
+    links.forEach((l) => {
+      l.status = statusFromSample[l.status] ?? 'later';
+      l.note = '';
+    });
+
+    const faviconColors = ['var(--bg-cat-personal)', 'var(--bg-cat-work)', 'var(--bg-cat-study)', 'var(--bg-cat-finance)', 'var(--bg-cat-family)', 'var(--bg-cat-travel)', 'var(--bg-cat-social)', 'var(--bg-cat-hobby)'];
+    const hostOf = (url) => new URL(url).hostname.replace(/^www\./, '');
+    const colorOf = (text) => faviconColors[[...text].reduce((a, c) => a + c.charCodeAt(0), 0) % faviconColors.length];
+
+    // Goal from the occurrences module, as in the product requirements.
+    const goal = { title: 'Read 2 books a month', target: 2 };
+
+    let collection = 'all';
+    let status = 'all';
+    let query = '';
+    let selectedId = links[0]?.id;
+
+    const collectionsEl = document.getElementById('collections');
+    const names = ['all', ...new Set(links.map((l) => l.collection))];
+    names.forEach((name) => {
+      const count = name === 'all' ? links.length : links.filter((l) => l.collection === name).length;
+      const button = document.createElement('button');
+      button.type = 'button';
+      button.className = 'c-collection';
+      button.dataset.name = name;
+      button.innerHTML = `${name === 'all' ? 'All links' : name}<span>${count}</span>`;
+      button.addEventListener('click', () => {
+        collection = name;
+        render();
+      });
+      collectionsEl.appendChild(button);
+    });
+
+    const statusFilter = document.getElementById('status-filter');
+    [['all', 'All'], ...Object.entries(statuses).map(([k, v]) => [k, v.label])].forEach(([key, label]) => {
+      const button = document.createElement('button');
+      button.type = 'button';
+      button.dataset.key = key;
+      button.textContent = label;
+      button.addEventListener('click', () => {
+        status = key;
+        render();
+      });
+      statusFilter.appendChild(button);
+    });
+
+    document.getElementById('search').addEventListener('input', (e) => {
+      query = e.target.value.trim().toLowerCase();
+      render();
+    });
+
+    function visibleLinks() {
+      return links.filter(
+        (l) =>
+          (collection === 'all' || l.collection === collection) &&
+          (status === 'all' || l.status === status) &&
+          (!query || l.title.toLowerCase().includes(query) || hostOf(l.url).includes(query) || l.tag.toLowerCase().includes(query))
+      );
+    }
+
+    function render() {
+      collectionsEl.querySelectorAll('.c-collection').forEach((b) => b.setAttribute('aria-current', String(b.dataset.name === collection)));
+      statusFilter.querySelectorAll('button').forEach((b) => b.setAttribute('aria-pressed', String(b.dataset.key === status)));
+      document.getElementById('list-title').textContent = collection === 'all' ? 'All links' : collection;
+
+      const groupsEl = document.getElementById('groups');
+      const list = visibleLinks();
+      if (!list.some((l) => l.id === selectedId)) selectedId = list[0]?.id;
+      if (!list.length) {
+        groupsEl.innerHTML = `<div class="p-links__end">${readingIllo}<span>Nothing here yet. Save a link to read later.</span></div>`;
+      } else {
+        const byGroup = {};
+        list.forEach((l) => {
+          const key = collection === 'all' ? l.collection : l.tag;
+          (byGroup[key] ??= []).push(l);
+        });
+        groupsEl.innerHTML = Object.entries(byGroup)
+          .map(
+            ([group, items]) => `
+            <div class="p-links__group">
+              <h2>${group}</h2>
+              <ul>${items
+                .map(
+                  (l) => `
+                <li><button class="c-link" type="button" data-id="${l.id}" aria-current="${l.id === selectedId}">
+                  <span class="c-link__favicon" style="--fav-color:${colorOf(hostOf(l.url))}">${hostOf(l.url)[0]}</span>
+                  <span class="c-link__text"><span class="c-link__title">${l.title}</span><span class="c-link__host">${hostOf(l.url)} · ${l.tag}</span></span>
+                  <span class="c-status" style="--status-color:${statuses[l.status].color}">${statuses[l.status].label}</span>
+                </button></li>`
+                )
+                .join('')}</ul>
+            </div>`
+          )
+          .join('') + `<div class="p-links__end">${readingIllo}<span>That's everything for now.</span></div>`;
+        groupsEl.querySelectorAll('.c-link').forEach((b) =>
+          b.addEventListener('click', () => {
+            selectedId = Number(b.dataset.id);
+            render();
+          })
+        );
+      }
+      renderDetail();
+    }
+
+    function renderDetail() {
+      const detail = document.getElementById('detail');
+      const link = links.find((l) => l.id === selectedId);
+      if (!link) {
+        detail.innerHTML = '<p class="p-links__empty">Pick a link to see it here.</p>';
+        return;
+      }
+      const booksDone = links.filter((l) => l.collection === 'books' && l.status === 'done').length;
+      const goalCard =
+        link.collection === 'books'
+          ? `<div class="c-goal">
+              <small>Counts toward a goal</small>
+              <strong>${goal.title}</strong>
+              <div class="c-goal__bar"><span style="width:${Math.min(100, (booksDone / goal.target) * 100)}%"></span></div>
+              <small>${Math.min(booksDone, goal.target)} of ${goal.target} this month</small>
+            </div>`
+          : '';
+      detail.innerHTML = `
+        <div>
+          <span class="c-tag c-tag--plain">${link.collection} · ${link.tag}</span>
+        </div>
+        <div>
+          <h2>${link.title}</h2>
+          <span class="c-link__host">${hostOf(link.url)}</span>
+        </div>
+        <p class="p-links__desc">${link.desc}</p>
+        <div>
+          <p class="p-links__label">Status</p>
+          <div class="p-links__statuses">${Object.entries(statuses)
+            .map(([k, v]) => `<button type="button" data-status="${k}" style="--status-color:${v.color}" aria-pressed="${link.status === k}">${v.label}</button>`)
+            .join('')}</div>
+        </div>
+        ${goalCard}
+        <label>
+          <span class="p-links__label">My note</span>
+          <textarea class="p-links__note" placeholder="Why did you save it?">${link.note}</textarea>
+        </label>
+        <div class="p-links__actions">
+          <a class="c-button c-button--module" href="${link.url}" target="_blank" rel="noopener noreferrer">Open link</a>
+        </div>`;
+      detail.querySelectorAll('[data-status]').forEach((b) =>
+        b.addEventListener('click', () => {
+          link.status = b.dataset.status;
+          render();
+        })
+      );
+      detail.querySelector('textarea').addEventListener('input', (e) => {
+        link.note = e.target.value;
+      });
+    }
+
+    render();
+  </script>
+</body>
+</html>

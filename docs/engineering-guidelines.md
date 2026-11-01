@@ -103,6 +103,16 @@ Applies to `client/`. Paths below are relative to it.
 - Styles live in `src/assets/sass/`, mirroring the component or page folder.
 - Classes follow BEM, prefixed with `c-` for components and `p-` for pages. Examples: `c-default-button--error`, `p-homepage__intro`.
 - Colors, breakpoints and effects come from `src/assets/sass/tokens/`. No loose values.
+- The tokens mirror `docs/prototypes/platform/tokens.css`, which is the reference. A new or changed token goes to the prototype first (decision 005).
+- A screen is implemented as it is in the prototype. If the implementation needs a visual change, the prototype changes first.
+
+#### Mobile-first
+
+Screens are designed and built for the smallest screen first, then enhanced for larger ones. This also applies to the HTML prototypes in `docs/prototypes/`.
+
+- The base styles are the mobile layout. Larger screens are added with `min-width` media queries, never `max-width`.
+- Breakpoints come from `src/assets/sass/tokens/_breakpoints.scss`. Prototypes, which can't import the tokens, use the same values.
+- Check every change at mobile width before checking it on desktop.
 
 #### Flexbox or grid
 

@@ -1,0 +1,145 @@
+<!doctype html>
+<html lang="en" data-theme="light">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Yoko — Design system</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@300..700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="tokens.css">
+  <link rel="stylesheet" href="shell.css">
+  <style>
+    .p-tokens{display:grid;gap:28px;padding:16px 16px 40px}
+    .p-tokens h1{font-size:var(--text-lg);font-weight:var(--font-bold)}
+    .p-tokens__intro{max-width:70ch;font-size:var(--text-sm);color:var(--text-color-muted)}
+    .p-tokens__intro code{font-size:var(--text-xs)}
+    .p-tokens section{display:grid;gap:12px}
+    .p-tokens h2{font-size:var(--text-base);font-weight:var(--font-bold)}
+    .p-tokens h3{font-size:var(--text-xs);font-weight:var(--font-bold);letter-spacing:.04em;text-transform:uppercase;color:var(--text-color-muted)}
+
+    .c-swatches{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:10px}
+    .c-swatch{display:grid;grid-template-rows:56px auto;border:var(--border-w-default) solid var(--border-color-line);border-radius:var(--border-r-default);overflow:hidden;background:var(--bg-surface)}
+    .c-swatch__color{background:var(--swatch)}
+    .c-swatch__info{display:grid;padding:8px 10px;font-size:var(--text-xs)}
+    .c-swatch__info b{font-weight:var(--font-highlight)}
+    .c-swatch__info span{color:var(--text-color-muted)}
+
+    .c-type-list{display:grid;gap:10px}
+    .c-type{display:flex;flex-wrap:wrap;align-items:baseline;gap:6px 16px;padding-bottom:10px;border-bottom:var(--border-w-default) solid var(--border-color-line)}
+    .c-type code{min-width:12ch;font-size:var(--text-xs);color:var(--text-color-muted)}
+
+    .c-samples{display:flex;flex-wrap:wrap;gap:14px}
+    .c-sample{display:grid;place-items:center;gap:6px;width:130px;height:96px;padding:8px;text-align:center;font-size:var(--text-xs);background:var(--bg-surface);border:var(--border-w-default) solid var(--border-color-line)}
+    .c-sample span{color:var(--text-color-muted)}
+
+    .c-breakpoints{width:100%;border-collapse:collapse;font-size:var(--text-sm)}
+    .c-breakpoints th,.c-breakpoints td{padding:8px 10px;text-align:left;border-bottom:var(--border-w-default) solid var(--border-color-line)}
+    .c-breakpoints th{font-size:var(--text-xs);color:var(--text-color-muted)}
+
+    @media (min-width:769px){
+      .p-tokens{padding:24px 28px 40px}
+    }
+  </style>
+</head>
+<body data-page="design" data-search="Search tokens">
+  <div class="app">
+    <div class="app__main">
+      <main class="app__content">
+        <div class="p-tokens">
+          <div>
+            <h1>Design system</h1>
+            <p class="p-tokens__intro">The tokens below are read live from <code>tokens.css</code>. A token changes there first, gets validated in the prototype, and then is copied to <code>client/src/assets/sass/tokens/</code> (decision 005). Switch the theme in the sidebar to see the dark values.</p>
+          </div>
+
+          <section aria-labelledby="colors-title">
+            <h2 id="colors-title">Colors</h2>
+            <h3>Base</h3>
+            <div class="c-swatches" data-swatches="blue red green yellow gray dark-soft dark-md dark white"></div>
+            <h3>Categories</h3>
+            <div class="c-swatches" data-swatches="bg-cat-personal bg-cat-work bg-cat-study bg-cat-finance bg-cat-family bg-cat-travel bg-cat-home bg-cat-health bg-cat-reading bg-cat-social bg-cat-hobby"></div>
+            <h3>Theme</h3>
+            <div class="c-swatches" data-swatches="bg-page bg-surface bg-surface-raised text-color-default text-color-muted border-color-line"></div>
+            <h3>Semantic</h3>
+            <div class="c-swatches" data-swatches="bg-default bg-error bg-success bg-places text-color-on-color text-color-error border-color-dark"></div>
+            <h3>Task status</h3>
+            <div class="c-swatches" data-swatches="bg-status-todo bg-status-in-progress bg-status-on-hold bg-status-blocked bg-status-completed bg-status-deferred bg-status-cancelled"></div>
+            <h3>Shell</h3>
+            <div class="c-swatches" data-swatches="bg-shell bg-shell-hover text-color-shell text-color-shell-muted border-color-shell"></div>
+          </section>
+
+          <section aria-labelledby="type-title">
+            <h2 id="type-title">Typography</h2>
+            <p class="p-tokens__intro">Quicksand. Weights: light 300, regular 400, highlight 600, bold 700.</p>
+            <div class="c-type-list" id="type-list"></div>
+          </section>
+
+          <section aria-labelledby="effects-title">
+            <h2 id="effects-title">Effects</h2>
+            <h3>Border radius</h3>
+            <div class="c-samples" id="radius-list"></div>
+            <h3>Border width</h3>
+            <div class="c-samples" id="width-list"></div>
+            <h3>Shadow</h3>
+            <div class="c-samples" id="shadow-list"></div>
+            <h3>Opacity</h3>
+            <div class="c-samples" id="opacity-list"></div>
+          </section>
+
+          <section aria-labelledby="breakpoints-title">
+            <h2 id="breakpoints-title">Breakpoints</h2>
+            <p class="p-tokens__intro">Mobile first: base styles are the phone, and larger screens are added with <code>min-width</code>.</p>
+            <table class="c-breakpoints">
+              <thead><tr><th scope="col">Token</th><th scope="col">From</th><th scope="col">Devices</th></tr></thead>
+              <tbody>
+                <tr><td>base</td><td>0</td><td>Smaller smartphones</td></tr>
+                <tr><td><code>tablet-min</code></td><td>481px</td><td>Tablets and larger smartphones</td></tr>
+                <tr><td><code>desktop-sm-min</code></td><td>769px</td><td>Laptops, tablets in landscape and small desktops</td></tr>
+                <tr><td><code>desktop-lg-min</code></td><td>1280px</td><td>Larger desktops and monitors</td></tr>
+              </tbody>
+            </table>
+          </section>
+        </div>
+      </main>
+    </div>
+  </div>
+
+  <script src="shell.js"></script>
+  <script>
+    // Values are read from the computed styles, so this page always matches tokens.css.
+    const root = document.documentElement;
+    const token = (name) => getComputedStyle(root).getPropertyValue(`--${name}`).trim();
+
+    const renderSwatches = () =>
+      document.querySelectorAll('[data-swatches]').forEach((list) => {
+        list.innerHTML = list.dataset.swatches
+          .split(' ')
+          .map((name) => `<div class="c-swatch" style="--swatch:var(--${name})"><span class="c-swatch__color"></span><span class="c-swatch__info"><b>--${name}</b><span>${token(name)}</span></span></div>`)
+          .join('');
+      });
+
+    const sizes = ['text-xs', 'text-sm', 'text-base', 'text-lg', 'text-xl'];
+    document.getElementById('type-list').innerHTML = sizes
+      .map((size) => `<div class="c-type"><code>--${size} · ${token(size)}</code><span style="font-size:var(--${size})">Regular</span><span style="font-size:var(--${size});font-weight:var(--font-highlight)">Highlight</span></div>`)
+      .join('');
+
+    const samples = (id, names, style) => {
+      document.getElementById(id).innerHTML = names
+        .map((name) => `<div class="c-sample" style="${style(name)}"><b>--${name}</b><span>${token(name)}</span></div>`)
+        .join('');
+    };
+    samples('radius-list', ['border-r-soft', 'border-r-default', 'border-r-pill', 'border-r-full'], (n) => `border-radius:var(--${n})${n === 'border-r-full' ? ';width:96px' : ''}`);
+    samples('width-list', ['border-w-default', 'border-w-highlight'], (n) => `border:var(--${n}) solid var(--border-color-dark);border-radius:var(--border-r-default)`);
+    const renderShadows = () => samples('shadow-list', ['shadow-sm', 'shadow-md', 'shadow-lg'], (n) => `box-shadow:var(--${n});border-radius:var(--border-r-default)`);
+    samples('opacity-list', ['opacity-soft', 'opacity-md', 'opacity-strong'], (n) => `background:color-mix(in srgb, var(--blue) var(--${n}), transparent);border-radius:var(--border-r-default)`);
+
+    renderSwatches();
+    renderShadows();
+    // The theme toggle lives in the shell; refresh the values when it changes.
+    new MutationObserver(() => {
+      renderSwatches();
+      renderShadows();
+    }).observe(root, { attributes: true, attributeFilter: ['data-theme'] });
+  </script>
+</body>
+</html>
