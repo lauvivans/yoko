@@ -11,7 +11,7 @@
       return false;
     }
   };
-  if (!art || visitsOff() || window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+  if (!art || visitsOff() || !('animate' in Element.prototype) || window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
 
   const SIZE = 72;
   const FIRST_VISIT_MS = 1500;
