@@ -540,5 +540,137 @@ window.YokoSearchData = [
     title: "Got my driver’s license.",
     detail: "Happy",
     page: "mood.html"
+  },
+  {
+    module: "Routines",
+    title: "Morning skincare",
+    detail: "Same steps",
+    page: "routines.html"
+  },
+  {
+    module: "Routines",
+    title: "Night skincare",
+    detail: "Same steps",
+    page: "routines.html"
+  },
+  {
+    module: "Routines",
+    title: "Hair schedule",
+    detail: "Cycle",
+    page: "routines.html"
+  },
+  {
+    module: "Routines",
+    title: "Plant care",
+    detail: "Same steps",
+    page: "routines.html"
+  },
+  {
+    module: "Media",
+    title: "Sasaki and Miyano",
+    detail: "Anime & manga",
+    page: "media.html"
+  },
+  {
+    module: "Media",
+    title: "Kimi ni Todoke",
+    detail: "Anime & manga",
+    page: "media.html"
+  },
+  {
+    module: "Media",
+    title: "Hyouka",
+    detail: "Anime & manga",
+    page: "media.html"
+  },
+  {
+    module: "Media",
+    title: "Kamisama Hajimemashita",
+    detail: "Anime & manga",
+    page: "media.html"
+  },
+  {
+    module: "Media",
+    title: "Akuyaku Reijō Nanode Rasubosu o Katte Mimashita",
+    detail: "Anime & manga",
+    page: "media.html"
+  },
+  {
+    module: "Media",
+    title: "Frieren: Beyond Journey’s End",
+    detail: "Anime & manga",
+    page: "media.html"
+  },
+  {
+    module: "Media",
+    title: "Spy x Family",
+    detail: "Anime & manga",
+    page: "media.html"
+  },
+  {
+    module: "Media",
+    title: "Stardew Valley",
+    detail: "Game",
+    page: "media.html"
+  },
+  {
+    module: "Media",
+    title: "Hollow Knight",
+    detail: "Game",
+    page: "media.html"
+  },
+  {
+    module: "Media",
+    title: "Celeste",
+    detail: "Game",
+    page: "media.html"
+  },
+  {
+    module: "Media",
+    title: "Spirited Away",
+    detail: "Movie",
+    page: "media.html"
+  },
+  {
+    module: "Media",
+    title: "Your Name",
+    detail: "Movie",
+    page: "media.html"
+  },
+  {
+    module: "Media",
+    title: "Perfect Days",
+    detail: "Movie",
+    page: "media.html"
+  },
+  {
+    module: "Lists",
+    title: "Groceries",
+    detail: "Checklist",
+    page: "lists.html"
+  },
+  {
+    module: "Lists",
+    title: "Packing for Lisbon",
+    detail: "Checklist",
+    page: "lists.html"
+  },
+  {
+    module: "Lists",
+    title: "Gift ideas",
+    detail: "Collection",
+    page: "lists.html"
+  },
+  {
+    module: "Lists",
+    title: "Capsule wardrobe",
+    detail: "Collection",
+    page: "lists.html"
+  },
+  {
+    module: "Lists",
+    title: "Restaurants to try",
+    detail: "Collection",
+    page: "lists.html"
   }
 ];

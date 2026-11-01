@@ -1,0 +1,366 @@
+<!doctype html>
+<html lang="en" data-theme="light">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Yoko — Routines</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@300..700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="tokens.css">
+  <link rel="stylesheet" href="shell.css">
+  <link rel="stylesheet" href="components.css">
+  <style>
+    .p-routines{padding:16px 12px 40px}
+    .p-routines .c-workspace__list{gap:20px}
+    .p-routines__head{display:flex;flex-wrap:wrap;align-items:center;gap:12px}
+    .p-routines__head h1{margin-right:auto;font-size:var(--text-lg);font-weight:var(--font-bold)}
+    .p-routines h2{font-size:var(--text-xs);font-weight:var(--font-bold);letter-spacing:.04em;text-transform:uppercase;color:var(--text-color-muted)}
+    .p-routines__section{display:grid;gap:10px}
+    .p-routines__today{display:grid;gap:12px}
+    .p-routines__message{display:flex;flex-direction:column;align-items:center;gap:10px;padding:24px 0;text-align:center;color:var(--text-color-muted);font-size:var(--text-sm);font-weight:var(--font-highlight)}
+    .p-routines__message img{width:110px;height:auto;transform:rotate(-8deg)}
+
+    /* A routine due today: a checklist, or the next step of a cycle */
+    .c-routine{display:grid;gap:12px;padding:14px 16px;border-radius:var(--border-r-default);border:var(--border-w-default) solid var(--border-color-line);border-left:6px solid var(--routine-color);background:var(--bg-surface)}
+    .c-routine__head{display:flex;flex-wrap:wrap;align-items:baseline;gap:6px 10px}
+    .c-routine__head h3{margin-right:auto;font-size:var(--text-base);font-weight:var(--font-bold)}
+    .c-routine__meta{font-size:var(--text-xs);font-weight:var(--font-highlight);color:var(--text-color-muted)}
+    .c-routine.is-done{border-color:var(--border-color-line);background:var(--bg-surface-raised)}
+    .c-routine__done{display:inline-flex;align-items:center;gap:6px;padding:2px 10px;border-radius:var(--border-r-pill);background:var(--bg-success);color:var(--dark);font-size:var(--text-xs);font-weight:var(--font-bold)}
+    .c-routine__steps{display:grid;gap:4px;margin:0;padding:0;list-style:none}
+    .c-routine__step{display:flex;align-items:center;gap:10px;padding:6px 8px;border-radius:var(--border-r-soft);font-size:var(--text-sm);font-weight:var(--font-highlight);cursor:pointer}
+    .c-routine__step:hover{background:var(--bg-surface-raised)}
+    .c-routine__step input{width:18px;height:18px;margin:0;accent-color:var(--text-color-default)}
+    .c-routine__step:has(input:checked) span{text-decoration:line-through;color:var(--text-color-muted)}
+    .c-routine__next{display:grid;gap:4px}
+    .c-routine__next small{font-size:var(--text-xs);font-weight:var(--font-bold);letter-spacing:.04em;text-transform:uppercase;color:var(--text-color-muted)}
+    .c-routine__next strong{font-size:var(--text-lg)}
+    .c-cycle{display:flex;flex-wrap:wrap;gap:6px;margin:0;padding:0;list-style:none}
+    .c-cycle li{display:inline-flex;align-items:center;gap:4px;padding:3px 10px;border-radius:var(--border-r-pill);border:var(--border-w-default) solid var(--border-color-line);font-size:var(--text-xs);font-weight:var(--font-bold);color:var(--text-color-muted)}
+    .c-cycle li.is-done{color:var(--text-color-default)}
+    .c-cycle li.is-done::before{content:"✓"}
+    .c-cycle li.is-current{border-color:var(--border-color-dark);background:var(--routine-color);color:var(--dark)}
+    .c-routine__actions{display:flex;flex-wrap:wrap;align-items:center;gap:8px}
+    .c-routine__actions .c-button--module{background:var(--routine-color)}
+
+    /* Every routine */
+    .c-routine-list{display:grid;gap:8px;margin:0;padding:0;list-style:none}
+    .c-routine-row{all:unset;box-sizing:border-box;display:grid;grid-template-columns:auto minmax(0,1fr);align-items:center;gap:2px 12px;width:100%;padding:12px 14px;border-radius:var(--border-r-default);border:var(--border-w-default) solid var(--border-color-line);background:var(--bg-surface);cursor:pointer}
+    .c-routine-row:hover{border-color:var(--text-color-muted)}
+    .c-routine-row:focus-visible{outline:2px solid var(--accent)}
+    .c-routine-row.is-editing{box-shadow:0 0 0 2px var(--text-color-default)}
+    .c-routine-row__dot{grid-row:span 2;width:14px;height:14px;border-radius:var(--border-r-full);border:var(--border-w-default) solid var(--border-color-dark);background:var(--routine-color)}
+    .c-routine-row strong{font-size:var(--text-sm)}
+    .c-routine-row span{font-size:var(--text-xs);color:var(--text-color-muted)}
+
+    /* Form */
+    .c-routine-form__hint{font-size:var(--text-xs);color:var(--text-color-muted)}
+
+    @media (min-width:769px){
+      .p-routines{padding:22px 24px 40px}
+      .p-routines__today{grid-template-columns:repeat(auto-fill,minmax(300px,1fr));align-items:start}
+    }
+  </style>
+</head>
+<body data-page="routines" data-search="Search routines">
+  <div class="app">
+    <div class="app__main">
+      <main class="app__content">
+        <div class="p-routines c-workspace" id="workspace">
+          <div class="c-workspace__list">
+            <div class="p-routines__head">
+              <h1>Routines</h1>
+              <button class="c-button c-button--module" type="button" id="add-routine" data-new>
+                <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path stroke="currentColor" stroke-width="1.8" stroke-linecap="round" d="M12 5v14M5 12h14"/></svg>
+                New routine
+              </button>
+            </div>
+            <section class="p-routines__section" aria-labelledby="today-title">
+              <h2 id="today-title">Today</h2>
+              <div class="p-routines__today" id="today"></div>
+            </section>
+            <section class="p-routines__section" aria-labelledby="all-title">
+              <h2 id="all-title">All routines</h2>
+              <ul class="c-routine-list" id="all"></ul>
+            </section>
+          </div>
+          <section class="c-workspace__panel" id="edit-panel" aria-label="Edit routine" hidden></section>
+        </div>
+      </main>
+    </div>
+  </div>
+
+  <dialog class="c-dialog" id="routine-dialog" aria-labelledby="routine-form-title">
+    <form class="c-form" id="routine-form" novalidate>
+      <div class="c-dialog__head">
+        <h2 id="routine-form-title">New routine</h2>
+        <button class="c-icon-btn c-workspace__close" type="button" id="close-form" aria-label="Close">
+          <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path stroke="currentColor" stroke-width="1.8" stroke-linecap="round" d="M18 6 6 18M6 6l12 12"/></svg>
+        </button>
+      </div>
+      <label class="u-visually-hidden" for="routine-name">Name</label>
+      <input class="c-dialog__title" id="routine-name" name="name" placeholder="Name it, like Skincare" maxlength="40" autocomplete="off" required>
+      <div class="c-field" role="radiogroup" aria-labelledby="kind-label">
+        <span id="kind-label">How it repeats</span>
+        <div class="c-segmented">
+          <label><input class="u-visually-hidden" type="radio" name="kind" value="steps" checked>Same steps</label>
+          <label><input class="u-visually-hidden" type="radio" name="kind" value="cycle">A cycle</label>
+        </div>
+        <p class="c-routine-form__hint" id="kind-hint"></p>
+      </div>
+      <div class="c-field" role="group" aria-labelledby="days-label">
+        <span id="days-label">On these days</span>
+        <div class="c-weekdays" id="days"></div>
+      </div>
+      <label class="c-field"><span id="steps-label">Steps, one per line</span><textarea name="steps" rows="5" maxlength="600" required></textarea></label>
+      <div class="c-field" role="radiogroup" aria-labelledby="color-label">
+        <span id="color-label">Color</span>
+        <div class="c-swatches" id="swatches"></div>
+      </div>
+      <div class="c-dialog__actions">
+        <button class="c-button c-button--danger c-dialog__delete" type="button" id="delete-routine">Delete</button>
+        <button class="c-button c-button--module" type="submit" id="submit-form">Create</button>
+      </div>
+    </form>
+  </dialog>
+
+  <dialog class="c-dialog c-confirm" id="delete-dialog" aria-labelledby="delete-title">
+    <form method="dialog">
+      <div class="c-dialog__head">
+        <h2 id="delete-title">Are you sure you want to delete <b id="delete-name"></b>?</h2>
+        <button class="c-icon-btn" value="cancel" aria-label="Close">
+          <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path stroke="currentColor" stroke-width="1.8" stroke-linecap="round" d="M18 6 6 18M6 6l12 12"/></svg>
+        </button>
+      </div>
+      <p class="c-confirm__note">This can’t be undone.</p>
+      <div class="c-dialog__actions">
+        <button class="c-button c-button--ghost" value="cancel">Cancel</button>
+        <button class="c-button c-button--danger" value="delete">Delete</button>
+      </div>
+    </form>
+  </dialog>
+
+  <script src="shell.js"></script>
+  <script src="components.js"></script>
+  <script>
+    (() => {
+      const { closeOnBackdrop, workspace } = window.YokoUI;
+      const $ = (id) => document.getElementById(id);
+      const dayNames = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+      const colors = ['health', 'family', 'reading', 'study', 'travel', 'hobby'];
+      const kindHints = {
+        steps: 'The same steps every time, checked off one by one.',
+        cycle: 'One step each time, in order. After the last one it starts over.',
+      };
+      const today = new Date().getDay();
+      const everyDay = [0, 1, 2, 3, 4, 5, 6];
+
+      // Sample data. A cycle keeps the step it is on and the last one done.
+      let nextId = 1;
+      const routines = [
+        { id: nextId++, name: 'Morning skincare', kind: 'steps', days: everyDay, color: 'health', steps: ['Cleanser', 'Vitamin C serum', 'Moisturizer', 'Sunscreen'], checked: [0] },
+        { id: nextId++, name: 'Night skincare', kind: 'steps', days: everyDay, color: 'family', steps: ['Makeup remover', 'Cleanser', 'Retinol', 'Moisturizer'], checked: [] },
+        { id: nextId++, name: 'Hair schedule', kind: 'cycle', days: [today, (today + 3) % 7].sort(), color: 'reading', steps: ['Hydration', 'Nutrition', 'Hydration', 'Reconstruction'], position: 1, last: { step: 'Hydration', when: '3 days ago' }, doneToday: false },
+        { id: nextId++, name: 'Plant care', kind: 'steps', days: [(today + 2) % 7], color: 'hobby', steps: ['Water the ferns', 'Turn the pots to the light'], checked: [] },
+      ];
+
+      const scheduleText = (r) => (r.days.length === 7 ? 'Every day' : [...r.days].sort().map((d) => dayNames[d]).join(' · '));
+      const kindText = (r) => (r.kind === 'cycle' ? `Cycle of ${r.steps.length}` : `${r.steps.length} ${r.steps.length === 1 ? 'step' : 'steps'}`);
+      const isDone = (r) => (r.kind === 'cycle' ? r.doneToday : r.checked.length === r.steps.length);
+      const el = (tag, className, text) => {
+        const node = document.createElement(tag);
+        if (className) node.className = className;
+        if (text !== undefined) node.textContent = text;
+        return node;
+      };
+
+      const checklist = (r) => {
+        const list = el('ul', 'c-routine__steps');
+        r.steps.forEach((step, i) => {
+          const item = el('li');
+          const label = el('label', 'c-routine__step');
+          const box = document.createElement('input');
+          box.type = 'checkbox';
+          box.checked = r.checked.includes(i);
+          box.addEventListener('change', () => {
+            r.checked = box.checked ? [...r.checked, i] : r.checked.filter((c) => c !== i);
+            render();
+          });
+          label.append(box, el('span', '', step));
+          item.append(label);
+          list.append(item);
+        });
+        return list;
+      };
+
+      const cycleView = (r) => {
+        const wrap = document.createDocumentFragment();
+        const next = el('div', 'c-routine__next');
+        next.append(el('small', '', r.doneToday ? 'Next time' : 'Today'), el('strong', '', r.steps[r.position]));
+        const steps = el('ol', 'c-cycle');
+        steps.setAttribute('aria-label', 'The cycle');
+        r.steps.forEach((step, i) => {
+          const item = el('li', i < r.position ? 'is-done' : i === r.position ? 'is-current' : '', step);
+          if (i === r.position) item.setAttribute('aria-current', 'step');
+          steps.append(item);
+        });
+        const actions = el('div', 'c-routine__actions');
+        if (r.doneToday) {
+          actions.append(el('span', 'c-routine__done', `✓ ${r.last.step} done today`));
+          const undo = el('button', 'c-button c-button--ghost', 'Undo');
+          undo.type = 'button';
+          undo.addEventListener('click', () => {
+            r.position = (r.position - 1 + r.steps.length) % r.steps.length;
+            r.last = r.previous;
+            r.doneToday = false;
+            render();
+          });
+          actions.append(undo);
+        } else {
+          const done = el('button', 'c-button c-button--module', `Done: ${r.steps[r.position]}`);
+          done.type = 'button';
+          done.addEventListener('click', () => {
+            r.previous = r.last;
+            r.last = { step: r.steps[r.position], when: 'today' };
+            r.position = (r.position + 1) % r.steps.length;
+            r.doneToday = true;
+            render();
+          });
+          actions.append(done);
+          if (r.last) actions.append(el('span', 'c-routine__meta', `Last: ${r.last.step}, ${r.last.when}`));
+        }
+        wrap.append(next, steps, actions);
+        return wrap;
+      };
+
+      const todayCard = (r) => {
+        const card = el('article', `c-routine${isDone(r) ? ' is-done' : ''}`);
+        card.style.setProperty('--routine-color', `var(--bg-cat-${r.color})`);
+        const head = el('div', 'c-routine__head');
+        head.append(el('h3', '', r.name));
+        if (r.kind === 'steps') head.append(isDone(r) ? el('span', 'c-routine__done', '✓ Done for today') : el('span', 'c-routine__meta', `${r.checked.length} of ${r.steps.length}`));
+        else head.append(el('span', 'c-routine__meta', kindText(r)));
+        card.append(head, r.kind === 'steps' ? checklist(r) : cycleView(r));
+        return card;
+      };
+
+      // Create in a dialog, edit in the panel
+      const form = $('routine-form');
+      const field = (name) => form.elements.namedItem(name);
+      let editing = null;
+      const editor = workspace({ root: $('workspace'), panel: $('edit-panel'), dialog: $('routine-dialog'), form, onChange: () => render() });
+
+      $('days').innerHTML = dayNames.map((d, i) => `<label class="c-weekday"><input type="checkbox" name="days" value="${i}"><span>${d}</span></label>`).join('');
+      $('swatches').innerHTML = colors.map((c) => `<label class="c-swatch" style="--swatch:var(--bg-cat-${c})"><input class="u-visually-hidden" type="radio" name="color" value="${c}" aria-label="${c}"><span></span></label>`).join('');
+      const syncKind = () => {
+        $('kind-hint').textContent = kindHints[field('kind').value];
+        $('steps-label').textContent = field('kind').value === 'cycle' ? 'Steps of the cycle, one per line, in order' : 'Steps, one per line';
+      };
+      form.addEventListener('change', (e) => e.target.name === 'kind' && syncKind());
+
+      const openForm = (r = null) => {
+        editing = r;
+        const heading = $('routine-form-title');
+        heading.textContent = r ? 'Edit ' : 'New routine';
+        if (r) heading.append(el('b', '', r.name));
+        field('name').value = r?.name ?? '';
+        field('kind').value = r?.kind ?? 'steps';
+        const days = r?.days ?? everyDay;
+        form.querySelectorAll('input[name="days"]').forEach((box) => (box.checked = days.includes(Number(box.value))));
+        field('steps').value = (r?.steps ?? []).join('\n');
+        field('color').value = r?.color ?? colors[routines.length % colors.length];
+        [...form.elements].forEach((input) => input.setCustomValidity?.(''));
+        $('delete-routine').hidden = !r;
+        $('submit-form').textContent = r ? 'Save' : 'Create';
+        syncKind();
+        editor.open(Boolean(r));
+      };
+      const closeForm = () => {
+        const id = editing?.id;
+        editor.close();
+        editing = null;
+        if (id) $('all').querySelector(`[data-id="${id}"]`)?.focus();
+      };
+
+      form.addEventListener('submit', (e) => {
+        e.preventDefault();
+        const name = field('name').value.trim();
+        const steps = field('steps').value.split('\n').map((s) => s.trim()).filter(Boolean);
+        const days = [...form.querySelectorAll('input[name="days"]:checked')].map((box) => Number(box.value));
+        field('name').setCustomValidity(name ? '' : 'Give the routine a name.');
+        field('steps').setCustomValidity(steps.length ? '' : 'Add at least one step.');
+        form.querySelector('input[name="days"]').setCustomValidity(days.length ? '' : 'Pick at least one day.');
+        if (!form.reportValidity()) return;
+        const kind = field('kind').value === 'cycle' ? 'cycle' : 'steps';
+        const color = colors.includes(field('color').value) ? field('color').value : colors[0];
+        if (editing) {
+          const stepsChanged = steps.join('\n') !== editing.steps.join('\n') || kind !== editing.kind;
+          Object.assign(editing, { name, kind, days, color, steps });
+          if (stepsChanged) Object.assign(editing, { checked: [], position: 0, doneToday: false, last: null });
+        } else {
+          routines.push({ id: nextId++, name, kind, days, color, steps, checked: [], position: 0, doneToday: false, last: null });
+        }
+        closeForm();
+        render();
+      });
+      form.addEventListener('input', (e) => e.target.setCustomValidity?.(''));
+      $('close-form').addEventListener('click', closeForm);
+      $('add-routine').addEventListener('click', () => openForm());
+      document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape' && editor.isEditing() && !document.querySelector('dialog[open]')) closeForm();
+      });
+
+      const deleteDialog = $('delete-dialog');
+      closeOnBackdrop(deleteDialog);
+      $('delete-routine').addEventListener('click', () => {
+        $('delete-name').textContent = editing.name;
+        deleteDialog.returnValue = '';
+        deleteDialog.showModal();
+      });
+      deleteDialog.addEventListener('close', () => {
+        if (deleteDialog.returnValue !== 'delete' || !editing) return;
+        routines.splice(routines.indexOf(editing), 1);
+        closeForm();
+        render();
+      });
+
+      let query = '';
+      $('search').addEventListener('input', (e) => {
+        query = e.target.value.trim().toLowerCase();
+        render();
+      });
+
+      function render() {
+        const visible = routines.filter((r) => !query || `${r.name} ${r.steps.join(' ')}`.toLowerCase().includes(query));
+        const due = visible.filter((r) => r.days.includes(today));
+        if (due.length) {
+          $('today').replaceChildren(...due.map(todayCard));
+        } else {
+          const message = el('div', 'p-routines__message');
+          const img = document.createElement('img');
+          img.src = '../../../client/public/mascot.svg';
+          img.alt = '';
+          message.append(img, el('span', '', query ? 'No routine due today matches your search.' : 'Nothing to do today. Enjoy it!'));
+          $('today').replaceChildren(message);
+        }
+        $('all').replaceChildren(
+          ...visible.map((r) => {
+            const item = el('li');
+            const row = el('button', `c-routine-row${editing === r && editor.isEditing() ? ' is-editing' : ''}`);
+            row.type = 'button';
+            row.dataset.id = r.id;
+            row.style.setProperty('--routine-color', `var(--bg-cat-${r.color})`);
+            row.append(el('span', 'c-routine-row__dot'), el('strong', '', r.name), el('span', '', `${scheduleText(r)} · ${kindText(r)}`));
+            row.addEventListener('click', () => openForm(r));
+            item.append(row);
+            return item;
+          }),
+        );
+      }
+
+      render();
+    })();
+  </script>
+</body>
+</html>

@@ -32,8 +32,7 @@
     .p-home__footer{display:flex;flex-wrap:wrap;justify-content:space-between;gap:12px;padding-top:12px;border-top:1px solid var(--border-color-line);font-size:var(--text-xs);color:var(--text-color-muted)}
     .p-home__footer div{display:flex;gap:14px}
     .p-home__footer a{color:inherit}
-    .p-home__footer button{all:unset;text-decoration:underline;cursor:pointer}
-    .p-home__footer button:focus-visible,.p-home__footer a:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+    .p-home__footer a:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
 
     @media (min-width:481px){
       .p-home__cards{grid-template-columns:repeat(2,1fr);grid-auto-rows:minmax(130px,1fr)}
@@ -90,12 +89,30 @@
                 <p>Look back at how you have been feeling.</p>
                 <span class="c-module-card__stat">9 moods</span>
               </a>
+              <a class="c-module-card" href="routines.html" style="--card-color:var(--bg-cat-health)">
+                <span class="c-module-card__icon" data-icon="routines"></span>
+                <h3>Routines</h3>
+                <p>Steps you repeat, like skincare, or a cycle that moves on, like a hair schedule.</p>
+                <span class="c-module-card__stat">2 due today</span>
+              </a>
+              <a class="c-module-card" href="lists.html" style="--card-color:var(--bg-cat-home)">
+                <span class="c-module-card__icon" data-icon="lists"></span>
+                <h3>Lists</h3>
+                <p>Checklists you tick off, like groceries, and collections to keep, like gift ideas.</p>
+                <span class="c-module-card__stat">5 lists · 9 items to tick off</span>
+              </a>
+              <a class="c-module-card" href="media.html" style="--card-color:var(--bg-cat-work)">
+                <span class="c-module-card__icon" data-icon="media"></span>
+                <h3>Media</h3>
+                <p>The anime, manga, games and movies you love, with covers, progress and where to find them.</p>
+                <span class="c-module-card__stat">7 anime &amp; manga · 3 games · 3 movies</span>
+              </a>
             </div>
           </section>
 
           <footer class="p-home__footer">
             <span>&copy; Yoko! 2024–2026 · v1.0.0</span>
-            <div><a href="design-system.html">Design system</a><button type="button" data-open="export">Export my data</button><button type="button" data-open="import">Import my data</button></div>
+            <div><a href="design-system.html">Design system</a><a href="settings.html#data">Export or import my data</a></div>
           </footer>
         </div>
       </main>
@@ -105,11 +122,18 @@
   <script src="mascots.js"></script>
   <script src="shell.js"></script>
   <script src="components.js"></script>
-  <script src="data.js"></script>
   <script>
     // Reuse the sidebar icons in the module cards.
     const sidebarIcon = (id) => document.querySelector(`.c-sidebar [href][aria-label^="${id}"] svg`)?.outerHTML ?? '';
-    const names = { occurrences: 'Occurrences', links: 'Links', notes: 'Notes', tasks: 'Tasks', mood: 'Mood' };
+    const names = { occurrences: 'Occurrences', links: 'Links', notes: 'Notes', tasks: 'Tasks', mood: 'Mood', routines: 'Routines', media: 'Media', lists: 'Lists' };
+    // Cards of hidden modules (Settings > Modules) stay out of the home page.
+    const showModuleCards = () =>
+      document.querySelectorAll('.c-module-card').forEach((card) => {
+        const id = window.YokoModules.byHref(card.getAttribute('href'));
+        card.hidden = Boolean(id) && !window.YokoModules.isVisible(id);
+      });
+    showModuleCards();
+    document.addEventListener('yoko:modules', showModuleCards);
     document.querySelectorAll('[data-icon]').forEach((el) => {
       el.innerHTML = el.dataset.icon === 'otter' ? window.otter : sidebarIcon(names[el.dataset.icon]);
     });

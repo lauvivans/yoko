@@ -21,6 +21,10 @@
     sun: stroke('<path d="M12 18.5a6.5 6.5 0 1 0 0-13 6.5 6.5 0 0 0 0 13Z"/><path d="M19.14 19.14 19.01 19.01M19.01 4.99l.13-.13M4.86 19.14l.13-.13M12 2.08V2M12 22v-.08M2.08 12H2M22 12h-.08M4.99 4.99l-.13-.13"/>'),
     chevronLeft: stroke('<path d="M15 19.92 8.48 13.4c-.77-.77-.77-2.03 0-2.8L15 4.08"/>'),
     chevronRight: stroke('<path d="m8.91 19.92 6.52-6.52c.77-.77.77-2.03 0-2.8L8.91 4.08"/>'),
+    routines: stroke('<path d="M12 3l1.9 5.1L19 10l-5.1 1.9L12 17l-1.9-5.1L5 10l5.1-1.9Z"/><path d="M19 15l.8 2.2L22 18l-2.2.8L19 21l-.8-2.2L16 18l2.2-.8Z"/>'),
+    media: stroke('<path d="M2 9h20M7 3l2 6M15 3l2 6"/><path d="M6 21h12a4 4 0 0 0 4-4V7a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v10a4 4 0 0 0 4 4Z"/><path d="M10 13.5v3.2c0 .5.5.8.9.5l2.6-1.6c.4-.3.4-.8 0-1.1l-2.6-1.6c-.4-.2-.9.1-.9.6Z"/>'),
+    lists: stroke('<path d="M9 6h12M9 12h12M9 18h12M4 6h.01M4 12h.01M4 18h.01"/>'),
+    settings: stroke('<path d="M12 15a3 3 0 1 0 0-6 3 3 0 0 0 0 6Z"/><path d="M2 12.88v-1.76c0-1.04.85-1.9 1.9-1.9 1.81 0 2.55-1.28 1.64-2.85-.52-.9-.21-2.07.7-2.59l1.73-.99c.79-.47 1.81-.19 2.28.6l.11.19c.9 1.57 2.38 1.57 3.29 0l.11-.19c.47-.79 1.49-1.07 2.28-.6l1.73.99c.91.52 1.22 1.69.7 2.59-.91 1.57-.17 2.85 1.64 2.85 1.04 0 1.9.85 1.9 1.9v1.76c0 1.04-.85 1.9-1.9 1.9-1.81 0-2.55 1.28-1.64 2.85.52.91.21 2.07-.7 2.59l-1.73.99c-.79.47-1.81.19-2.28-.6l-.11-.19c-.9-1.57-2.38-1.57-3.29 0l-.11.19c-.47.79-1.49 1.07-2.28.6l-1.73-.99a1.9 1.9 0 0 1-.7-2.59c.91-1.57.17-2.85-1.64-2.85-1.05 0-1.9-.86-1.9-1.9Z"/>'),
     search: stroke('<path d="M11.5 21a9.5 9.5 0 1 0 0-19 9.5 9.5 0 0 0 0 19ZM22 22l-2-2"/>'),
   };
 
@@ -31,19 +35,53 @@
     { id: 'notes', label: 'Notes', href: 'notes.html', color: 'var(--blue)' },
     { id: 'tasks', label: 'Tasks', href: 'tasks.html', color: 'var(--blue)' },
     { id: 'mood', label: 'Mood history', href: 'mood.html', color: 'var(--blue)' },
+    { id: 'routines', label: 'Routines', href: 'routines.html', color: 'var(--bg-cat-health)' },
+    { id: 'media', label: 'Media', href: 'media.html', color: 'var(--bg-cat-work)' },
+    { id: 'lists', label: 'Lists', href: 'lists.html', color: 'var(--bg-cat-home)' },
   ];
 
   // Each module has its own accent: Yoko's blue, or yellow on Places.
   const current = modules.find((m) => m.id === page);
   if (current?.color) root.style.setProperty('--module', current.color);
 
-  // Theme, remembered across pages when the browser allows it.
-  try {
-    const saved = localStorage.getItem('yoko-prototype-theme');
-    if (saved) root.dataset.theme = saved;
-  } catch {
-    // Storage blocked: start with the light theme.
-  }
+  // Theme: the preference (light, dark or system) and the theme it resolves to, remembered when the browser allows it.
+  // Pages without the shell (login, landing, docs, 404) only read the resolved theme.
+  const THEME_KEY = 'yoko-prototype-theme';
+  const PREFERENCE_KEY = 'yoko-prototype-theme-preference';
+  const systemDark = window.matchMedia('(prefers-color-scheme: dark)');
+  const store = {
+    get: (key) => {
+      try {
+        return localStorage.getItem(key);
+      } catch {
+        return null;
+      }
+    },
+    set: (key, value) => {
+      try {
+        localStorage.setItem(key, value);
+      } catch {
+        // Storage blocked: the theme just isn't remembered.
+      }
+    },
+  };
+  const themes = ['light', 'dark', 'system'];
+  let themePreference = [store.get(PREFERENCE_KEY), store.get(THEME_KEY)].find((t) => themes.includes(t)) ?? 'light';
+  const applyTheme = () => {
+    root.dataset.theme = themePreference === 'system' ? (systemDark.matches ? 'dark' : 'light') : themePreference;
+    store.set(THEME_KEY, root.dataset.theme);
+  };
+  applyTheme();
+  systemDark.addEventListener?.('change', () => themePreference === 'system' && applyTheme());
+  window.YokoTheme = {
+    preference: () => themePreference,
+    set: (preference) => {
+      if (!themes.includes(preference)) return;
+      themePreference = preference;
+      store.set(PREFERENCE_KEY, preference);
+      applyTheme();
+    },
+  };
 
   const sidebar = document.createElement('aside');
   sidebar.className = 'c-sidebar';
@@ -56,12 +94,13 @@
             .filter(Boolean)
             .join(' ');
           const current = m.id === page ? ' aria-current="page"' : '';
-          return `<li><a class="${classes}" href="${m.href}" data-label="${m.label}" aria-label="${m.label}"${current}>${icons[m.id]}</a></li>`;
+          return `<li data-module="${m.id}"><a class="${classes}" href="${m.href}" data-label="${m.label}" aria-label="${m.label}"${current}>${icons[m.id]}</a></li>`;
         })
         .join('')}
     </ul></nav>
     <ul class="c-sidebar__bottom">
-      <li><button class="c-sidebar__item" type="button" id="theme-toggle" data-label="Switch theme" aria-label="Switch theme">${icons.theme}</button></li>
+      <li><a class="c-sidebar__item${page === 'settings' ? ' c-sidebar__item--active' : ''}" href="settings.html" data-label="Settings" aria-label="Settings"${page === 'settings' ? ' aria-current="page"' : ''}>${icons.settings}</a></li>
+      <li class="c-sidebar__theme"><button class="c-sidebar__item" type="button" id="theme-toggle" data-label="Switch theme" aria-label="Switch theme">${icons.theme}</button></li>
       <li><a class="c-sidebar__item" href="login.html" data-label="Sign out" aria-label="Sign out">${icons.signOut}</a></li>
     </ul>`;
 
@@ -102,18 +141,41 @@
   app.prepend(sidebar);
   app.querySelector('.app__main').prepend(topbar);
 
+  // Modules the person chose to hide (Settings > Modules). Hiding only takes them out of the way; nothing is deleted.
+  const HIDDEN_KEY = 'yoko-prototype-hidden-modules';
+  const readHidden = () => {
+    try {
+      const saved = JSON.parse(store.get(HIDDEN_KEY) ?? '[]');
+      return Array.isArray(saved) ? saved.filter((id) => modules.some((m) => m.id === id)) : [];
+    } catch {
+      return [];
+    }
+  };
+  let hiddenModules = readHidden();
+  const applyModules = () => {
+    sidebar.querySelectorAll('[data-module]').forEach((item) => (item.hidden = hiddenModules.includes(item.dataset.module)));
+    topbar.querySelector('.c-mood').hidden = hiddenModules.includes('mood');
+    document.dispatchEvent(new CustomEvent('yoko:modules'));
+  };
+  applyModules();
+  window.YokoModules = {
+    all: modules.map(({ id, label, href }) => ({ id, label, href })),
+    isVisible: (id) => !hiddenModules.includes(id),
+    byHref: (href) => modules.find((m) => href.split(/[?#]/)[0] === m.href)?.id,
+    setVisible: (id, visible) => {
+      hiddenModules = visible ? hiddenModules.filter((h) => h !== id) : [...new Set([...hiddenModules, id])];
+      store.set(HIDDEN_KEY, JSON.stringify(hiddenModules));
+      applyModules();
+    },
+  };
+
   // Greeting by period of the day (decision 004, without the location).
   const hour = new Date().getHours();
   const period = hour < 5 ? 'It’s late' : hour < 12 ? 'Good morning' : hour < 18 ? 'Good afternoon' : 'Good evening';
   document.getElementById('greeting').textContent = `${period}, Laura`;
 
   document.getElementById('theme-toggle').addEventListener('click', () => {
-    root.dataset.theme = root.dataset.theme === 'dark' ? 'light' : 'dark';
-    try {
-      localStorage.setItem('yoko-prototype-theme', root.dataset.theme);
-    } catch {
-      // Storage blocked: the theme just isn't remembered.
-    }
+    window.YokoTheme.set(root.dataset.theme === 'dark' ? 'light' : 'dark');
   });
 
   const moodToggle = document.getElementById('mood-toggle');

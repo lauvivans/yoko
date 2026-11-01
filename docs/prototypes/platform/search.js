@@ -22,6 +22,9 @@
     plus: stroke('<path d="M12 5v14M5 12h14"/>'),
     page: stroke('<path d="M14 5h7M14 12h7M14 19h7M3 4h7v7H3ZM3 15h7v5H3Z"/>'),
     filter: stroke('<path d="M5.4 2.1h13.2c1.1 0 2 .9 2 2v2.2c0 .8-.5 1.8-1 2.3l-4.3 3.8c-.6.5-1 1.5-1 2.3v4.3c0 .6-.4 1.4-.9 1.7l-1.4.9c-1.3.8-3.1-.1-3.1-1.7v-5.3c0-.7-.4-1.6-.8-2.1L4.4 8.6c-.5-.5-.9-1.4-.9-2V4.2c0-1.2.9-2.1 1.9-2.1Z"/>'),
+    Routines: stroke('<path d="M12 3l1.9 5.1L19 10l-5.1 1.9L12 17l-1.9-5.1L5 10l5.1-1.9Z"/><path d="M19 15l.8 2.2L22 18l-2.2.8L19 21l-.8-2.2L16 18l2.2-.8Z"/>'),
+    Media: stroke('<path d="M2 9h20M7 3l2 6M15 3l2 6"/><path d="M6 21h12a4 4 0 0 0 4-4V7a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v10a4 4 0 0 0 4 4Z"/>'),
+    Lists: stroke('<path d="M9 6h12M9 12h12M9 18h12M4 6h.01M4 12h.01M4 18h.01"/>'),
     recent: stroke('<path d="M22 12c0 5.52-4.48 10-10 10S2 17.52 2 12 6.48 2 12 2s10 4.48 10 10ZM15.71 15.18l-3.1-1.85c-.54-.32-.98-1.09-.98-1.72v-4.1"/>'),
   };
 
@@ -33,6 +36,10 @@
     { label: 'Notes', href: 'notes.html' },
     { label: 'Tasks', href: 'tasks.html' },
     { label: 'Mood history', href: 'mood.html' },
+    { label: 'Routines', href: 'routines.html' },
+    { label: 'Media', href: 'media.html' },
+    { label: 'Lists', href: 'lists.html' },
+    { label: 'Settings', href: 'settings.html' },
     { label: 'Design system', href: 'design-system.html' },
   ];
   const creates = [
@@ -41,6 +48,9 @@
     { label: 'New note', href: 'notes.html?new=1' },
     { label: 'Save a link', href: 'links.html?new=1' },
     { label: 'Add a place', href: 'places.html?new=1' },
+    { label: 'New routine', href: 'routines.html?new=1' },
+    { label: 'Add to media', href: 'media.html?new=1' },
+    { label: 'New list', href: 'lists.html?new=1' },
     { label: 'Log my mood', mood: true },
   ];
 
@@ -116,17 +126,26 @@
     return span;
   };
 
+  const moduleOfGroup = { Events: 'occurrences', Actions: 'occurrences', Tasks: 'tasks', Notes: 'notes', Links: 'links', Places: 'places', Moods: 'mood', Routines: 'routines', Media: 'media', Lists: 'lists' };
+  const shown = (href) => {
+    const id = window.YokoModules?.byHref(href);
+    return !id || window.YokoModules.isVisible(id);
+  };
+  const visiblePages = () => pages.filter((p) => shown(p.href));
+  const visibleCreates = () => creates.filter((c) => (c.mood ? window.YokoModules?.isVisible('mood') !== false : shown(c.href)));
+
   const groupsFor = (q) => {
     if (!q) {
       const recent = readRecent().map((r) => ({ ...r, icon: icons.recent }));
       return [
         { name: 'Recent', items: recent },
-        { name: 'Create', items: creates.map((c) => ({ ...c, title: c.label, icon: icons.plus })) },
-        { name: 'Go to', items: pages.map((p) => ({ title: p.label, href: p.href, icon: icons.page })) },
+        { name: 'Create', items: visibleCreates().map((c) => ({ ...c, title: c.label, icon: icons.plus })) },
+        { name: 'Go to', items: visiblePages().map((p) => ({ title: p.label, href: p.href, icon: icons.page })) },
       ];
     }
     const filter = canFilterPage ? [{ name: 'This page', items: [{ title: `Filter this page by “${input.value.trim()}”`, filter: input.value.trim(), icon: icons.filter }] }] : [];
-    const modules = ['Events', 'Actions', 'Tasks', 'Notes', 'Links', 'Places', 'Moods'].map((module) => ({
+    const modules = ['Events', 'Actions', 'Tasks', 'Notes', 'Links', 'Places', 'Moods', 'Routines', 'Media', 'Lists'].filter((module) => window.YokoModules?.isVisible(moduleOfGroup[module]) !== false)
+      .map((module) => ({
       name: module,
       items: index
         .filter((item) => item.module === module)
@@ -140,8 +159,8 @@
     return [
       ...filter,
       ...modules,
-      { name: 'Create', items: matching(creates).map((c) => ({ ...c, title: c.label, icon: icons.plus })) },
-      { name: 'Go to', items: matching(pages).map((p) => ({ title: p.label, href: p.href, icon: icons.page })) },
+      { name: 'Create', items: matching(visibleCreates()).map((c) => ({ ...c, title: c.label, icon: icons.plus })) },
+      { name: 'Go to', items: matching(visiblePages()).map((p) => ({ title: p.label, href: p.href, icon: icons.page })) },
     ];
   };
 
