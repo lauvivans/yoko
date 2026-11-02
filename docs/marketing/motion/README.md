@@ -2,7 +2,7 @@
 
 A short promo video of the platform prototype (`docs/prototypes/platform/`). It opens with an animated intro, shows live clips of the prototype in use, then a few highlights and an outro with the mascots.
 
-The video is generated from the prototype, so it can be recorded again whenever the screens change. The `.mp4` isn't versioned here; the final version is attached to a GitHub release.
+The video is generated from the prototype, so it can be recorded again whenever the screens change. The `.mp4` isn't versioned.
 
 ## Files
 
