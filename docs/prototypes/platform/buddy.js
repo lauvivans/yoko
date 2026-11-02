@@ -13,7 +13,7 @@
   };
   if (!art || visitsOff() || !('animate' in Element.prototype) || window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
 
-  const SIZE = 96;
+  // The size comes from the CSS (shell.css), which makes it bigger on larger screens.
   const FIRST_VISIT_MS = 1500;
   const VISIT_EVERY_MS = [12000, 20000];
   const MAX_VISITS = 6;
@@ -50,6 +50,7 @@
   const wait = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
   const width = () => stage.clientWidth;
   const height = () => stage.clientHeight;
+  const size = () => mover.offsetWidth;
   const place = (x, y) => (mover.style.transform = `translate(${x}px, ${y}px)`);
   const move = (frames, duration, easing = 'ease-in-out') =>
     mover.animate(frames.map(([x, y]) => ({ transform: `translate(${x}px, ${y}px)` })), { duration, easing, fill: 'forwards' }).finished;
@@ -92,7 +93,7 @@
     async peek(text) {
       const x = width() * (0.15 + Math.random() * 0.65);
       const hidden = height();
-      const out = height() - SIZE + 14;
+      const out = height() - size() + 14;
       face(Math.random() < 0.5);
       place(x, hidden);
       const rise = move([[x, hidden], [x, out]], 380, 'cubic-bezier(.34,1.56,.64,1)');
@@ -103,8 +104,8 @@
     // Cross the bottom, bobbing.
     async cross() {
       const toRight = Math.random() < 0.5;
-      const y = height() - SIZE - 6;
-      const [from, to] = toRight ? [-SIZE, width() + SIZE] : [width() + SIZE, -SIZE];
+      const y = height() - size() - 6;
+      const [from, to] = toRight ? [-size(), width() + size()] : [width() + size(), -size()];
       face(toRight);
       const steps = 6;
       const frames = Array.from({ length: steps + 1 }, (_, i) => [from + ((to - from) * i) / steps, y + (i % 2 ? -10 : 0)]);
